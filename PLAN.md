@@ -30,10 +30,23 @@ Measured on the 128-record pipeline batch before any design decision:
 | Phase | Scope | Status |
 |---|---|---|
 | 1. Foundation | Collections, roles, publishing rules, importer, item list and item pages, entity pages | **Done** |
-| 2. Linking | Merge review workflow, related items, search across transcripts, filters | Next |
-| 3. Presentation | Visual design, home and about content, team | |
+| 2. Linking | Merge review workflow, related items, search across transcripts, filters, A–Z indexes | **Done** |
+| 3. Presentation | Visual design, home and about content, team | Next |
 | 4. Narrative | Curated stories that string items together, as LivedMU's stories do | |
 | Deploy | Storage adapter, Neon, Vercel Pro, migrations, Libraries subdomain | Before public launch |
+
+## How linking works (Phase 2)
+
+- **Related items** score shared people (weight 3), subjects (2), places (1) and genres (0.5), each
+  scaled by how rare the shared term is. A term on more than a quarter of the visible items is
+  ignored, so *correspondence* and *Ohio--Oxford* never make two items "related". Each suggestion
+  shows the links it shares. Suggestions are only as good as the name links: a bare surname such
+  as "Morris" can join two different people until an editor resolves it.
+- **Merging people** happens at `/review/people` (editors and admins). A merge repoints every item,
+  keeps one row per person with the strongest role, folds the other spellings into aliases, records
+  the merged names in `mergedFrom` — which the importer honours, so a merge survives re-import —
+  and deletes the merged records, all in one transaction. It refuses, before changing anything,
+  when a published item has unpublished changes naming the record.
 
 ## Open items
 

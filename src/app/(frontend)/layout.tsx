@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { getViewer } from '@/lib/viewer'
+import type { User } from '@/payload-types'
+
 import './styles.css'
 
 export const metadata = {
@@ -9,7 +12,18 @@ export const metadata = {
     'Letters, documents and photographs recording Asian American lives in Ohio, from the collections of Miami University.',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const NAV = [
+  ['/items', 'Items'],
+  ['/people', 'People'],
+  ['/places', 'Places'],
+  ['/subjects', 'Subjects'],
+  ['/about', 'About'],
+] as const
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { user } = await getViewer()
+  const role = (user as User | null)?.role
+  const canReview = role === 'admin' || role === 'editor'
   return (
     <html lang="en">
       <body>
@@ -24,12 +38,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <nav aria-label="Main">
               <ul role="list">
-                <li>
-                  <Link href="/items">Items</Link>
-                </li>
-                <li>
-                  <Link href="/about">About</Link>
-                </li>
+                {NAV.map(([href, label]) => (
+                  <li key={href}>
+                    <Link href={href}>{label}</Link>
+                  </li>
+                ))}
+                {canReview && (
+                  <li>
+                    <Link href="/review/people" className="nav-staff">
+                      Review duplicates
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>

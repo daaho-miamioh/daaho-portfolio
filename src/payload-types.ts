@@ -341,12 +341,52 @@ export interface Person {
    */
   importKey?: string | null;
   /**
+   * Records merged into this one. The importer maps these names here, so a merge survives re-import.
+   */
+  mergedFrom?:
+    | {
+        name?: string | null;
+        importKey?: string | null;
+        mergedAt?: string | null;
+        mergedBy?: (number | null) | User;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * The source reading of this name was uncertain.
    */
   needsReview?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name: string;
+  role: 'admin' | 'editor' | 'contributor';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -437,34 +477,6 @@ export interface Genre {
   } | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  name: string;
-  role: 'admin' | 'editor' | 'contributor';
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -686,6 +698,15 @@ export interface PeopleSelect<T extends boolean = true> {
   possibleDuplicates?: T;
   public?: T;
   importKey?: T;
+  mergedFrom?:
+    | T
+    | {
+        name?: T;
+        importKey?: T;
+        mergedAt?: T;
+        mergedBy?: T;
+        id?: T;
+      };
   needsReview?: T;
   updatedAt?: T;
   createdAt?: T;

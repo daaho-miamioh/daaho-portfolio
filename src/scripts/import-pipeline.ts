@@ -191,7 +191,11 @@ async function main() {
   const created = new Set<string>()
   const usedSlugs = new Set<string>()
   for (const n of [...names.values()].sort((a, b) => a.key.localeCompare(b.key))) {
-    let doc = await findOne(payload, 'people', 'importKey', n.key)
+    // A name an editor merged into another record maps to the survivor; recreating it would undo
+    // the merge on every re-import.
+    let doc =
+      (await findOne(payload, 'people', 'importKey', n.key)) ??
+      (await findOne(payload, 'people', 'mergedFrom.importKey', n.key))
     if (!doc) {
       let slug = slugify(n.display) || 'unnamed'
       for (let i = 2; usedSlugs.has(slug) || (await findOne(payload, 'people', 'slug', slug)); i++) slug = `${slugify(n.display)}-${i}`

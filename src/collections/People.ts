@@ -90,6 +90,20 @@ export const People: CollectionConfig = {
       admin: { position: 'sidebar', readOnly: true, description: 'Normalized name the importer matched on.' },
     },
     {
+      name: 'mergedFrom',
+      type: 'array',
+      admin: {
+        readOnly: true,
+        description: 'Records merged into this one. The importer maps these names here, so a merge survives re-import.',
+      },
+      fields: [
+        { name: 'name', type: 'text' },
+        { name: 'importKey', type: 'text', index: true },
+        { name: 'mergedAt', type: 'date' },
+        { name: 'mergedBy', type: 'relationship', relationTo: 'users' },
+      ],
+    },
+    {
       name: 'needsReview',
       type: 'checkbox',
       admin: { position: 'sidebar', description: 'The source reading of this name was uncertain.' },

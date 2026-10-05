@@ -1,8 +1,7 @@
 import Link from 'next/link'
 
-export function Pagination({ page, totalPages, base }: { page: number; totalPages: number; base: string }) {
+export function Pagination({ page, totalPages, href }: { page: number; totalPages: number; href: (page: number) => string }) {
   if (totalPages <= 1) return null
-  const href = (p: number) => (p === 1 ? base : `${base}?page=${p}`)
   return (
     <nav className="pagination" aria-label="Pagination">
       {page > 1 ? <Link href={href(page - 1)}>← Previous</Link> : <span aria-hidden="true" />}

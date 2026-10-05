@@ -60,6 +60,12 @@ What it will not guess at, and reports instead:
 | Editor | Edit and publish items, people, pages |
 | Contributor | Create and edit drafts; cannot publish |
 
+## Reviewing duplicate people
+
+Editors and admins see **Review duplicates** in the site header (`/review/people`). Each group is
+one decision: choose the record to keep, tick the ones that are the same person, and merge — or
+mark them as different people. Merges are transactional and survive re-import.
+
 ## Publishing rules
 
 Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
@@ -75,7 +81,7 @@ Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
 
 ```bash
 pnpm test:unit   # name handling and dates — no database needed
-pnpm test:int    # publishing rules, against DATABASE_URL (creates and removes its own test records)
+pnpm test:int    # publishing rules and people merges, against DATABASE_URL (creates and removes its own test records)
 ```
 
 ## Before deploying to Vercel
