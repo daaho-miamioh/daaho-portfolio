@@ -25,6 +25,17 @@ import { cleanName, clusters, mayBeSamePerson, splitJoined, type NameKind } from
 import { detectRegions } from '@/lib/regions'
 import { slugify } from '@/lib/slug'
 
+
+/** Where this run will write, without credentials — printed before anything is written. */
+function describeDatabase(): string {
+  try {
+    const u = new URL(process.env.DATABASE_URL ?? '')
+    return `${u.hostname}${u.pathname} (${process.env.NODE_ENV === 'production' ? 'production mode' : 'development mode'})`
+  } catch {
+    return '(DATABASE_URL not set)'
+  }
+}
+
 const PIPELINE_DIR = path.resolve(process.env.PIPELINE_DIR ?? '../daaho-metadata-pipeline')
 const DRY_RUN = !!process.env.DRY_RUN
 const LOW_CONFIDENCE = 70
@@ -151,6 +162,7 @@ async function main() {
   const kinds = [...names.values()].reduce<Record<string, number>>((a, n) => ((a[n.kind] = (a[n.kind] ?? 0) + 1), a), {})
   const rawCount = new Set([...names.values()].flatMap((n) => [...n.aliases])).size
   const rejected = [...issues.values()].flat().filter((s) => s.startsWith('Name not imported')).length
+  console.log(`Database: ${describeDatabase()}`)
   console.log(`Pipeline: ${PIPELINE_DIR}`)
   console.log(`Records: ${records.length}, pages: ${records.reduce((a, r) => a + r.context.pages.length, 0)}`)
   console.log(`Name strings: ${rawCount} -> ${names.size} entries (${Object.entries(kinds).map(([k, v]) => `${v} ${k}`).join(', ')})`)

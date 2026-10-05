@@ -101,16 +101,10 @@ pnpm test:unit   # name handling and dates — no database needed
 pnpm test:int    # publishing rules and people merges, against DATABASE_URL (creates and removes its own test records)
 ```
 
-## Before deploying to Vercel
+## Deploying
 
-- **Add an object-storage adapter for media** (Vercel Blob, Cloudflare R2 or S3). Scans are stored on
-  local disk in development; Vercel's filesystem is temporary, so uploads would vanish on the next
-  deploy.
-- **Vercel Pro is required**, not Hobby: Vercel's Hobby terms exclude projects built by a paid
-  employee.
-- Use `@payloadcms/db-postgres` with Neon's connection string; not `db-vercel-postgres`, whose
-  underlying driver Vercel no longer maintains.
-- Generate migrations (`pnpm payload migrate:create`) rather than relying on development-mode schema
-  push.
+See **[DEPLOY.md](DEPLOY.md)**: Vercel Pro, Neon for Postgres, and a private Cloudflare R2 bucket for
+the scans. Schema changes ship as migrations in `src/migrations`; create one with
+`pnpm payload migrate:create <name>` after changing a collection.
 
 See [PLAN.md](PLAN.md) for the architecture and phases.

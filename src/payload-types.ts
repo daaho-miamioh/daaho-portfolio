@@ -261,6 +261,8 @@ export interface Media {
    * Original scan filename from the pipeline.
    */
   sourceFilename?: string | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -887,6 +889,8 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   public?: T;
   sourceFilename?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

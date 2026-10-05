@@ -33,8 +33,20 @@ type EventIn = {
   draftedBy?: string
 }
 
+
+/** Where this run will write, without credentials — printed before anything is written. */
+function describeDatabase(): string {
+  try {
+    const u = new URL(process.env.DATABASE_URL ?? '')
+    return `${u.hostname}${u.pathname} (${process.env.NODE_ENV === 'production' ? 'production mode' : 'development mode'})`
+  } catch {
+    return '(DATABASE_URL not set)'
+  }
+}
+
 const file = path.resolve(process.env.EVENTS_FILE ?? 'data/context-events.json')
 const events = JSON.parse(fs.readFileSync(file, 'utf8')) as EventIn[]
+console.log(`Database: ${describeDatabase()}`)
 const payload = await getPayload({ config })
 let created = 0
 for (const e of events) {
