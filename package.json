@@ -1,7 +1,7 @@
 {
   "name": "daaho-portfolio",
   "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
+  "description": "Public exhibit site and CMS for Documenting Asian American Histories in Ohio",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -13,9 +13,11 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "test": "pnpm run test:int && pnpm run test:e2e",
+    "test": "pnpm run test:unit && pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
+    "test:unit": "vitest run --config ./vitest.unit.config.mts",
+    "import:pipeline": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-pipeline.ts"
   },
   "dependencies": {
     "@payloadcms/next": "3.90.2",

@@ -67,8 +67,14 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    items: Item;
+    people: Person;
+    places: Place;
+    subjects: Subject;
+    genres: Genre;
     media: Media;
+    team: Team;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,19 +82,31 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    items: ItemsSelect<false> | ItemsSelect<true>;
+    people: PeopleSelect<false> | PeopleSelect<true>;
+    places: PlacesSelect<false> | PlacesSelect<true>;
+    subjects: SubjectsSelect<false> | SubjectsSelect<true>;
+    genres: GenresSelect<false> | GenresSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    home: Home;
+    about: About;
+  };
+  globalsSelect: {
+    home: HomeSelect<false> | HomeSelect<true>;
+    about: AboutSelect<false> | AboutSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -118,11 +136,316 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Archival items. Imported from the metadata pipeline as drafts; published after review.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "items".
+ */
+export interface Item {
+  id: number;
+  title: string;
+  /**
+   * YYYY-MM-DD, YYYY-MM or YYYY. Leave empty if undated.
+   */
+  date?: string | null;
+  description?: string | null;
+  /**
+   * Required before publishing.
+   */
+  rights?: string | null;
+  pages?:
+    | {
+        image: number | Media;
+        /**
+         * e.g. Recto, Verso, Page 2
+         */
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Follows the DAAHO Transcription Policy: [page N] markers, original spelling with [corrections], [illegible], [struck: ...].
+   */
+  transcript?: string | null;
+  people?:
+    | {
+        person: number | Person;
+        role: 'creator' | 'correspondent' | 'contributor';
+        id?: string | null;
+      }[]
+    | null;
+  places?: (number | Place)[] | null;
+  subjects?: (number | Subject)[] | null;
+  genres?: (number | Genre)[] | null;
+  archival?: {
+    repository?: string | null;
+    collection?: string | null;
+    series?: string | null;
+    box?: string | null;
+    folder?: string | null;
+    callNumber?: string | null;
+  };
+  /**
+   * Pipeline identifier, e.g. AAMU-0001.
+   */
+  itemId: string;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  dateSort?: string | null;
+  language?: string | null;
+  review?: {
+    status?: ('ai_generated' | 'in_review' | 'reviewed') | null;
+    reviewedBy?: (number | null) | User;
+    reviewedAt?: string | null;
+    notes?: string | null;
+  };
+  ai?: {
+    model?: string | null;
+    promptVersion?: string | null;
+    transcriptConfidence?: number | null;
+    /**
+     * Transcript confidence below 70.
+     */
+    lowConfidence?: boolean | null;
+    fieldConfidence?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  /**
+   * Problems the importer found and would not guess at. Resolve, then delete the row.
+   */
+  importIssues?:
+    | {
+        issue?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  /**
+   * Visible to the public. Set automatically for published items.
+   */
+  public?: boolean | null;
+  /**
+   * Original scan filename from the pipeline.
+   */
+  sourceFilename?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    reading?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "people".
+ */
+export interface Person {
+  id: number;
+  /**
+   * Inverted form for people: "Upham, Alfred H."
+   */
+  name: string;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  kind: 'person' | 'organization' | 'group';
+  /**
+   * e.g. 1877–1949
+   */
+  dates?: string | null;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Every spelling found in the source documents.
+   */
+  aliases?:
+    | {
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Proposed by the importer: same surname, compatible initials. Confirm or clear.
+   */
+  possibleDuplicates?: (number | Person)[] | null;
+  /**
+   * Set automatically: visible to the public once named in a published item.
+   */
+  public?: boolean | null;
+  /**
+   * Normalized name the importer matched on.
+   */
+  importKey?: string | null;
+  /**
+   * The source reading of this name was uncertain.
+   */
+  needsReview?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "places".
+ */
+export interface Place {
+  id: number;
+  name: string;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  authorityUri?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subjects".
+ */
+export interface Subject {
+  id: number;
+  name: string;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  authorityUri?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "genres".
+ */
+export interface Genre {
+  id: number;
+  name: string;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  authorityUri?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  name: string;
+  role: 'admin' | 'editor' | 'contributor';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -130,6 +453,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -144,29 +468,45 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "team".
  */
-export interface Media {
-  id: string;
-  alt: string;
+export interface Team {
+  id: number;
+  name: string;
+  /**
+   * Role on the project, e.g. Principal Investigator
+   */
+  title?: string | null;
+  affiliation?: string | null;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  photo?: (number | null) | Media;
+  /**
+   * Lower first.
+   */
+  order?: number | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -183,20 +523,44 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: string | User;
+        relationTo: 'items';
+        value: number | Item;
+      } | null)
+    | ({
+        relationTo: 'people';
+        value: number | Person;
+      } | null)
+    | ({
+        relationTo: 'places';
+        value: number | Place;
+      } | null)
+    | ({
+        relationTo: 'subjects';
+        value: number | Subject;
+      } | null)
+    | ({
+        relationTo: 'genres';
+        value: number | Genre;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'team';
+        value: number | Team;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -206,10 +570,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -229,7 +593,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -237,25 +601,131 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "items_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+export interface ItemsSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  description?: T;
+  rights?: T;
+  pages?:
     | T
     | {
+        image?: T;
+        label?: T;
         id?: T;
-        createdAt?: T;
-        expiresAt?: T;
       };
+  transcript?: T;
+  people?:
+    | T
+    | {
+        person?: T;
+        role?: T;
+        id?: T;
+      };
+  places?: T;
+  subjects?: T;
+  genres?: T;
+  archival?:
+    | T
+    | {
+        repository?: T;
+        collection?: T;
+        series?: T;
+        box?: T;
+        folder?: T;
+        callNumber?: T;
+      };
+  itemId?: T;
+  slug?: T;
+  dateSort?: T;
+  language?: T;
+  review?:
+    | T
+    | {
+        status?: T;
+        reviewedBy?: T;
+        reviewedAt?: T;
+        notes?: T;
+      };
+  ai?:
+    | T
+    | {
+        model?: T;
+        promptVersion?: T;
+        transcriptConfidence?: T;
+        lowConfidence?: T;
+        fieldConfidence?: T;
+      };
+  importIssues?:
+    | T
+    | {
+        issue?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "people_select".
+ */
+export interface PeopleSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  kind?: T;
+  dates?: T;
+  bio?: T;
+  aliases?:
+    | T
+    | {
+        value?: T;
+        id?: T;
+      };
+  possibleDuplicates?: T;
+  public?: T;
+  importKey?: T;
+  needsReview?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "places_select".
+ */
+export interface PlacesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  authorityUri?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subjects_select".
+ */
+export interface SubjectsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  authorityUri?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "genres_select".
+ */
+export interface GenresSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  authorityUri?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -263,6 +733,8 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  public?: T;
+  sourceFilename?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -274,6 +746,79 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        reading?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  title?: T;
+  affiliation?: T;
+  bio?: T;
+  photo?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +859,83 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home".
+ */
+export interface Home {
+  id: number;
+  heading: string;
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Up to six items for the home page. Only published items are shown publicly.
+   */
+  featured?: (number | Item)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about".
+ */
+export interface About {
+  id: number;
+  heading: string;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home_select".
+ */
+export interface HomeSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about_select".
+ */
+export interface AboutSelect<T extends boolean = true> {
+  heading?: T;
+  body?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

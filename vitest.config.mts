@@ -5,8 +5,12 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
-    environment: 'jsdom',
+    // Payload, sharp and the Postgres driver need Node, not a browser emulation.
+    environment: 'node',
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/int/**/*.int.spec.ts'],
+    testTimeout: 60_000,
+    hookTimeout: 120_000,
+    fileParallelism: false,
   },
 })

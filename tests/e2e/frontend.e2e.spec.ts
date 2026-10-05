@@ -1,20 +1,14 @@
-import { test, expect, Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-test.describe('Frontend', () => {
-  let page: Page
-
-  test.beforeAll(async ({ browser }, testInfo) => {
-    const context = await browser.newContext()
-    page = await context.newPage()
+test.describe('Public site', () => {
+  test('home page names the project', async ({ page }) => {
+    await page.goto('http://localhost:3000')
+    await expect(page).toHaveTitle(/Documenting Asian American Histories in Ohio/)
+    await expect(page.locator('h1').first()).toHaveText('Documenting Asian American Histories in Ohio')
   })
 
-  test('can go on homepage', async ({ page }) => {
-    await page.goto('http://localhost:3000')
-
-    await expect(page).toHaveTitle(/Payload Blank Template/)
-
-    const heading = page.locator('h1').first()
-
-    await expect(heading).toHaveText('Welcome to your new project.')
+  test('an unpublished item is not reachable by the public', async ({ page }) => {
+    const res = await page.goto('http://localhost:3000/items/aamu-0001')
+    expect(res?.status()).toBe(404)
   })
 })

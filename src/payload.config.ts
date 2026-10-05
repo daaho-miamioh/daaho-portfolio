@@ -5,8 +5,16 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
-import { Users } from './collections/Users'
+import { Genres } from './collections/Genres'
+import { Items } from './collections/Items'
 import { Media } from './collections/Media'
+import { People } from './collections/People'
+import { Places } from './collections/Places'
+import { Subjects } from './collections/Subjects'
+import { Team } from './collections/Team'
+import { Users } from './collections/Users'
+import { About } from './globals/About'
+import { Home } from './globals/Home'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -17,8 +25,10 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: { titleSuffix: ' — DAAHO' },
   },
-  collections: [Users, Media],
+  collections: [Items, People, Places, Subjects, Genres, Media, Team, Users],
+  globals: [Home, About],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

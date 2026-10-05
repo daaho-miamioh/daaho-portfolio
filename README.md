@@ -1,67 +1,93 @@
-# Payload Blank Template
+# DAAHO Portfolio
 
-This template comes configured with the bare minimum to get started on anything you need.
+The public website for **Documenting Asian American Histories in Ohio**: an exhibit of letters,
+documents and photographs from Miami University's collections, with a CMS that lets project staff
+review, edit and publish them.
 
-## Quick start
+Item descriptions and transcriptions come from the
+[DAAHO metadata pipeline](https://github.com/Meng-V/daaho-metadata-pipeline), which reads the scans
+with AI. This site imports that output, puts every item through human review, and publishes it.
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+**Stack:** Next.js 16 + Payload CMS 3 (in the same app) + PostgreSQL. Deploys to Vercel with Neon.
 
-## Quick Start - local setup
+## Run it locally
 
-To spin up this template locally, follow these steps:
+Requirements: Node 20+, pnpm, PostgreSQL 15+.
 
-### Clone
+```bash
+pnpm install
+cp .env.example .env          # set DATABASE_URL and PAYLOAD_SECRET
+pnpm dev                      # http://localhost:3000, CMS at /admin
+```
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+The first account created at `/admin` becomes an **admin**. Every account after that defaults to
+contributor; an admin assigns roles.
 
-### Development
+On macOS with Homebrew Postgres, if the server refuses to start with
+`postmaster became multithreaded during startup`, start it with a locale set:
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+```bash
+LC_ALL=en_US.UTF-8 pg_ctl -D /opt/homebrew/var/postgresql@17 -l /opt/homebrew/var/postgresql@17/server.log start
+```
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+## Import from the pipeline
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+```bash
+DRY_RUN=1 pnpm import:pipeline   # report only: what would be created, what needs review
+pnpm import:pipeline             # create items, scans, people, places, subjects, genres
+```
 
-#### Docker (Optional)
+Reads `../daaho-metadata-pipeline/out_batch/*.loc15.json` and `../daaho-metadata-pipeline/images/`
+(override with `PIPELINE_DIR`). Run it on your own machine against whichever database
+`DATABASE_URL` points to — never as a serverless function, since uploading scans takes minutes.
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+The importer is **create-only**. Anything already in the CMS is left untouched, so re-running it
+never overwrites an editor's work. To re-import one item from scratch, delete it in the CMS first.
 
-To do so, follow these steps:
+What it will not guess at, and reports instead:
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+- **Names that cannot be parsed** — e.g. model reasoning that leaked into a name field, or several
+  people in one string — are not turned into people. They appear in the item's *Import issues*.
+- **Names that might be the same person** ("Upham, A. H." / "Upham, Alfred H.") are not merged.
+  They appear under *Possible duplicates* on each person, for an editor to decide. Only names that
+  are provably identical — differing in punctuation, spacing or name order — merge automatically.
 
-## How it works
+## Roles
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+| Role | Can |
+|---|---|
+| Admin | Everything, including creating accounts and assigning roles |
+| Editor | Edit and publish items, people, pages |
+| Contributor | Create and edit drafts; cannot publish |
 
-### Collections
+## Publishing rules
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
+`tests/int/publishing.int.spec.ts`):
 
-- #### Users (Authentication)
+1. An item cannot be published until its description is marked **Reviewed**. The reviewer and date
+   are recorded automatically and shown on the public page.
+2. An item cannot be published without a **rights statement**.
+3. **Scans are private until their item is published**, including by direct URL, and become private
+   again if it is unpublished.
 
-  Users are auth-enabled collections that have access to the admin panel.
+## Tests
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+```bash
+pnpm test:unit   # name handling and dates — no database needed
+pnpm test:int    # publishing rules, against DATABASE_URL (creates and removes its own test records)
+```
 
-- #### Media
+## Before deploying to Vercel
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+- **Add an object-storage adapter for media** (Vercel Blob, Cloudflare R2 or S3). Scans are stored on
+  local disk in development; Vercel's filesystem is temporary, so uploads would vanish on the next
+  deploy.
+- **Vercel Pro is required**, not Hobby: Vercel's Hobby terms exclude projects built by a paid
+  employee.
+- Use `@payloadcms/db-postgres` with Neon's connection string; not `db-vercel-postgres`, whose
+  underlying driver Vercel no longer maintains.
+- Generate migrations (`pnpm payload migrate:create`) rather than relying on development-mode schema
+  push.
 
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+See [PLAN.md](PLAN.md) for the architecture and phases.
