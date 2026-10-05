@@ -31,7 +31,14 @@ const LOW_CONFIDENCE = 70
 type Meta = Record<string, unknown> & { field_confidence?: Record<string, number | null> }
 type Record_ = {
   metadata: Meta
-  context: { item_id: string; model?: string; prompt_version?: string; pages: { filename: string; label?: string }[] }
+  context: {
+    item_id: string
+    model?: string
+    prompt_version?: string
+    pages: { filename: string; label?: string }[]
+    // Names the pipeline removed because they were not exactly one name (its decision D-014).
+    rejected_names?: Record<string, { value: string; reason: string; suggested_split?: string[] }[]>
+  }
 }
 
 const text = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null)
@@ -103,6 +110,18 @@ function resolveNames(records: Record_[]) {
       if (!cur || ROLE_RANK[l.role] < ROLE_RANK[cur]) best.set(l.key, l.role)
     }
     perItem.set(id, [...best].map(([key, role]) => ({ key, role })))
+
+    // The pipeline has already removed these from the data and recorded them only in its own notes.
+    // Carry them into the CMS, or an editor would never learn the item is missing a name. A suggested
+    // split is shown, not applied: the pipeline leaves that to a person, and so does this importer.
+    for (const [field, rejected] of Object.entries(r.context.rejected_names ?? {})) {
+      for (const { value, reason, suggested_split } of rejected) {
+        const split = suggested_split?.length ? ` Suggested split: ${suggested_split.join(' | ')}` : ''
+        ;(issues.get(id) ?? issues.set(id, []).get(id)!).push(
+          `Pipeline removed a ${field} value (${reason}): "${value}".${split}`,
+        )
+      }
+    }
   }
 
   const people = [...names.values()].filter((n) => n.kind === 'person')
