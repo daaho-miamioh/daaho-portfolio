@@ -1,0 +1,492 @@
+[
+ {
+  "title": "Boxer Indemnity Scholarship Program begins",
+  "names": [
+   {
+    "language": "zh",
+    "name": "庚款留美"
+   }
+  ],
+  "startDate": "1909",
+  "regions": [
+   "China"
+  ],
+  "importance": "notable",
+  "summary": "The United States returned part of the Boxer Indemnity to fund Chinese students' education in America. The first scholars sailed in 1909, and Tsinghua College opened in Beijing in 1911 to prepare them.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Japan annexes Korea",
+  "names": [
+   {
+    "language": "ko",
+    "name": "한일병합"
+   },
+   {
+    "language": "ja",
+    "name": "韓国併合"
+   }
+  ],
+  "startDate": "1910-08-29",
+  "regions": [
+   "Korea",
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "Japan formally annexed Korea, beginning thirty-five years of colonial rule that lasted until 1945.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Xinhai Revolution",
+  "names": [
+   {
+    "language": "zh",
+    "name": "辛亥革命"
+   }
+  ],
+  "startDate": "1911-10-10",
+  "endDate": "1912-02-12",
+  "regions": [
+   "China"
+  ],
+  "importance": "major",
+  "summary": "An uprising at Wuchang spread across China and ended the Qing dynasty. The Republic of China was proclaimed on 1 January 1912.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "March First Movement",
+  "names": [
+   {
+    "language": "ko",
+    "name": "3·1 운동"
+   }
+  ],
+  "startDate": "1919-03-01",
+  "regions": [
+   "Korea"
+  ],
+  "importance": "major",
+  "summary": "Nationwide demonstrations proclaimed Korean independence from Japanese rule and were suppressed by the colonial authorities.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "May Fourth Movement",
+  "names": [
+   {
+    "language": "zh",
+    "name": "五四运动"
+   }
+  ],
+  "startDate": "1919-05-04",
+  "regions": [
+   "China"
+  ],
+  "importance": "major",
+  "summary": "Student protests in Beijing against the Paris Peace Conference's transfer of German rights in Shandong to Japan grew into a broad movement for political and cultural reform.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Great Kantō Earthquake",
+  "names": [
+   {
+    "language": "ja",
+    "name": "関東大震災"
+   }
+  ],
+  "startDate": "1923-09-01",
+  "regions": [
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "An earthquake and the fires that followed devastated Tokyo and Yokohama.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Immigration Act of 1924",
+  "startDate": "1924-05-26",
+  "regions": [
+   "Japan",
+   "China",
+   "Korea"
+  ],
+  "importance": "major",
+  "summary": "U.S. law barring immigration from most of Asia, which ended Japanese immigration to the United States, and setting national-origins quotas.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Mukden Incident",
+  "names": [
+   {
+    "language": "zh",
+    "name": "九一八事变"
+   },
+   {
+    "language": "ja",
+    "name": "柳条湖事件"
+   }
+  ],
+  "startDate": "1931-09-18",
+  "regions": [
+   "China",
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "An explosion on a Japanese-controlled railway near Mukden was used as the pretext for Japan's occupation of Manchuria.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Siamese Revolution of 1932",
+  "startDate": "1932-06-24",
+  "regions": [
+   "Thailand"
+  ],
+  "importance": "major",
+  "summary": "A bloodless coup ended absolute monarchy in Siam and introduced a constitution.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Tydings–McDuffie Act",
+  "startDate": "1934-03-24",
+  "regions": [
+   "Philippines"
+  ],
+  "importance": "notable",
+  "summary": "U.S. law setting the Philippines on a ten-year path to independence and limiting Filipino immigration to fifty people a year.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Marco Polo Bridge Incident",
+  "names": [
+   {
+    "language": "zh",
+    "name": "卢沟桥事变（七七事变）"
+   },
+   {
+    "language": "ja",
+    "name": "盧溝橋事件"
+   }
+  ],
+  "startDate": "1937-07-07",
+  "regions": [
+   "China",
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "A clash between Chinese and Japanese troops near Beiping escalated into full-scale war between China and Japan.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Second Sino-Japanese War",
+  "names": [
+   {
+    "language": "zh",
+    "name": "抗日战争"
+   },
+   {
+    "language": "ja",
+    "name": "日中戦争"
+   }
+  ],
+  "startDate": "1937-07-07",
+  "endDate": "1945-09-02",
+  "regions": [
+   "China",
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "War between China and Japan, which from December 1941 became part of the Second World War in Asia and the Pacific.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Nanjing Massacre",
+  "names": [
+   {
+    "language": "zh",
+    "name": "南京大屠杀"
+   },
+   {
+    "language": "ja",
+    "name": "南京事件"
+   }
+  ],
+  "startDate": "1937-12-13",
+  "endDate": "1938-01",
+  "regions": [
+   "China",
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "After capturing Nanjing, Japanese troops killed large numbers of Chinese prisoners of war and civilians over several weeks.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Siam renamed Thailand",
+  "startDate": "1939-06-24",
+  "regions": [
+   "Thailand"
+  ],
+  "importance": "notable",
+  "summary": "The government of Plaek Phibunsongkhram changed the country's name from Siam to Thailand.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Attack on Pearl Harbor",
+  "startDate": "1941-12-07",
+  "regions": [
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "Japan's attack on the U.S. Pacific Fleet in Hawaii brought the United States into the war in the Pacific.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Japanese occupation of the Philippines",
+  "startDate": "1941-12-08",
+  "endDate": "1945-09-02",
+  "regions": [
+   "Philippines",
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "Japan invaded the Philippines hours after Pearl Harbor and occupied the islands until the end of the war.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Fall of Singapore",
+  "startDate": "1942-02-15",
+  "regions": [
+   "Singapore",
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "British forces surrendered Singapore to Japan, which occupied it until 1945.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Executive Order 9066 and the incarceration of Japanese Americans",
+  "startDate": "1942-02-19",
+  "endDate": "1946",
+  "regions": [
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "A presidential order authorized the forced removal of about 120,000 people of Japanese ancestry from the West Coast, most of them U.S. citizens, to incarceration camps.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Japanese occupation of Burma",
+  "startDate": "1942",
+  "endDate": "1945",
+  "regions": [
+   "Burma",
+   "Japan"
+  ],
+  "importance": "notable",
+  "summary": "Japan drove British forces from Burma in 1942 and occupied the country until Allied forces retook it in 1945.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Magnuson Act repeals Chinese exclusion",
+  "startDate": "1943-12-17",
+  "regions": [
+   "China"
+  ],
+  "importance": "major",
+  "summary": "U.S. law repealing the Chinese Exclusion Acts, allowing Chinese immigrants to become citizens, and setting an annual quota of 105.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Atomic bombings of Hiroshima and Nagasaki",
+  "names": [
+   {
+    "language": "ja",
+    "name": "広島・長崎への原子爆弾投下"
+   }
+  ],
+  "startDate": "1945-08-06",
+  "endDate": "1945-08-09",
+  "regions": [
+   "Japan"
+  ],
+  "importance": "major",
+  "summary": "The United States dropped atomic bombs on Hiroshima on 6 August and Nagasaki on 9 August 1945.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Japan announces its surrender",
+  "names": [
+   {
+    "language": "ja",
+    "name": "終戦"
+   },
+   {
+    "language": "ko",
+    "name": "광복"
+   },
+   {
+    "language": "zh",
+    "name": "抗战胜利"
+   }
+  ],
+  "startDate": "1945-08-15",
+  "regions": [
+   "Japan",
+   "China",
+   "Korea",
+   "Philippines",
+   "Burma",
+   "Singapore",
+   "Thailand"
+  ],
+  "importance": "major",
+  "summary": "Japan announced its acceptance of Allied terms, ending the war in Asia; the formal surrender was signed on 2 September. In Korea the day is celebrated as Liberation Day.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Allied occupation of Japan",
+  "startDate": "1945-09",
+  "endDate": "1952-04-28",
+  "regions": [
+   "Japan"
+  ],
+  "importance": "notable",
+  "summary": "U.S.-led Allied forces occupied Japan and oversaw a new constitution, until the San Francisco Peace Treaty took effect in 1952.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Philippine independence",
+  "startDate": "1946-07-04",
+  "regions": [
+   "Philippines"
+  ],
+  "importance": "major",
+  "summary": "The United States recognized the independence of the Republic of the Philippines.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Burmese independence",
+  "startDate": "1948-01-04",
+  "regions": [
+   "Burma"
+  ],
+  "importance": "major",
+  "summary": "Burma became independent from Britain as the Union of Burma.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Two Korean states established",
+  "startDate": "1948",
+  "regions": [
+   "Korea"
+  ],
+  "importance": "major",
+  "summary": "The Republic of Korea was proclaimed in the south on 15 August 1948 and the Democratic People's Republic of Korea in the north on 9 September.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Founding of the People's Republic of China",
+  "names": [
+   {
+    "language": "zh",
+    "name": "中华人民共和国成立"
+   }
+  ],
+  "startDate": "1949-10-01",
+  "regions": [
+   "China"
+  ],
+  "importance": "major",
+  "summary": "Mao Zedong proclaimed the People's Republic of China in Beijing; the Republic of China government withdrew to Taiwan by the end of the year.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Korean War",
+  "names": [
+   {
+    "language": "ko",
+    "name": "한국 전쟁"
+   },
+   {
+    "language": "zh",
+    "name": "朝鲜战争"
+   }
+  ],
+  "startDate": "1950-06-25",
+  "endDate": "1953-07-27",
+  "regions": [
+   "Korea",
+   "China"
+  ],
+  "importance": "major",
+  "summary": "War between North Korea, supported by China and the Soviet Union, and South Korea, supported by United Nations forces led by the United States, ending in an armistice.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Immigration and Nationality Act of 1952",
+  "startDate": "1952-06-27",
+  "regions": [
+   "Japan",
+   "China",
+   "Korea",
+   "Philippines",
+   "Thailand"
+  ],
+  "importance": "major",
+  "summary": "U.S. law ending racial bars to naturalization while keeping small national quotas for Asian countries.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Singapore becomes independent",
+  "startDate": "1965-08-09",
+  "regions": [
+   "Singapore"
+  ],
+  "importance": "notable",
+  "summary": "Singapore separated from Malaysia and became an independent republic.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Immigration and Nationality Act of 1965",
+  "startDate": "1965-10-03",
+  "regions": [
+   "China",
+   "Japan",
+   "Korea",
+   "Philippines",
+   "Thailand",
+   "Burma",
+   "Singapore"
+  ],
+  "importance": "major",
+  "summary": "U.S. law abolishing the national-origins quota system, which opened immigration from Asia on equal terms with other regions.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "Cultural Revolution",
+  "names": [
+   {
+    "language": "zh",
+    "name": "文化大革命"
+   }
+  ],
+  "startDate": "1966",
+  "endDate": "1976",
+  "regions": [
+   "China"
+  ],
+  "importance": "major",
+  "summary": "A political campaign launched by Mao Zedong that brought a decade of upheaval to China, closing universities for several years.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ },
+ {
+  "title": "President Nixon visits China",
+  "startDate": "1972-02-21",
+  "endDate": "1972-02-28",
+  "regions": [
+   "China"
+  ],
+  "importance": "notable",
+  "summary": "Richard Nixon's week-long visit opened relations between the United States and the People's Republic of China.",
+  "draftedBy": "Claude (AI), 2026-10-05 — unverified: check dates, names and wording, and add a source"
+ }
+]

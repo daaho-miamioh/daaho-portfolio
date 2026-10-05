@@ -22,6 +22,7 @@ import { getPayload, type Payload } from 'payload'
 
 import { asList } from '@/lib/fields'
 import { cleanName, clusters, mayBeSamePerson, splitJoined, type NameKind } from '@/lib/names'
+import { detectRegions } from '@/lib/regions'
 import { slugify } from '@/lib/slug'
 
 const PIPELINE_DIR = path.resolve(process.env.PIPELINE_DIR ?? '../daaho-metadata-pipeline')
@@ -267,6 +268,13 @@ async function main() {
         description: text(m.description),
         transcript: text(m.transcript),
         language: asList(m.language).join('; ') || null,
+        regions: detectRegions({
+          title,
+          description: text(m.description),
+          places: asList(m.place),
+          subjects: asList(m.subjects),
+          language: asList(m.language).join('; '),
+        }),
         rights: text(m.rights),
         pages,
         people: (perItem.get(id) ?? []).map(({ key, role }) => ({ person: personIds.get(key)!, role })),

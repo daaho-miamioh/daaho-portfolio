@@ -3,13 +3,15 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { PERSON_ROLES } from '@/collections/Items'
+import { ContextEvents } from '@/components/ContextEvents'
 import { ItemGrid } from '@/components/ItemCard'
+import { eventsForItem, yearOf } from '@/lib/context'
 import { displayDate } from '@/lib/dates'
 import { langAttr } from '@/lib/lang'
 import { asMedia, src, srcSet } from '@/lib/media'
 import { relatedItems, toLinkable, type Kind } from '@/lib/related'
 import { getViewer } from '@/lib/viewer'
-import type { Genre, Item, Person, Place, Subject, User } from '@/payload-types'
+import type { Event, Genre, Item, Person, Place, Subject, User } from '@/payload-types'
 
 type Params = { params: Promise<{ slug: string }> }
 
@@ -60,10 +62,27 @@ async function loadRelated(item: Item) {
   return ranked.filter((r) => byId.has(r.id)).map((r) => ({ ...r, item: byId.get(r.id)! }))
 }
 
+/** Events under way in the item's year, for the regions it concerns; editors' pins first. */
+async function loadContext(item: Item) {
+  const { payload, user, draft, access } = await getViewer()
+  const events = (await payload.find({ collection: 'events', pagination: false, depth: 0, draft, sort: 'startYear', ...access })).docs as Event[]
+  type Dated = Event & { startYear: number }
+  const dated = (e: Event | undefined): e is Dated => typeof e?.startYear === 'number'
+  const visible = new Map(events.map((e) => [e.id, e]))
+  const pinned = (item.contextEvents ?? []).map((e) => visible.get(typeof e === 'object' ? e.id : e)).filter(dated)
+  const year = yearOf(item.dateSort)
+  const chosen = eventsForItem(
+    { year, regions: item.regions ?? [], pinned, hideAutomatic: !!item.hideAutoContext },
+    events.filter(dated),
+  )
+  return { events: chosen as Event[], year, staff: !!user }
+}
+
 export default async function ItemPage({ params }: Params) {
   const item = await load((await params).slug)
   if (!item) notFound()
   const related = await loadRelated(item)
+  const context = await loadContext(item)
 
   const pages = (item.pages ?? []).map((p) => ({ media: asMedia(p.image), label: p.label })).filter((p) => p.media)
   const people = (item.people ?? [])
@@ -116,7 +135,8 @@ export default async function ItemPage({ params }: Params) {
               </a>
               <figcaption>
                 Page {i + 1}
-                {label ? ` · ${label}` : ''}
+                {/* Labels such as "Recto" add information; "page 2" only repeats the number. */}
+                {label && !/^page\s*\d+$/i.test(label.trim()) ? ` · ${label}` : ''}
               </figcaption>
             </figure>
           ))}
@@ -182,6 +202,8 @@ export default async function ItemPage({ params }: Params) {
               )}
             </p>
           </aside>
+
+          <ContextEvents events={context.events} regions={item.regions ?? []} year={context.year} staff={context.staff} />
         </div>
       </div>
 

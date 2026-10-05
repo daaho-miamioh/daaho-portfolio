@@ -17,7 +17,9 @@
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
     "test:unit": "vitest run --config ./vitest.unit.config.mts",
-    "import:pipeline": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-pipeline.ts"
+    "import:pipeline": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-pipeline.ts",
+    "import:events": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-events.ts",
+    "backfill:regions": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/backfill-regions.ts"
   },
   "dependencies": {
     "@payloadcms/next": "3.90.2",

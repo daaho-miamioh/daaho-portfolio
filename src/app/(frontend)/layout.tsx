@@ -17,6 +17,7 @@ const NAV = [
   ['/people', 'People'],
   ['/places', 'Places'],
   ['/subjects', 'Subjects'],
+  ['/timeline', 'Timeline'],
   ['/about', 'About'],
 ] as const
 

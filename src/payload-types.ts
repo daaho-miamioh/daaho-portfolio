@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     items: Item;
+    events: Event;
     people: Person;
     places: Place;
     subjects: Subject;
@@ -83,6 +84,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     items: ItemsSelect<false> | ItemsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
     places: PlacesSelect<false> | PlacesSelect<true>;
     subjects: SubjectsSelect<false> | SubjectsSelect<true>;
@@ -177,6 +179,18 @@ export interface Item {
   places?: (number | Place)[] | null;
   subjects?: (number | Subject)[] | null;
   genres?: (number | Genre)[] | null;
+  /**
+   * Asian countries this item concerns. Set from its title, description and places on import; correct it here.
+   */
+  regions?: ('China' | 'Japan' | 'Korea' | 'Philippines' | 'Thailand' | 'Burma' | 'Singapore')[] | null;
+  /**
+   * Always shown, first. Only published events appear publicly.
+   */
+  contextEvents?: (number | Event)[] | null;
+  /**
+   * Turn off events matched automatically by year and region.
+   */
+  hideAutoContext?: boolean | null;
   archival?: {
     repository?: string | null;
     collection?: string | null;
@@ -479,6 +493,75 @@ export interface Genre {
   createdAt: string;
 }
 /**
+ * Shown as historical context beside items from the same years and regions. Public only after review, with a source.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  /**
+   * English name, e.g. Marco Polo Bridge Incident
+   */
+  title: string;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  /**
+   * Names differ between Chinese, Japanese and Korean historiography; list each rather than choosing one.
+   */
+  names?:
+    | {
+        language: 'zh' | 'ja' | 'ko' | 'th' | 'my' | 'fil';
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * YYYY, YYYY-MM or YYYY-MM-DD
+   */
+  startDate: string;
+  /**
+   * For a period; leave empty for a single event
+   */
+  endDate?: string | null;
+  /**
+   * The communities it concerns. A U.S. law is tagged with the groups it affected: the Chinese Exclusion Act is China.
+   */
+  regions: ('China' | 'Japan' | 'Korea' | 'Philippines' | 'Thailand' | 'Burma' | 'Singapore')[];
+  importance?: ('major' | 'notable') | null;
+  /**
+   * One or two neutral sentences.
+   */
+  summary: string;
+  /**
+   * At least one is required before publishing.
+   */
+  sources?:
+    | {
+        citation: string;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  startYear?: number | null;
+  endYear?: number | null;
+  review?: {
+    status?: ('ai_drafted' | 'reviewed') | null;
+    reviewedBy?: (number | null) | User;
+    reviewedAt?: string | null;
+    notes?: string | null;
+  };
+  /**
+   * Who or what wrote the first draft.
+   */
+  draftedBy?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team".
  */
@@ -540,6 +623,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'items';
         value: number | Item;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: number | Event;
       } | null)
     | ({
         relationTo: 'people';
@@ -638,6 +725,9 @@ export interface ItemsSelect<T extends boolean = true> {
   places?: T;
   subjects?: T;
   genres?: T;
+  regions?: T;
+  contextEvents?: T;
+  hideAutoContext?: T;
   archival?:
     | T
     | {
@@ -675,6 +765,47 @@ export interface ItemsSelect<T extends boolean = true> {
         issue?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  names?:
+    | T
+    | {
+        language?: T;
+        name?: T;
+        id?: T;
+      };
+  startDate?: T;
+  endDate?: T;
+  regions?: T;
+  importance?: T;
+  summary?: T;
+  sources?:
+    | T
+    | {
+        citation?: T;
+        url?: T;
+        id?: T;
+      };
+  startYear?: T;
+  endYear?: T;
+  review?:
+    | T
+    | {
+        status?: T;
+        reviewedBy?: T;
+        reviewedAt?: T;
+        notes?: T;
+      };
+  draftedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

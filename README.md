@@ -60,6 +60,23 @@ What it will not guess at, and reports instead:
 | Editor | Edit and publish items, people, pages |
 | Contributor | Create and edit drafts; cannot publish |
 
+## Historical context
+
+Items show events in East Asian and Asian American history from their year, for the regions they
+concern (**Context** tab on each item; `/timeline` for all of them). Events live in the **Historical
+events** collection.
+
+```bash
+pnpm import:events      # load data/context-events.json as drafts (create-only)
+pnpm backfill:regions   # set regions on items that have none, from title, description and places
+```
+
+`data/context-events.json` is a starter set of 33 events drafted with AI. **None is public until an
+editor marks it Reviewed and adds at least one source** — AI gets dates, numbers and names wrong,
+and these sit beside archival documents. To add more, generate entries in the same JSON shape (see
+the header of `src/scripts/import-events.ts`) and run `pnpm import:events` again; existing events
+are never overwritten.
+
 ## Reviewing duplicate people
 
 Editors and admins see **Review duplicates** in the site header (`/review/people`). Each group is

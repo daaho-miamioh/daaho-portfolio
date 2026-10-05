@@ -31,7 +31,7 @@ Measured on the 128-record pipeline batch before any design decision:
 |---|---|---|
 | 1. Foundation | Collections, roles, publishing rules, importer, item list and item pages, entity pages | **Done** |
 | 2. Linking | Merge review workflow, related items, search across transcripts, filters, A–Z indexes | **Done** |
-| 3. Presentation | Visual design, home and about content, team | Next |
+| 3. Presentation | Historical context and timeline, home page, layout fixes | **In progress** — home, about and team content to come from the project |
 | 4. Narrative | Curated stories that string items together, as LivedMU's stories do | |
 | Deploy | Storage adapter, Neon, Vercel Pro, migrations, Libraries subdomain | Before public launch |
 
@@ -48,7 +48,23 @@ Measured on the 128-record pipeline batch before any design decision:
   and deletes the merged records, all in one transaction. It refuses, before changing anything,
   when a published item has unpublished changes naming the record.
 
+## Historical context (Phase 3)
+
+Events are matched to an item by **year and region**. Regions come from the item's title,
+description, places, subjects and language — place headings alone would miss most items, since 91
+of 128 were written in Ohio — and are stored on the item for editors to correct. A U.S. law is
+tagged with the communities it affected (Chinese exclusion is China, Executive Order 9066 is
+Japan), so Asian American history is matched the same way as East Asian history. Single events of
+the item's year come first, then periods; at most three, with an editor's pinned events ahead.
+
+The page says plainly that these are context added by staff and that the document need not refer
+to them. Names are listed in each language, tagged for screen readers, because Chinese, Japanese
+and Korean historiography name the same events differently.
+
 ## Open items
+
+- **Review the 33 drafted events.** Each needs its dates and wording checked and a source added
+  before it can be published. Casualty figures were deliberately left out of the drafts.
 
 - **Rights statements** are empty on every item, and an item cannot be published without one. This
   is the gate on going public, and it is an archival decision, not a technical one.

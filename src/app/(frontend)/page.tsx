@@ -2,6 +2,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
 
 import { ItemGrid } from '@/components/ItemCard'
+import { decadeOptions } from '@/lib/itemsQuery'
 import { getViewer } from '@/lib/viewer'
 import type { Item } from '@/payload-types'
 
@@ -25,6 +26,7 @@ export default async function HomePage() {
     }
     for (const place of item.places ?? []) placesSeen.add(typeof place === 'object' ? place.id : place)
   }
+  const decades = decadeOptions(visible.docs.map((d) => d.dateSort)).filter((d) => d.value !== 'undated')
   const itemCount = { totalDocs: visible.docs.length }
   const peopleCount = { totalDocs: peopleSeen.size }
   const placeCount = { totalDocs: placesSeen.size }
@@ -57,11 +59,28 @@ export default async function HomePage() {
             <dd>{placeCount.totalDocs}</dd>
           </div>
         </dl>
-        <p>
+        <p className="hero-actions">
           <Link href="/items" className="button">
             Browse the collection
           </Link>
+          <Link href="/timeline" className="button-secondary">
+            See the timeline
+          </Link>
         </p>
+        {decades.length > 0 && (
+          <nav aria-label="Browse by decade">
+            <p className="decade-label">Browse by decade</p>
+            <ul className="chips" role="list">
+              {decades.map((d) => (
+                <li key={d.value}>
+                  <Link href={`/items?decade=${d.value}`}>
+                    {d.label} <span className="count">{d.count}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </section>
 
       <section aria-labelledby="featured-heading">

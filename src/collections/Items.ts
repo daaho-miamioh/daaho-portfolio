@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { editors, loggedIn, publishedOrLoggedIn } from '@/access/roles'
 import { slugField } from '@/fields/slug'
 import { deriveDateSort, publishGate, stampReview, syncVisibility } from '@/hooks/items'
+import { REGIONS } from '@/lib/regions'
 
 export const PERSON_ROLES = [
   { label: 'Creator', value: 'creator' },
@@ -87,6 +88,33 @@ export const Items: CollectionConfig = {
             { name: 'places', type: 'relationship', relationTo: 'places', hasMany: true },
             { name: 'subjects', type: 'relationship', relationTo: 'subjects', hasMany: true },
             { name: 'genres', type: 'relationship', relationTo: 'genres', hasMany: true },
+          ],
+        },
+        {
+          label: 'Context',
+          description: 'Historical events shown beside this item. They are context for the period, not a claim that the item mentions them.',
+          fields: [
+            {
+              name: 'regions',
+              type: 'select',
+              hasMany: true,
+              options: REGIONS.map((r) => ({ label: r, value: r })),
+              admin: { description: 'Asian countries this item concerns. Set from its title, description and places on import; correct it here.' },
+            },
+            {
+              name: 'contextEvents',
+              type: 'relationship',
+              relationTo: 'events',
+              hasMany: true,
+              label: 'Pinned events',
+              admin: { description: 'Always shown, first. Only published events appear publicly.' },
+            },
+            {
+              name: 'hideAutoContext',
+              type: 'checkbox',
+              label: 'Show only pinned events',
+              admin: { description: 'Turn off events matched automatically by year and region.' },
+            },
           ],
         },
         {
