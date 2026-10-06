@@ -20,7 +20,7 @@
     "import:pipeline": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-pipeline.ts",
     "import:events": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-events.ts",
     "backfill:regions": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/backfill-regions.ts",
-    "vercel-build": "cross-env NODE_OPTIONS=--no-deprecation payload migrate && pnpm build",
+    "vercel-build": "node scripts/check-env.mjs && cross-env NODE_OPTIONS=--no-deprecation payload migrate && pnpm build",
     "load:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation sh -c \"payload run src/scripts/import-pipeline.ts && payload run src/scripts/import-events.ts && payload run src/scripts/backfill-regions.ts\""
   },
   "dependencies": {
