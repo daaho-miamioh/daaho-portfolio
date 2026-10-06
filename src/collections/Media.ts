@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionConfig, Where } from 'payload'
 
 import { editors, loggedIn } from '@/access/roles'
 
@@ -8,11 +8,27 @@ import { editors, loggedIn } from '@/access/roles'
  * reachable by guessing its URL. `public` is set automatically — on an item's pages when the item
  * is published, on a team photo when it is saved — and can be set by hand for anything else.
  */
+/**
+ * The public may read a file only if it is public; and, until Site settings allow full resolution, only
+ * the derived sizes, not the original. Hiding the link alone would not do: file URLs are predictable
+ * (/api/media/file/AAMU-0001_Recto.jpg). Each size has its own filename, so the original is refused by
+ * name while the reading-size image of the same scan is served.
+ */
+export const readMedia: Access = async ({ req }) => {
+  if (req.user) return true
+  const visible: Where = { public: { equals: true } }
+  const requested = (req.routeParams as { filename?: string } | undefined)?.filename
+  if (!requested) return visible
+  const settings = await req.payload.findGlobal({ slug: 'settings', req, depth: 0, overrideAccess: true })
+  if (settings.allowFullResolution) return visible
+  return { and: [visible, { filename: { not_equals: requested } }] }
+}
+
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: { group: 'Content', defaultColumns: ['filename', 'alt', 'public'] },
   access: {
-    read: ({ req }) => (req.user ? true : { public: { equals: true } }),
+    read: readMedia,
     create: loggedIn,
     update: loggedIn,
     delete: editors,

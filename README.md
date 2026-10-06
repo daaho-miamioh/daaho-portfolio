@@ -90,9 +90,14 @@ Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
 
 1. An item cannot be published until its description is marked **Reviewed**. The reviewer and date
    are recorded automatically and shown on the public page.
-2. An item cannot be published without a **rights statement**.
+2. An item cannot be published without a **rights statement** — its own, or the default set once in
+   **Site settings** (every scan is Miami University's, so one statement can cover the collection).
 3. **Scans are private until their item is published**, including by direct URL, and become private
-   again if it is unpublished.
+   again if it is unpublished. Unreviewed scans can hold private information — a 1961 memorandum
+   about a student's hospitalization — whatever their copyright.
+4. **Full-resolution originals are withheld from the public** until **Site settings → Public can open
+   full-resolution scans** is turned on; the public gets reading-size images. Enforced on the file
+   itself, not only by hiding the link, since file URLs are predictable.
 
 ## Tests
 

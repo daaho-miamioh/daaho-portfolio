@@ -104,10 +104,12 @@ export interface Config {
   globals: {
     home: Home;
     about: About;
+    settings: Setting;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
     about: AboutSelect<false> | AboutSelect<true>;
+    settings: SettingsSelect<false> | SettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1072,6 +1074,23 @@ export interface About {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: number;
+  /**
+   * Shown on every item without its own rights statement, and counts as the rights statement required to publish. An item's own statement takes precedence.
+   */
+  defaultRights?: string | null;
+  /**
+   * Off: the public sees reading-size images only (2000 px). Signed-in staff can always open originals. Pending the PI's decision.
+   */
+  allowFullResolution?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home_select".
  */
 export interface HomeSelect<T extends boolean = true> {
@@ -1089,6 +1108,17 @@ export interface HomeSelect<T extends boolean = true> {
 export interface AboutSelect<T extends boolean = true> {
   heading?: T;
   body?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  defaultRights?: T;
+  allowFullResolution?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

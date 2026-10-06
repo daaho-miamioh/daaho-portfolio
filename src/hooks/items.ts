@@ -14,16 +14,18 @@ const mediaIds = (pages: Page[] | null | undefined) =>
  * an AI-generated description is not published until a person has reviewed it, and nothing is
  * published without a rights statement. Contributors draft; only editors and admins publish.
  */
-export const publishGate: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
+export const publishGate: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
   if (data._status !== 'published') return data
   if (req.user && !hasRole(req, 'admin', 'editor')) {
     throw new APIError('Contributors can save drafts but cannot publish. Ask an editor to publish.', 403)
   }
   const status = data.review?.status ?? originalDoc?.review?.status
-  const rights = (data.rights ?? originalDoc?.rights ?? '').trim()
+  // The site-wide statement in Site settings covers items without their own.
+  const settings = await req.payload.findGlobal({ slug: 'settings', req, depth: 0, overrideAccess: true })
+  const rights = (data.rights ?? originalDoc?.rights ?? settings.defaultRights ?? '').trim()
   const missing = [
     status !== 'reviewed' && 'mark the description as Reviewed',
-    !rights && 'add a rights statement',
+    !rights && 'add a rights statement (on the item, or a default in Site settings)',
   ].filter(Boolean)
   if (missing.length) throw new APIError(`Before publishing: ${missing.join(' and ')}.`, 400)
   return data

@@ -83,6 +83,11 @@ export default async function ItemPage({ params }: Params) {
   if (!item) notFound()
   const related = await loadRelated(item)
   const context = await loadContext(item)
+  const { payload, user } = await getViewer()
+  const settings = await payload.findGlobal({ slug: 'settings', depth: 0 })
+  const rights = item.rights || settings.defaultRights
+  // Originals for staff always; for the public only once the PI allows it.
+  const fullResolution = !!user || !!settings.allowFullResolution
 
   const pages = (item.pages ?? []).map((p) => ({ media: asMedia(p.image), label: p.label })).filter((p) => p.media)
   const people = (item.people ?? [])
@@ -121,18 +126,27 @@ export default async function ItemPage({ params }: Params) {
         <section className="item-pages" aria-label="Scans">
           {pages.map(({ media, label }, i) => (
             <figure key={media!.id} className="page">
-              <a href={media!.url ?? '#'} aria-label={`Open full-resolution scan of page ${i + 1}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={src(media!, 'reading')}
-                  srcSet={srcSet(media!)}
-                  sizes="(min-width: 960px) 55vw, 100vw"
-                  alt={media!.alt}
-                  width={media!.width ?? undefined}
-                  height={media!.height ?? undefined}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                />
-              </a>
+              {(() => {
+                const image = (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={src(media!, 'reading')}
+                    srcSet={fullResolution ? srcSet(media!) : srcSet(media!, ['thumbnail', 'card', 'reading'])}
+                    sizes="(min-width: 960px) 55vw, 100vw"
+                    alt={media!.alt}
+                    width={media!.width ?? undefined}
+                    height={media!.height ?? undefined}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                  />
+                )
+                return fullResolution ? (
+                  <a href={media!.url ?? '#'} aria-label={`Open full-resolution scan of page ${i + 1}`}>
+                    {image}
+                  </a>
+                ) : (
+                  <div className="page-frame">{image}</div>
+                )
+              })()}
               <figcaption>
                 Page {i + 1}
                 {/* Labels such as "Recto" add information; "page 2" only repeats the number. */}
@@ -180,10 +194,10 @@ export default async function ItemPage({ params }: Params) {
                 <dd>{item.archival.collection}</dd>
               </>
             )}
-            {item.rights && (
+            {rights && (
               <>
                 <dt>Rights</dt>
-                <dd>{item.rights}</dd>
+                <dd>{rights}</dd>
               </>
             )}
           </dl>

@@ -71,6 +71,10 @@ the others from the admin panel; give the PI an editor or contributor account.
 
 ## What to expect
 
+- **Two settings wait on the PI** (admin → **Site settings**): the default rights statement, and
+  whether the public may open full-resolution scans. Until the first is filled, no item can be
+  published; until the second is on, the public sees reading-size images only.
+
 - **The public site starts empty.** An item is public only once it is reviewed and has a rights
   statement; historical events only once reviewed and sourced. Signed-in staff see everything,
   marked as drafts.

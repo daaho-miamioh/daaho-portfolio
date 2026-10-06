@@ -17,6 +17,7 @@ import { Team } from './collections/Team'
 import { Users } from './collections/Users'
 import { About } from './globals/About'
 import { Home } from './globals/Home'
+import { Settings } from './globals/Settings'
 
 /**
  * Where uploaded files live. Locally: the ./media folder. In production: a PRIVATE S3-compatible bucket
@@ -60,7 +61,7 @@ export default buildConfig({
     meta: { titleSuffix: ' — DAAHO' },
   },
   collections: [Items, Events, People, Places, Subjects, Genres, Media, Team, Users],
-  globals: [Home, About],
+  globals: [Home, About, Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

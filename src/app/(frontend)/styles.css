@@ -100,7 +100,7 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 4rem; min-height: 60vh; }
 @media (min-width: 60rem) { .item-layout { grid-template-columns: 1.25fr 1fr; align-items: start; } }
 .item-pages { display: grid; gap: 1.5rem; }
 .page { margin: 0; }
-.page a { display: block; border: 1px solid var(--rule); background: #fff; }
+.page a, .page-frame { display: block; border: 1px solid var(--rule); background: #fff; }
 .page figcaption { color: var(--ink-soft); font-size: 0.875rem; margin-top: 0.4rem; }
 .item-text h2:first-child, .item-text section:first-child h2 { margin-top: 0; }
 .links li { margin: 0.3rem 0; }
