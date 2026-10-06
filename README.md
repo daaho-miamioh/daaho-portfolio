@@ -5,7 +5,7 @@ documents and photographs from Miami University's collections, with a CMS that l
 review, edit and publish them.
 
 Item descriptions and transcriptions come from the
-[DAAHO metadata pipeline](https://github.com/Meng-V/daaho-metadata-pipeline), which reads the scans
+[DAAHO metadata pipeline](https://github.com/daaho-miamioh/daaho-metadata-pipeline), which reads the scans
 with AI. This site imports that output, puts every item through human review, and publishes it.
 
 **Stack:** Next.js 16 + Payload CMS 3 (in the same app) + PostgreSQL. Deploys to Vercel with Neon.

@@ -45,4 +45,4 @@ Leave *Releases*, *Packages* and *Deployments* unchecked until there is somethin
 ## Related repository
 
 The metadata comes from
-[Meng-V/daaho-metadata-pipeline](https://github.com/Meng-V/daaho-metadata-pipeline).
+[daaho-miamioh/daaho-metadata-pipeline](https://github.com/daaho-miamioh/daaho-metadata-pipeline).
