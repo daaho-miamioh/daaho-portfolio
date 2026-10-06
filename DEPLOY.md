@@ -65,19 +65,30 @@ and `S3_REGION` to `auto`.*
 
 ## 3. Load the collection (once, from your computer)
 
-1. Create `.env.production.local` in the repository (it is gitignored) with the production
-   `DATABASE_URL` (Vercel → Storage → Neon → `.env.local` tab) and the four `S3_` values.
+1. Put the **Production** environment's values in `.env.production.local` in the repository — never in
+   `.env`, which is for local development; a production database there would make `pnpm dev` and
+   the tests run against the live site. The file is gitignored. The reliable way:
+
+   ```bash
+   npx vercel env pull .env.production.local --environment=production
+   ```
+
+   Copying from the dashboard works too, but take the variables marked **Production**: the Neon
+   integration gives Preview and Development their own database branches, and a development
+   connection string looks just like the production one. Variables marked Sensitive in Vercel are
+   not pulled; add those by hand.
 2. Run:
 
    ```bash
-   set -a && . ./.env.production.local && set +a && pnpm load:production
+   pnpm load:production
    ```
 
-   It prints the database it is about to write to. **Check that it names Neon, not `localhost`**,
-   before letting it continue. It uploads the 316 scans with their derivatives, imports the 128
-   items, the people and terms, loads the drafted historical events, and fills item regions —
-   about fifteen minutes. It runs in production mode, so it never alters the database schema; the
-   deploy's migrations do that.
+   It reads `.env.production.local` itself (do not `source` the file: connection strings contain
+   `&`, which a shell misreads). It prints the database it is about to write to, and **refuses to
+   continue if that database has no migrations applied** — the sign that it is not the one the
+   deployment uses. It uploads the 316 scans with their derivatives, imports the 128 items, the
+   people and terms, loads the drafted historical events, and fills item regions — about fifteen
+   minutes. It runs in production mode, so it never alters the database schema.
 
 ## 4. First account
 

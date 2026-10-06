@@ -184,6 +184,25 @@ async function main() {
   }
 
   const payload = await getPayload({ config })
+
+  // In production mode the schema comes only from migrations, run by a deploy. A database with none
+  // applied is not the one the site uses — typically a development branch copied from the Vercel
+  // dashboard instead of the Production variables. Refuse rather than fail halfway on missing tables.
+  if (process.env.NODE_ENV === 'production') {
+    const applied = await payload
+      .find({ collection: 'payload-migrations', limit: 0, overrideAccess: true })
+      .then((r) => r.totalDocs)
+      .catch(() => 0)
+    if (!applied) {
+      console.error(
+        '\nThis database has no migrations applied, so it is not the database your deployment uses.\n' +
+          'Put the Production DATABASE_URL in .env.production.local (Vercel -> Settings -> Environment Variables,\n' +
+          'Production; or `npx vercel env pull .env.production.local --environment=production`) and run again.\n',
+      )
+      process.exit(1)
+    }
+  }
+
   const counts = { items: 0, itemsSkipped: 0, media: 0, people: 0, terms: 0 }
 
   const termIds = new Map<string, number>()
