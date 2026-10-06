@@ -108,8 +108,8 @@ pnpm test:int    # publishing rules and people merges, against DATABASE_URL (cre
 
 ## Deploying
 
-See **[DEPLOY.md](DEPLOY.md)**: Vercel Pro, Neon for Postgres, and a private Cloudflare R2 bucket for
-the scans. Schema changes ship as migrations in `src/migrations`; create one with
+See **[DEPLOY.md](DEPLOY.md)**: Vercel Pro, Neon for Postgres, and a private AWS S3 bucket for the
+scans. Schema changes ship as migrations in `src/migrations`; create one with
 `pnpm payload migrate:create <name>` after changing a collection.
 
 See [PLAN.md](PLAN.md) for the architecture and phases.

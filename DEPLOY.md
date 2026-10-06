@@ -3,26 +3,42 @@
 ```
 Browser ──> Vercel (Next.js + Payload CMS) ──> Neon (Postgres)
                      │
-                     └──> Cloudflare R2 (private bucket: scans)
+                     └──> AWS S3 (private bucket: scans)
 ```
 
 | Service | Plan | Why |
 |---|---|---|
 | Vercel | **Pro** ($20/month) | Hobby's terms exclude projects built by a paid employee; Vercel can suspend them |
 | Neon | Free | The data is text; 0.5 GB is ample |
-| Cloudflare R2 | Free tier (10 GB) | The scans and their derivatives are about 1.4 GB; R2 does not charge for downloads |
+| AWS S3 (us-east-2) | Pay as you go: under $0.10/month | About 1.4 GB of scans and derivatives at $0.023/GB; the first 100 GB a month of downloads is free on every AWS account |
 
 The bucket must be **private**. The scans' rights are not yet cleared, and the site keeps a scan
 private until its item is published. Payload checks that before every file request and then
-redirects to a five-minute signed URL. Do not turn on public access, an `r2.dev` URL or a custom
-domain for the bucket.
+redirects to a five-minute signed URL. Keep **Block all public access** on, and do not add a bucket
+policy that grants public reads.
 
-## 1. Create the R2 bucket
+## 1. Create the S3 bucket
 
-1. In Cloudflare, open **R2** and **Create bucket**. Name it `daaho-media` and leave it private.
-2. **Manage API tokens → Create API token.** Permission **Object Read & Write**, applied to this bucket
-   only. Keep the **Access Key ID**, the **Secret Access Key**, and the S3 endpoint
-   `https://<account-id>.r2.cloudflarestorage.com`.
+1. **S3 → Create bucket.** Region **us-east-2 (Ohio)**. The name must be unique across AWS, for
+   example `daaho-media-miamioh`. Leave **Block all public access** checked.
+2. **IAM → Users → Create user** for the site alone, and attach this inline policy (with your bucket
+   name). It can reach this bucket and nothing else in the account:
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       { "Effect": "Allow", "Action": ["s3:ListBucket"], "Resource": "arn:aws:s3:::daaho-media-miamioh" },
+       { "Effect": "Allow", "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"], "Resource": "arn:aws:s3:::daaho-media-miamioh/*" }
+     ]
+   }
+   ```
+
+3. Create an **access key** for that user and keep the Access Key ID and Secret Access Key.
+4. Optional but sensible: **AWS Budgets** (the first two budgets are free) with an alert at $5.
+
+*Cloudflare R2 also works, unchanged: set `S3_ENDPOINT` to `https://<account-id>.r2.cloudflarestorage.com`
+and `S3_REGION` to `auto`.*
 
 ## 2. Create the Vercel project
 
@@ -38,9 +54,8 @@ domain for the bucket.
    | Name | Value |
    |---|---|
    | `PAYLOAD_SECRET` | output of `openssl rand -hex 32` |
-   | `S3_BUCKET` | `daaho-media` |
-   | `S3_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` |
-   | `S3_REGION` | `auto` |
+   | `S3_BUCKET` | your bucket name |
+   | `S3_REGION` | `us-east-2` |
    | `S3_ACCESS_KEY_ID` | from step 1 |
    | `S3_SECRET_ACCESS_KEY` | from step 1 |
 
@@ -51,7 +66,7 @@ domain for the bucket.
 ## 3. Load the collection (once, from your computer)
 
 1. Create `.env.production.local` in the repository (it is gitignored) with the production
-   `DATABASE_URL` (Vercel → Storage → Neon → `.env.local` tab) and the five `S3_` values.
+   `DATABASE_URL` (Vercel → Storage → Neon → `.env.local` tab) and the four `S3_` values.
 2. Run:
 
    ```bash
