@@ -189,3 +189,5 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 4rem; min-height: 60vh; }
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .chips a { display: inline-block; padding: 0.3rem 0.75rem; border: 1px solid var(--rule); border-radius: 999px; background: #fff; color: var(--ink); text-decoration: none; }
 .chips a:hover { border-color: var(--accent); color: var(--accent); }
+
+.notice-unreviewed { background: var(--panel); color: var(--ink); border-left: 3px solid var(--accent); margin-top: 1rem; font-size: 0.95rem; }

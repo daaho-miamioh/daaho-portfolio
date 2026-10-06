@@ -21,7 +21,8 @@
     "import:events": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-events.ts",
     "backfill:regions": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/backfill-regions.ts",
     "vercel-build": "node scripts/check-env.mjs && cross-env NODE_OPTIONS=--no-deprecation payload migrate && pnpm build",
-    "load:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation sh -c \"payload run src/scripts/import-pipeline.ts && payload run src/scripts/import-events.ts && payload run src/scripts/backfill-regions.ts\""
+    "load:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation sh -c \"payload run src/scripts/import-pipeline.ts && payload run src/scripts/import-events.ts && payload run src/scripts/backfill-regions.ts\"",
+    "publish:items:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload run src/scripts/publish-items.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.90.2",

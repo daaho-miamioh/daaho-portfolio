@@ -22,6 +22,16 @@ export const Settings: GlobalConfig = {
       },
     },
     {
+      name: 'allowUnreviewedPublishing',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Allow publishing before review',
+      admin: {
+        description:
+          'On: an item can be published before its AI-generated description is reviewed. Its page then says plainly that it has not been reviewed. Off: review is required first.',
+      },
+    },
+    {
       name: 'allowFullResolution',
       type: 'checkbox',
       defaultValue: false,

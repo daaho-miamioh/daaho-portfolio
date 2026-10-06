@@ -1083,6 +1083,10 @@ export interface Setting {
    */
   defaultRights?: string | null;
   /**
+   * On: an item can be published before its AI-generated description is reviewed. Its page then says plainly that it has not been reviewed. Off: review is required first.
+   */
+  allowUnreviewedPublishing?: boolean | null;
+  /**
    * Off: the public sees reading-size images only (2000 px). Signed-in staff can always open originals. Pending the PI's decision.
    */
   allowFullResolution?: boolean | null;
@@ -1118,6 +1122,7 @@ export interface AboutSelect<T extends boolean = true> {
  */
 export interface SettingsSelect<T extends boolean = true> {
   defaultRights?: T;
+  allowUnreviewedPublishing?: T;
   allowFullResolution?: T;
   updatedAt?: T;
   createdAt?: T;

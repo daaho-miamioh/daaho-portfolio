@@ -61,8 +61,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <footer className="site-footer">
           <div className="wrap">
             <p>
-              Item descriptions and transcriptions are generated with AI from the original scans and reviewed by
-              project staff before publication.
+              Item descriptions and transcriptions are generated with AI from the original scans. Each item page
+              says whether project staff have reviewed it yet.
             </p>
             <p>
               Miami University Libraries · <Link href="/admin">Staff sign-in</Link>

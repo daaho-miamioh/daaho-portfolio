@@ -68,6 +68,26 @@ describe('publishing rules', () => {
     ).rejects.toThrow(/Reviewed/)
   })
 
+  it('publishes an unreviewed item only when Site settings allow it, and never without rights', async () => {
+    const before = await payload.findGlobal({ slug: 'settings', depth: 0 })
+    try {
+      await payload.updateGlobal({ slug: 'settings', data: { allowUnreviewedPublishing: true, defaultRights: null } })
+      const noRights = await draftItem()
+      await expect(
+        payload.update({ collection: 'items', id: noRights.id, data: { _status: 'published' }, user: editor, overrideAccess: false }),
+      ).rejects.toThrow(/rights statement/)
+      const ok = await draftItem({ rights: 'In copyright' })
+      const published = await payload.update({ collection: 'items', id: ok.id, data: { _status: 'published' }, user: editor, overrideAccess: false })
+      expect(published._status).toBe('published')
+      expect(published.review?.status).toBe('ai_generated') // published, but not falsely marked reviewed
+    } finally {
+      await payload.updateGlobal({
+        slug: 'settings',
+        data: { allowUnreviewedPublishing: !!before.allowUnreviewedPublishing, defaultRights: before.defaultRights ?? null },
+      })
+    }
+  })
+
   it('refuses to publish without a rights statement', async () => {
     const item = await draftItem({ review: { status: 'reviewed' } })
     await expect(

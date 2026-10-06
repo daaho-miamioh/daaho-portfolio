@@ -23,8 +23,11 @@ export const publishGate: CollectionBeforeChangeHook = async ({ data, originalDo
   // The site-wide statement in Site settings covers items without their own.
   const settings = await req.payload.findGlobal({ slug: 'settings', req, depth: 0, overrideAccess: true })
   const rights = (data.rights ?? originalDoc?.rights ?? settings.defaultRights ?? '').trim()
+  // The project may publish before review; the item page then says it is unreviewed. What it may not
+  // do is mark an item Reviewed that nobody reviewed, so the switch exists instead of a bulk "Reviewed".
+  const reviewOk = status === 'reviewed' || !!settings.allowUnreviewedPublishing
   const missing = [
-    status !== 'reviewed' && 'mark the description as Reviewed',
+    !reviewOk && 'mark the description as Reviewed (or allow publishing before review in Site settings)',
     !rights && 'add a rights statement (on the item, or a default in Site settings)',
   ].filter(Boolean)
   if (missing.length) throw new APIError(`Before publishing: ${missing.join(' and ')}.`, 400)
