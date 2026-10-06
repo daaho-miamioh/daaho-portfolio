@@ -21,7 +21,12 @@ export const readMedia: Access = async ({ req }) => {
   if (!requested) return visible
   const settings = await req.payload.findGlobal({ slug: 'settings', req, depth: 0, overrideAccess: true })
   if (settings.allowFullResolution) return visible
-  return { and: [visible, { filename: { not_equals: requested } }] }
+  // Refuse the original only where a reading-size copy exists to serve instead. An original under
+  // 2000 px gets no reading size (Payload does not enlarge) and is itself what the page shows; refusing
+  // it would break the image. Ten scans in the collection are that small.
+  return {
+    and: [visible, { or: [{ filename: { not_equals: requested } }, { 'sizes.reading.filename': { exists: false } }] }],
+  }
 }
 
 export const Media: CollectionConfig = {

@@ -78,6 +78,22 @@ describe('full-resolution files', () => {
     expect(await publicCanFetch(media.filename!)).toBe(false)
   })
 
+  it('serves a small original that has no reading size, since it is what the page shows', async () => {
+    await setSettings({ allowFullResolution: false })
+    const png = await sharp({ create: { width: 900, height: 1200, channels: 3, background: '#777' } }).png().toBuffer()
+    const small = (await payload.create({
+      collection: 'media',
+      data: { alt: 'small', public: true },
+      file: { data: png, mimetype: 'image/png', name: `small-${stamp}.png`, size: png.length },
+    })) as Media
+    made.media.push(small.id)
+    expect(small.sizes?.reading?.filename ?? null).toBeNull()
+    const req = { user: null, payload, routeParams: { filename: small.filename } } as unknown as PayloadRequest
+    const where = (await readMedia({ req } as Parameters<typeof readMedia>[0])) as Where
+    const found = await payload.find({ collection: 'media', where: { and: [where, { id: { equals: small.id } }] }, depth: 0 })
+    expect(found.totalDocs).toBe(1)
+  })
+
   it('serves the original once full resolution is allowed', async () => {
     await setSettings({ allowFullResolution: true })
     expect(await publicCanFetch(media.filename!)).toBe(true)
