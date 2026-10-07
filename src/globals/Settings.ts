@@ -32,6 +32,15 @@ export const Settings: GlobalConfig = {
       },
     },
     {
+      name: 'harmfulLanguageStatement',
+      type: 'richText',
+      label: 'Statement on potentially harmful language',
+      admin: {
+        description:
+          'Shown at /harmful-language and linked from every page. Leave empty to use the statement drafted with the site; fill it to replace that text.',
+      },
+    },
+    {
       name: 'allowFullResolution',
       type: 'checkbox',
       defaultValue: false,

@@ -65,6 +65,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               says whether project staff have reviewed it yet.
             </p>
             <p>
+              Some documents contain language that is harmful.{' '}
+              <Link href="/harmful-language">Statement on potentially harmful language</Link>
+            </p>
+            <p>
               Miami University Libraries · <Link href="/admin">Staff sign-in</Link>
             </p>
           </div>

@@ -232,7 +232,9 @@ export default async function ItemPage({ params }: Params) {
           <h2 id="transcript-heading">Transcript</h2>
           <p className="transcript-note">
             Transcribed following the DAAHO Transcription Policy: original spelling is kept with corrections in
-            [brackets]; [illegible] marks words that could not be read.
+            [brackets]; [illegible] marks words that could not be read. The document&rsquo;s original wording is kept,
+            including language that may be harmful &mdash; see our{' '}
+            <Link href="/harmful-language">statement on potentially harmful language</Link>.
           </p>
           <div className="transcript-body" lang={langAttr(item.language)}>
             {item.transcript}

@@ -1087,6 +1087,24 @@ export interface Setting {
    */
   allowUnreviewedPublishing?: boolean | null;
   /**
+   * Shown at /harmful-language and linked from every page. Leave empty to use the statement drafted with the site; fill it to replace that text.
+   */
+  harmfulLanguageStatement?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
    * Off: the public sees reading-size images only (2000 px). Signed-in staff can always open originals. Pending the PI's decision.
    */
   allowFullResolution?: boolean | null;
@@ -1123,6 +1141,7 @@ export interface AboutSelect<T extends boolean = true> {
 export interface SettingsSelect<T extends boolean = true> {
   defaultRights?: T;
   allowUnreviewedPublishing?: T;
+  harmfulLanguageStatement?: T;
   allowFullResolution?: T;
   updatedAt?: T;
   createdAt?: T;

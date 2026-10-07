@@ -191,3 +191,6 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 4rem; min-height: 60vh; }
 .chips a:hover { border-color: var(--accent); color: var(--accent); }
 
 .notice-unreviewed { background: var(--panel); color: var(--ink); border-left: 3px solid var(--accent); margin-top: 1rem; font-size: 0.95rem; }
+
+/* Statement pages */
+.statement .prose p { margin: 0 0 1rem; }
