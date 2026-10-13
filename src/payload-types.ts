@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     items: Item;
+    annotations: Annotation;
     events: Event;
     people: Person;
     places: Place;
@@ -84,6 +85,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     items: ItemsSelect<false> | ItemsSelect<true>;
+    annotations: AnnotationsSelect<false> | AnnotationsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
     places: PlacesSelect<false> | PlacesSelect<true>;
@@ -566,6 +568,43 @@ export interface Event {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Written from the item editor (Annotations tab). Public only after approval by someone other than the author.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "annotations".
+ */
+export interface Annotation {
+  id: number;
+  item: number | Item;
+  quote: string;
+  category: 'context' | 'person' | 'place' | 'translation' | 'correction' | 'harmful-language' | 'other';
+  body: string;
+  status: 'draft' | 'submitted' | 'approved' | 'rejected';
+  /**
+   * Why it was returned, or anything the author should know.
+   */
+  reviewNote?: string | null;
+  author?: (number | null) | User;
+  lastEditedBy?: (number | null) | User;
+  reviewedBy?: (number | null) | User;
+  reviewedAt?: string | null;
+  /**
+   * Offset when last anchored
+   */
+  start?: number | null;
+  end?: number | null;
+  /**
+   * Text just before the passage, used to find it again
+   */
+  prefix?: string | null;
+  /**
+   * Text just after the passage
+   */
+  suffix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team".
  */
@@ -627,6 +666,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'items';
         value: number | Item;
+      } | null)
+    | ({
+        relationTo: 'annotations';
+        value: number | Annotation;
       } | null)
     | ({
         relationTo: 'events';
@@ -772,6 +815,28 @@ export interface ItemsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "annotations_select".
+ */
+export interface AnnotationsSelect<T extends boolean = true> {
+  item?: T;
+  quote?: T;
+  category?: T;
+  body?: T;
+  status?: T;
+  reviewNote?: T;
+  author?: T;
+  lastEditedBy?: T;
+  reviewedBy?: T;
+  reviewedAt?: T;
+  start?: T;
+  end?: T;
+  prefix?: T;
+  suffix?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

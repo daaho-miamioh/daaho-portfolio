@@ -45,11 +45,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   </li>
                 ))}
                 {canReview && (
-                  <li>
-                    <Link href="/review/people" className="nav-staff">
-                      Review duplicates
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link href="/review/people" className="nav-staff">
+                        Review duplicates
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/review/annotations" className="nav-staff">
+                        Review annotations
+                      </Link>
+                    </li>
+                  </>
                 )}
               </ul>
             </nav>

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { PERSON_ROLES } from '@/collections/Items'
+import { AnnotatedTranscript } from '@/components/AnnotatedTranscript'
 import { ContextEvents } from '@/components/ContextEvents'
 import { ItemGrid } from '@/components/ItemCard'
 import { eventsForItem, yearOf } from '@/lib/context'
@@ -11,7 +12,7 @@ import { langAttr } from '@/lib/lang'
 import { asMedia, src, srcSet } from '@/lib/media'
 import { relatedItems, toLinkable, type Kind } from '@/lib/related'
 import { getViewer } from '@/lib/viewer'
-import type { Event, Genre, Item, Person, Place, Subject, User } from '@/payload-types'
+import type { Annotation, Event, Genre, Item, Person, Place, Subject, User } from '@/payload-types'
 
 type Params = { params: Promise<{ slug: string }> }
 
@@ -78,11 +79,34 @@ async function loadContext(item: Item) {
   return { events: chosen as Event[], year, staff: !!user }
 }
 
+/**
+ * Approved annotations only, for everyone, so staff see the page as the public does. Staff also get a
+ * count of those still awaiting review.
+ */
+async function loadAnnotations(item: Item) {
+  const { payload, user } = await getViewer()
+  const approved = (
+    await payload.find({
+      collection: 'annotations',
+      where: { and: [{ item: { equals: item.id } }, { status: { equals: 'approved' } }] },
+      pagination: false,
+      depth: 0,
+      overrideAccess: false,
+      user,
+    })
+  ).docs as Annotation[]
+  const pending = user
+    ? (await payload.count({ collection: 'annotations', where: { and: [{ item: { equals: item.id } }, { status: { equals: 'submitted' } }] }, overrideAccess: false, user })).totalDocs
+    : 0
+  return { approved, pending }
+}
+
 export default async function ItemPage({ params }: Params) {
   const item = await load((await params).slug)
   if (!item) notFound()
   const related = await loadRelated(item)
   const context = await loadContext(item)
+  const annotations = await loadAnnotations(item)
   const { payload, user } = await getViewer()
   const settings = await payload.findGlobal({ slug: 'settings', depth: 0 })
   const rights = item.rights || settings.defaultRights
@@ -236,9 +260,13 @@ export default async function ItemPage({ params }: Params) {
             including language that may be harmful &mdash; see our{' '}
             <Link href="/harmful-language">statement on potentially harmful language</Link>.
           </p>
-          <div className="transcript-body" lang={langAttr(item.language)}>
-            {item.transcript}
-          </div>
+          {annotations.pending > 0 && (
+            <p className="notice notice-staff" role="status">
+              {annotations.pending} {annotations.pending === 1 ? 'annotation is' : 'annotations are'} awaiting review and
+              not shown here. <Link href="/review/annotations">Review annotations</Link>
+            </p>
+          )}
+          <AnnotatedTranscript text={item.transcript} annotations={annotations.approved} lang={langAttr(item.language)} />
         </section>
       )}
 

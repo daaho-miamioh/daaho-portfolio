@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { editors, loggedIn, publishedOrLoggedIn } from '@/access/roles'
 import { slugField } from '@/fields/slug'
-import { deriveDateSort, publishGate, stampReview, syncVisibility } from '@/hooks/items'
+import { deleteAnnotations, deriveDateSort, publishGate, stampReview, syncVisibility } from '@/hooks/items'
 import { REGIONS } from '@/lib/regions'
 
 export const PERSON_ROLES = [
@@ -27,6 +27,7 @@ export const Items: CollectionConfig = {
   hooks: {
     beforeChange: [publishGate, stampReview, deriveDateSort],
     afterChange: [syncVisibility],
+    beforeDelete: [deleteAnnotations],
   },
   fields: [
     {
@@ -70,6 +71,17 @@ export const Items: CollectionConfig = {
                 description:
                   'Follows the DAAHO Transcription Policy: [page N] markers, original spelling with [corrections], [illegible], [struck: ...].',
               },
+            },
+          ],
+        },
+        {
+          label: 'Annotations',
+          description: 'Notes on passages of the transcript. Each is public only after someone other than its author approves it.',
+          fields: [
+            {
+              name: 'annotator',
+              type: 'ui',
+              admin: { components: { Field: '/components/admin/TranscriptAnnotator#TranscriptAnnotator' } },
             },
           ],
         },

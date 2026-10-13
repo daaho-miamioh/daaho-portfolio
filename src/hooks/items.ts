@@ -1,4 +1,4 @@
-import { APIError, type CollectionAfterChangeHook, type CollectionBeforeChangeHook } from 'payload'
+import { APIError, type CollectionAfterChangeHook, type CollectionBeforeDeleteHook, type CollectionBeforeChangeHook } from 'payload'
 
 import { hasRole } from '@/access/roles'
 import { sortableDate } from '@/lib/dates'
@@ -88,4 +88,9 @@ export const syncVisibility: CollectionAfterChangeHook = async ({ doc, previousD
     await req.payload.update({ collection: 'people', id, data: { public: totalDocs > 0 }, req, overrideAccess: true })
   }
   return doc
+}
+
+/** An item's annotations go with it. They must go first: the item column is required, so the database cannot leave them behind. */
+export const deleteAnnotations: CollectionBeforeDeleteHook = async ({ id, req }) => {
+  await req.payload.delete({ collection: 'annotations', where: { item: { equals: id } }, req, overrideAccess: true })
 }

@@ -6,6 +6,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { Annotations } from './collections/Annotations'
 import { Events } from './collections/Events'
 import { Genres } from './collections/Genres'
 import { Items } from './collections/Items'
@@ -60,7 +61,7 @@ export default buildConfig({
     },
     meta: { titleSuffix: ' — DAAHO' },
   },
-  collections: [Items, Events, People, Places, Subjects, Genres, Media, Team, Users],
+  collections: [Items, Annotations, Events, People, Places, Subjects, Genres, Media, Team, Users],
   globals: [Home, About, Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

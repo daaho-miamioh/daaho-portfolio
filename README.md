@@ -57,8 +57,8 @@ What it will not guess at, and reports instead:
 | Role | Can |
 |---|---|
 | Admin | Everything, including creating accounts and assigning roles |
-| Editor | Edit and publish items, people, pages |
-| Contributor | Create and edit drafts; cannot publish |
+| Editor | Edit and publish items, people, pages; approve others' annotations |
+| Contributor | Create and edit drafts; write annotations; cannot publish or approve |
 
 ## Historical context
 
@@ -83,6 +83,21 @@ Editors and admins see **Review duplicates** in the site header (`/review/people
 one decision: choose the record to keep, tick the ones that are the same person, and merge — or
 mark them as different people. Merges are transactional and survive re-import.
 
+## Annotating transcripts
+
+Any signed-in user can annotate a transcript: open an item, go to the **Annotations** tab, select a
+passage, choose a category, write the note, and **Submit for review** (or save it as a draft). The
+passage is stored with the text around it, so a note stays attached if the transcript is later
+corrected; if the passage itself is removed, the note is flagged in the editor.
+
+Nothing is public until it is approved, and **nobody can approve an annotation they wrote or last
+changed** — every public note has had two people. Editors and admins approve or return notes from
+the item's Annotations tab or from **Review annotations** in the site header
+(`/review/annotations`), which lists everything waiting across all items. Changing the text of an
+approved note sends it back for review. Approved notes appear on the public item page as numbered
+highlights with the notes listed below the transcript. Rules are in `src/hooks/annotations.ts`,
+tested in `tests/int/annotations.int.spec.ts`.
+
 ## Publishing rules
 
 Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
@@ -103,7 +118,7 @@ Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
 
 ```bash
 pnpm test:unit   # name handling and dates — no database needed
-pnpm test:int    # publishing rules and people merges, against DATABASE_URL (creates and removes its own test records)
+pnpm test:int    # publishing rules, people merges and annotation review, against DATABASE_URL (creates and removes its own test records)
 ```
 
 ## Deploying
