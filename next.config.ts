@@ -8,7 +8,8 @@ const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
   // A self-contained server in .next/standalone, for the library server (see deploy/README.md).
-  output: 'standalone',
+  // Vercel (VERCEL=1 during its builds) packages the app its own way and does not need it.
+  output: process.env.VERCEL ? undefined : 'standalone',
   images: {
     localPatterns: [
       {
