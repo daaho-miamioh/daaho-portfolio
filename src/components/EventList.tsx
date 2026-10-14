@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import { EVENT_KINDS } from '@/collections/ProjectEvents'
-import { formatEventDates } from '@/lib/eventDates'
+import { formatEventDates, isUpcoming } from '@/lib/eventDates'
 import type { ProjectEvent } from '@/payload-types'
 
 const KIND = Object.fromEntries(EVENT_KINDS.map((k) => [k.value, k.label]))
@@ -14,14 +14,19 @@ export function EventList({ events, headingLevel = 3 }: { events: ProjectEvent[]
         <li key={e.id} className="event-row">
           <p className="event-when">
             <time dateTime={e.start}>{formatEventDates(e.start, e.end)}</time>
-            {e.kind && e.kind !== 'other' && <span className="event-kind">{KIND[e.kind]}</span>}
-            {e._status !== 'published' && <span className="badge badge-draft">Draft</span>}
           </p>
-          <H className="event-title">
-            <Link href={`/events/${e.slug}`}>{e.title}</Link>
-          </H>
-          {e.location && <p className="card-meta">{e.location}</p>}
-          <p className="event-summary">{e.summary}</p>
+          <div className="event-main">
+            <p className="event-tags">
+              {isUpcoming(e) && <span className="event-kind event-upcoming">Upcoming</span>}
+              {e.kind && e.kind !== 'other' && <span className="event-kind">{KIND[e.kind]}</span>}
+              {e._status !== 'published' && <span className="badge badge-draft">Draft</span>}
+            </p>
+            <H className="event-title">
+              <Link href={`/events/${e.slug}`}>{e.title}</Link>
+            </H>
+            {e.location && <p className="card-meta">{e.location}</p>}
+            <p className="event-summary">{e.summary}</p>
+          </div>
         </li>
       ))}
     </ul>

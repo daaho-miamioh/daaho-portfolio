@@ -44,120 +44,160 @@ export default async function HomePage() {
     return m ? [{ src: src(m, 'reading'), srcSet: srcSet(m, ['card', 'reading']), alt: m.alt, caption: s.caption, width: m.width, height: m.height }] : []
   })
   const sponsors = (home.sponsors ?? []).map((s) => ({ ...s, logo: asMedia(s.logo) }))
+  // Six document scans for the hero: featured items first, then the rest of what this visitor can see.
+  const seen = new Set<number>()
+  const mosaic = [...items, ...visible.docs]
+    .filter((i) => !seen.has(i.id) && seen.add(i.id))
+    .map((i) => asMedia(i.pages?.[0]?.image))
+    .filter((m): m is NonNullable<typeof m> => !!m)
+    .slice(0, 6)
 
   return (
     <>
-      <section className="hero">
-        <h1>{home.heading}</h1>
-        {home.intro ? (
-          <div className="prose lede">
-            <RichText data={home.intro} />
-          </div>
-        ) : (
-          <p className="lede">
-            Letters, memoranda and photographs from the collections of Miami University, recording Asian
-            American lives, students and communities in Ohio across the twentieth century.
+      <section className="hero" aria-labelledby="hero-heading">
+        <div className="hero-copy">
+          <p className="eyebrow">Miami University Libraries · Digital collection</p>
+          <h1 id="hero-heading" className="display">
+            {home.heading}
+          </h1>
+          {home.intro ? (
+            <div className="lede">
+              <RichText data={home.intro} />
+            </div>
+          ) : (
+            <p className="lede">
+              Letters, memoranda and photographs from the collections of Miami University, recording Asian American
+              lives, students and communities in Ohio across the twentieth century.
+            </p>
+          )}
+          <p className="hero-actions">
+            <Link href="/items" className="button">
+              Browse the collection <span aria-hidden="true">→</span>
+            </Link>
+            <Link href="/timeline" className="button-secondary">
+              See the timeline
+            </Link>
           </p>
-        )}
-        <dl className="stats">
-          <div>
-            <dt>Items</dt>
-            <dd>{itemCount.totalDocs}</dd>
+          <dl className="stats">
+            <div>
+              <dt>Items</dt>
+              <dd>{itemCount.totalDocs}</dd>
+            </div>
+            <div>
+              <dt>People</dt>
+              <dd>{peopleCount.totalDocs}</dd>
+            </div>
+            <div>
+              <dt>Places</dt>
+              <dd>{placeCount.totalDocs}</dd>
+            </div>
+          </dl>
+        </div>
+        {mosaic.length >= 3 && (
+          <div className="hero-mosaic" aria-hidden="true">
+            {mosaic.map((m) => (
+              // Decorative: a glimpse of the documents; each is reachable, with its description, from the collection.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={m.id} src={src(m, 'card')} alt="" width={400} height={500} />
+            ))}
           </div>
-          <div>
-            <dt>People</dt>
-            <dd>{peopleCount.totalDocs}</dd>
-          </div>
-          <div>
-            <dt>Places</dt>
-            <dd>{placeCount.totalDocs}</dd>
-          </div>
-        </dl>
-        <p className="hero-actions">
-          <Link href="/items" className="button">
-            Browse the collection
-          </Link>
-          <Link href="/timeline" className="button-secondary">
-            See the timeline
-          </Link>
-        </p>
-        {decades.length > 0 && (
-          <nav aria-label="Browse by decade">
-            <p className="decade-label">Browse by decade</p>
-            <ul className="chips" role="list">
-              {decades.map((d) => (
-                <li key={d.value}>
-                  <Link href={`/items?decade=${d.value}`}>
-                    {d.label} <span className="count">{d.count}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
         )}
       </section>
+
+      {decades.length > 0 && (
+        <nav aria-label="Browse by decade" className="decades">
+          <p className="eyebrow">Browse by decade</p>
+          <ul className="chips" role="list">
+            {decades.map((d) => (
+              <li key={d.value}>
+                <Link href={`/items?decade=${d.value}`}>
+                  {d.label} <span className="count">{d.count}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
 
       {slides.length > 0 && <Slideshow slides={slides} />}
 
       {home.mission && (
-        <section id="mission-statement" aria-labelledby="mission-heading" className="home-mission">
-          <h2 id="mission-heading">Mission statement</h2>
-          <Paragraphs text={home.mission} className="prose" />
+        <section id="mission-statement" aria-labelledby="mission-heading" className="band band-dark home-mission">
+          <p className="eyebrow">Mission</p>
+          <h2 id="mission-heading">Making visible what was previously invisible</h2>
+          <Paragraphs text={home.mission} className="mission-text" />
         </section>
       )}
 
       {(home.goals ?? []).length > 0 && (
-        <section id="project-goals" aria-labelledby="goals-heading">
-          <h2 id="goals-heading">Project goals</h2>
-          <Paragraphs text={home.goalsIntro} className="prose" />
-          <ul className="goals" role="list">
+        <section id="project-goals" aria-labelledby="goals-heading" className="section">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Project goals</p>
+              <h2 id="goals-heading">What we are working toward</h2>
+            </div>
+          </div>
+          <Paragraphs text={home.goalsIntro} className="lede" />
+          <ol className="goals">
             {(home.goals ?? []).map((g) => (
               <li key={g.id ?? g.title}>
                 <h3>{g.title}</h3>
                 <p>{g.text}</p>
               </li>
             ))}
-          </ul>
+          </ol>
         </section>
       )}
 
-      <section aria-labelledby="featured-heading">
-        <h2 id="featured-heading">{featured.length ? 'Featured items' : 'From the collection'}</h2>
+      <section aria-labelledby="featured-heading" className="section">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">The collection</p>
+            <h2 id="featured-heading">{featured.length ? 'Featured items' : 'From the collection'}</h2>
+          </div>
+          <Link href="/items" className="section-link">
+            All {itemCount.totalDocs} items <span aria-hidden="true">→</span>
+          </Link>
+        </div>
         <ItemGrid items={items} />
       </section>
 
       {(events.upcoming.length > 0 || recentPast.length > 0) && (
-        <section id="events" aria-labelledby="events-heading">
-          <h2 id="events-heading">Events</h2>
-          {events.upcoming.length > 0 && (
-            <>
-              <h3>Upcoming</h3>
-              <EventList events={events.upcoming} headingLevel={3} />
-            </>
-          )}
-          {recentPast.length > 0 && (
-            <>
-              <h3>Recent</h3>
-              <EventList events={recentPast} headingLevel={3} />
-            </>
-          )}
-          <p>
-            <Link href="/events">All events</Link>
-          </p>
+        <section id="events" aria-labelledby="events-heading" className="section">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Events</p>
+              <h2 id="events-heading">{events.upcoming.length ? 'Upcoming and recent' : 'Recent events'}</h2>
+            </div>
+            <Link href="/events" className="section-link">
+              All events <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+          <EventList events={[...events.upcoming, ...recentPast]} headingLevel={3} />
         </section>
       )}
 
-      <section id="about-us" aria-labelledby="about-heading">
-        <h2 id="about-heading">About us</h2>
-        <p>
-          DAAHO brings together scholars, librarians, archivists and community partners across Ohio and beyond.{' '}
-          <Link href="/about#team">Meet our team</Link>.
-        </p>
+      <section id="about-us" aria-labelledby="about-heading" className="section about-teaser">
+        <div>
+          <p className="eyebrow">About us</p>
+          <h2 id="about-heading">Scholars, librarians, archivists and community partners</h2>
+        </div>
+        <div>
+          <p className="lede">
+            DAAHO brings together people across Ohio and beyond to collect, preserve and share Asian American
+            histories.
+          </p>
+          <Link href="/about#team" className="button-secondary">
+            Meet our team <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </section>
 
       {sponsors.length > 0 && (
         <section aria-labelledby="sponsors-heading" className="sponsors">
-          <h2 id="sponsors-heading">Sponsored by</h2>
+          <p id="sponsors-heading" className="eyebrow">
+            Supported by
+          </p>
           <ul role="list">
             {sponsors.map((s) => {
               const content = s.logo ? (

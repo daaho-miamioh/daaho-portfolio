@@ -3,20 +3,37 @@ import Link from 'next/link'
 
 import { EventEntry } from '@/components/ContextEvents'
 import { yearOf } from '@/lib/context'
+import { asMedia, src } from '@/lib/media'
 import { getViewer } from '@/lib/viewer'
-import type { Event } from '@/payload-types'
+import type { Event, Item } from '@/payload-types'
 
 export const metadata: Metadata = { title: 'Timeline' }
 
 export default async function TimelinePage() {
   const { payload, user, draft, access } = await getViewer()
   const events = (await payload.find({ collection: 'events', pagination: false, depth: 0, draft, sort: 'startDate', ...access })).docs as Event[]
-  const items = (await payload.find({ collection: 'items', pagination: false, depth: 0, draft, select: { dateSort: true }, ...access })).docs
+  const items = (
+    await payload.find({
+      collection: 'items',
+      pagination: false,
+      depth: 1,
+      draft,
+      sort: 'dateSort',
+      select: { dateSort: true, title: true, slug: true, pages: true },
+      ...access,
+    })
+  ).docs as Pick<Item, 'id' | 'dateSort' | 'title' | 'slug' | 'pages'>[]
 
   const itemsPerDecade = new Map<number, number>()
+  const thumbsPerDecade = new Map<number, { slug: string; title: string; src: string }[]>()
   for (const it of items) {
     const y = yearOf(it.dateSort)
-    if (y !== null) itemsPerDecade.set(Math.floor(y / 10) * 10, (itemsPerDecade.get(Math.floor(y / 10) * 10) ?? 0) + 1)
+    if (y === null) continue
+    const d = Math.floor(y / 10) * 10
+    itemsPerDecade.set(d, (itemsPerDecade.get(d) ?? 0) + 1)
+    const cover = asMedia(it.pages?.[0]?.image)
+    const thumbs = thumbsPerDecade.get(d) ?? []
+    if (cover && it.slug && thumbs.length < 6) thumbsPerDecade.set(d, [...thumbs, { slug: it.slug, title: it.title, src: src(cover, 'thumbnail') }])
   }
   const eventsPerDecade = new Map<number, Event[]>()
   for (const e of events) {
@@ -41,6 +58,20 @@ export default async function TimelinePage() {
           return (
             <li key={d} id={`decade-${d}`} className="decade">
               <h2>{d}s</h2>
+              {(thumbsPerDecade.get(d) ?? []).length > 0 && (
+                <ul className="decade-thumbs" role="list">
+                  {thumbsPerDecade.get(d)!.map((th) => (
+                    <li key={th.slug}>
+                      <Link href={`/items/${th.slug}`} title={th.title}>
+                        {/* The link is named by the item title; the scan is decorative here. */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={th.src} alt="" width={120} height={150} loading="lazy" />
+                        <span className="visually-hidden">{th.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
               {count > 0 && (
                 <p className="decade-items">
                   <Link href={`/items?decade=${d}s`}>

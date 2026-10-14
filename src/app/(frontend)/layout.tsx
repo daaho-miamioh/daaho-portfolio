@@ -1,3 +1,4 @@
+import { Geist, Geist_Mono } from 'next/font/google'
 import Link from 'next/link'
 import React from 'react'
 
@@ -5,6 +6,10 @@ import { getViewer } from '@/lib/viewer'
 import type { User } from '@/payload-types'
 
 import './styles.css'
+
+// Downloaded at build time and served from this site, so visitors' browsers never contact Google.
+const sans = Geist({ subsets: ['latin'], variable: '--font-sans', display: 'swap' })
+const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono', display: 'swap' })
 
 export const metadata = {
   title: { default: 'Documenting Asian American Histories in Ohio', template: '%s — DAAHO' },
@@ -29,7 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const role = (user as User | null)?.role
   const canReview = role === 'admin' || role === 'editor'
   return (
-    <html lang="en">
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
         <a className="skip-link" href="#main">
           Skip to content
@@ -37,6 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <header className="site-header">
           <div className="wrap header-inner">
             <Link href="/" className="site-title">
+              <span className="brand-mark" aria-hidden="true" />
               <span className="site-title-short">DAAHO</span>
               <span className="site-title-long">Documenting Asian American Histories in Ohio</span>
             </Link>
@@ -54,40 +60,70 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     </a>
                   </li>
                 )}
-                {canReview && (
-                  <>
-                    <li>
-                      <Link href="/review/people" className="nav-staff">
-                        Review duplicates
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/review/annotations" className="nav-staff">
-                        Review annotations
-                      </Link>
-                    </li>
-                  </>
-                )}
               </ul>
             </nav>
           </div>
+          {canReview && (
+            <nav className="staff-bar" aria-label="Staff">
+              <div className="wrap">
+                <span className="staff-label">Staff</span>
+                <Link href="/review/people">Review duplicates</Link>
+                <Link href="/review/annotations">Review annotations</Link>
+                <Link href="/admin">Admin</Link>
+              </div>
+            </nav>
+          )}
         </header>
         <main id="main" className="wrap">
           {children}
         </main>
         <footer className="site-footer">
-          <div className="wrap">
+          <div className="wrap footer-grid">
+            <div className="footer-brand">
+              <p className="footer-title">
+                <span className="brand-mark" aria-hidden="true" /> DAAHO
+              </p>
+              <p>
+                Documenting Asian American Histories in Ohio — letters, documents and photographs recording Asian
+                American lives in Ohio, gathered by scholars, librarians, archivists and community partners.
+              </p>
+            </div>
+            <nav aria-label="Explore" className="footer-links">
+              <p className="footer-heading">Explore</p>
+              <ul role="list">
+                {NAV.slice(0, 5).map(([href, label]) => (
+                  <li key={href}>
+                    <Link href={href}>{label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <nav aria-label="Project" className="footer-links">
+              <p className="footer-heading">Project</p>
+              <ul role="list">
+                <li>
+                  <Link href="/about">About and team</Link>
+                </li>
+                <li>
+                  <Link href="/events">Events</Link>
+                </li>
+                <li>
+                  <Link href="/harmful-language">Statement on harmful language</Link>
+                </li>
+                <li>
+                  <Link href="/admin">Staff sign-in</Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div className="wrap footer-fine">
             <p>
-              Item descriptions and transcriptions are generated with AI from the original scans. Each item page
-              says whether project staff have reviewed it yet.
+              Item descriptions and transcriptions are generated with AI from the original scans. Each item page says
+              whether project staff have reviewed it yet. Some documents contain language that is harmful.
             </p>
             <p>
-              Some documents contain language that is harmful.{' '}
-              <Link href="/harmful-language">Statement on potentially harmful language</Link>
-            </p>
-            <p>
-              &copy; {new Date().getFullYear()} Miami University Libraries · Funded by the National Historical
-              Publications and Records Commission (NHPRC) · <Link href="/admin">Staff sign-in</Link>
+              &copy; {new Date().getFullYear()} Miami University Libraries · Funded by the National Historical Publications
+              and Records Commission (NHPRC)
             </p>
           </div>
         </footer>

@@ -29,7 +29,7 @@ export default async function EventPage({ params }: Params) {
   const images = (e.images ?? []).map((r) => ({ media: asMedia(r.image), caption: r.caption })).filter((r) => r.media)
 
   return (
-    <article className="event">
+    <article className="event-page">
       {e._status !== 'published' && (
         <p className="notice notice-draft" role="status">
           <strong>Draft — not public.</strong> Only signed-in project staff can see this page.
