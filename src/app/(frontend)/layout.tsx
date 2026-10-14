@@ -18,11 +18,14 @@ const NAV = [
   ['/places', 'Places'],
   ['/subjects', 'Subjects'],
   ['/timeline', 'Timeline'],
+  ['/events', 'Events'],
   ['/about', 'About'],
 ] as const
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { user } = await getViewer()
+  const { payload, user } = await getViewer()
+  const home = await payload.findGlobal({ slug: 'home', depth: 0, overrideAccess: false, user })
+  const submit = home.submitLink?.url ? home.submitLink : null
   const role = (user as User | null)?.role
   const canReview = role === 'admin' || role === 'editor'
   return (
@@ -44,6 +47,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <Link href={href}>{label}</Link>
                   </li>
                 ))}
+                {submit && (
+                  <li>
+                    <a href={submit.url!} className="nav-cta">
+                      {submit.label || 'Submit a collection'}
+                    </a>
+                  </li>
+                )}
                 {canReview && (
                   <>
                     <li>
@@ -76,7 +86,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/harmful-language">Statement on potentially harmful language</Link>
             </p>
             <p>
-              Miami University Libraries · <Link href="/admin">Staff sign-in</Link>
+              &copy; {new Date().getFullYear()} Miami University Libraries · Funded by the National Historical
+              Publications and Records Commission (NHPRC) · <Link href="/admin">Staff sign-in</Link>
             </p>
           </div>
         </footer>

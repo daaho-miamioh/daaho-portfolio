@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Addresses from the earlier landing site at daaho.lib.miamioh.edu, which this site replaces.
+  async redirects() {
+    return [
+      { source: '/past/:slug', destination: '/events/:slug', permanent: true },
+      { source: '/news', destination: '/events', permanent: true },
+      { source: '/contact', destination: '/about', permanent: false },
+    ]
+  },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],

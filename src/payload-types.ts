@@ -75,6 +75,7 @@ export interface Config {
     subjects: Subject;
     genres: Genre;
     media: Media;
+    'project-events': ProjectEvent;
     team: Team;
     users: User;
     'payload-kv': PayloadKv;
@@ -92,6 +93,7 @@ export interface Config {
     subjects: SubjectsSelect<false> | SubjectsSelect<true>;
     genres: GenresSelect<false> | GenresSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'project-events': ProjectEventsSelect<false> | ProjectEventsSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -605,35 +607,77 @@ export interface Annotation {
   createdAt: string;
 }
 /**
+ * Exhibits, talks and conferences. Shown as upcoming until their last day, then as past events.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-events".
+ */
+export interface ProjectEvent {
+  id: number;
+  title: string;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  kind?: ('exhibit' | 'conference' | 'community' | 'talk' | 'workshop' | 'launch' | 'other') | null;
+  start: string;
+  end?: string | null;
+  /**
+   * e.g. 10 AM – 12 PM, or "Community event: October 25, 10 AM – 12 PM"
+   */
+  timeText?: string | null;
+  location?: string | null;
+  /**
+   * Registration or more information, on another site. Optional.
+   */
+  link?: string | null;
+  /**
+   * One or two sentences, shown in event lists.
+   */
+  summary: string;
+  /**
+   * The full text. Leave a blank line between paragraphs.
+   */
+  description?: string | null;
+  /**
+   * Flyers and photographs. Each image needs alternative text, set on the image itself.
+   */
+  images?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  sponsors?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shown on the About page in these groups, in order within each group (lower numbers first).
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team".
  */
 export interface Team {
   id: number;
   name: string;
+  group: 'project-team' | 'partners' | 'committee' | 'former-students';
   /**
-   * Role on the project, e.g. Principal Investigator
+   * Role or position, e.g. Co-Principal Investigator
    */
   title?: string | null;
   affiliation?: string | null;
-  bio?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  bio?: string | null;
   photo?: (number | null) | Media;
   /**
-   * Lower first.
+   * Lower first, within the group.
    */
   order?: number | null;
   updatedAt: string;
@@ -694,6 +738,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'project-events';
+        value: number | ProjectEvent;
       } | null)
     | ({
         relationTo: 'team';
@@ -1006,10 +1054,43 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-events_select".
+ */
+export interface ProjectEventsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  kind?: T;
+  start?: T;
+  end?: T;
+  timeText?: T;
+  location?: T;
+  link?: T;
+  summary?: T;
+  description?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  sponsors?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team_select".
  */
 export interface TeamSelect<T extends boolean = true> {
   name?: T;
+  group?: T;
   title?: T;
   affiliation?: T;
   bio?: T;
@@ -1109,10 +1190,50 @@ export interface Home {
    * Up to six items for the home page. Only published items are shown publicly.
    */
   featured?: (number | Item)[] | null;
+  /**
+   * A button in the site header. Leave the address empty to hide it.
+   */
+  submitLink?: {
+    label?: string | null;
+    url?: string | null;
+  };
+  /**
+   * Images at the top of the home page. Alternative text is set on each image; the caption is shown under it.
+   */
+  slides?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  mission?: string | null;
+  goalsIntro?: string | null;
+  goals?:
+    | {
+        title: string;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Shown above the events on the home page and the Events page.
+   */
+  eventsIntro?: string | null;
+  sponsors?:
+    | {
+        name: string;
+        logo?: (number | null) | Media;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
+ * Team members are edited under Site → Team.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about".
  */
@@ -1134,6 +1255,14 @@ export interface About {
     };
     [k: string]: unknown;
   } | null;
+  logo?: {
+    heading?: string | null;
+    image?: (number | null) | Media;
+    /**
+     * Leave a blank line between paragraphs.
+     */
+    text?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1184,6 +1313,37 @@ export interface HomeSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
   featured?: T;
+  submitLink?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+      };
+  slides?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  mission?: T;
+  goalsIntro?: T;
+  goals?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        id?: T;
+      };
+  eventsIntro?: T;
+  sponsors?:
+    | T
+    | {
+        name?: T;
+        logo?: T;
+        url?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1195,6 +1355,13 @@ export interface HomeSelect<T extends boolean = true> {
 export interface AboutSelect<T extends boolean = true> {
   heading?: T;
   body?: T;
+  logo?:
+    | T
+    | {
+        heading?: T;
+        image?: T;
+        text?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

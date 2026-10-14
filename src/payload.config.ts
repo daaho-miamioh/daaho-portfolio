@@ -13,6 +13,7 @@ import { Items } from './collections/Items'
 import { Media } from './collections/Media'
 import { People } from './collections/People'
 import { Places } from './collections/Places'
+import { ProjectEvents } from './collections/ProjectEvents'
 import { Subjects } from './collections/Subjects'
 import { Team } from './collections/Team'
 import { Users } from './collections/Users'
@@ -61,7 +62,7 @@ export default buildConfig({
     },
     meta: { titleSuffix: ' — DAAHO' },
   },
-  collections: [Items, Annotations, Events, People, Places, Subjects, Genres, Media, Team, Users],
+  collections: [Items, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users],
   globals: [Home, About, Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

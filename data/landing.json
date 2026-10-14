@@ -1,0 +1,411 @@
+{
+  "source": "Extracted from github.com/Meng-V/daaho (constant/Personnel.ts, constant/StaticInfo.ts, app/news/page.tsx) on 2026-10-14",
+  "team": [
+    {
+      "group": "project-team",
+      "order": 10,
+      "name": "Dr. Hongmei Li",
+      "title": "Project Director and Principal Investigator",
+      "bio": "Dr. Li is a professor and area coordinator of Strategic Communication at Miami University of Ohio with research expertise in media, cultural and communication studies, Chinese society, U.S.-China relations, and Chinese American community and diaspora.",
+      "photo": "images/team/LiHongmei.jpg"
+    },
+    {
+      "group": "project-team",
+      "order": 20,
+      "name": "Dr. Yong Chen",
+      "title": "Co-Principal Investigator",
+      "bio": "Dr. Chen is a professor of history and Asian American Studies at the University of California, Irvine, where he serves as Associate Dean for graduate and undergraduate education in the School of Humanities.",
+      "photo": "images/team/ChenYong.jpg"
+    },
+    {
+      "group": "project-team",
+      "order": 30,
+      "name": "Dr. Ann Marie Davis",
+      "title": "Co-Principal Investigator",
+      "bio": "Dr. Davis is an associate professor and Japanese Studies librarian at The Ohio State University Libraries. As a curator of general and special collections in Area Studies, she is passionate about documenting Japanese and Japanese American diasporic history in Ohio and beyond.",
+      "photo": "images/team/DavisAnnMarie.jpg"
+    },
+    {
+      "group": "project-team",
+      "order": 40,
+      "name": "Alia Levar Wegner",
+      "title": "Co-Principal Investigator",
+      "bio": "Alia is the Digital Collections Librarian at the Walter Havighurst Special Collections and University Archives at Miami University where she is responsible for coordinating the digitization of special collections materials, developing digital collections, and consulting on digital humanities projects.",
+      "photo": "images/team/WegnerAlia.jpg"
+    },
+    {
+      "group": "project-team",
+      "order": 50,
+      "name": "Kevin Eagles",
+      "title": "Co-PI",
+      "bio": "Kevin is a visiting teaching professor of history and Director of Public History at Northern Kentucky University . He is also the Assistant Director of the Fort Thomas Military and Community Museum in Fort Thomas, Kentucky. Kevin’s research focus is on the Asian American diaspora and Vietnam.",
+      "photo": "images/team/EaglesKevin.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 10,
+      "name": "Dr. Sarah Chang",
+      "title": "Assistant Professor of History",
+      "bio": "Dr. Chang is an assistant professor of history at Miami University, whose research interests include Chinese history, East Asian history, History of socialism and China's economic reforms, and gender and women's history.",
+      "photo": "images/team/ChangSarah.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 20,
+      "name": "Hao Cong",
+      "title": "Cincinnati Chapter President of AACO",
+      "bio": "Hao is the Cincinnati chapter president of the Asian American Coalition Ohio. She has been recognized by the Hamilton County Board of Commissioners for her outstanding contributions to the API community.",
+      "photo": "images/team/CongHao.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 30,
+      "name": "Dr. Mark Dahlquist",
+      "title": "Humanities and Social Sciences Librarian",
+      "bio": "Dr. Dahlquist is a Humanities and Social Sciences Librarian at Miami University and liaison to the Departments of English and Media, Journalism & Film. He also advises on the Libraries' Digital Humanities activities.",
+      "photo": "images/team/DahlquistMark.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 40,
+      "name": "Katie Gibson",
+      "title": "Humanities Librarian",
+      "bio": "Katie is the Miami University Libraries liaison to the Asian and Asian American Studies program and is the Libraries' liaison for accessibility.",
+      "photo": "images/team/GibsonKatie.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 50,
+      "name": "William (Bill) Hilt",
+      "title": "President of the Ohio Council for the Social Studies",
+      "bio": "Bill has been teaching social studies in Perrysburg, Ohio for thirty years. He is currently the President of the Ohio Council for the Social Studies, and is the founder, President and CEO of the World Affairs Council of NW Ohio.",
+      "photo": "images/team/HiltBill.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 60,
+      "name": "Eric Hughett",
+      "title": "Curatorial Assistant for East Asian Art at Cincinnati Art Museum",
+      "bio": "Eric is a Curatorial Assistant for East Asian Art at the Cincinnati Art Museum.",
+      "photo": "images/team/HughettEric.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 70,
+      "name": "Dr. Pranav Jani",
+      "title": "Associate Professor of English",
+      "bio": "Dr. Jani is an Associate Professor of English and the Program Director of Asian American Studies at The Ohio State University where he also serves as a Faculty Advisor for Students for Justice in Palestine and other student organizations. He is currently the President of AAUP-Ohio State.",
+      "photo": "images/team/JaniPranav.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 80,
+      "name": "Dr. Nalin Jayasena",
+      "title": "Associate Professor of Global and Intercultural Studies and English",
+      "bio": "Dr. Jay is an associate professor at Miami University specializing in the literature and culture of South Asia and its diaspora, with a focus on Asian and Asian American cinema. He is a member of the American Institute for Sri Lankan Studies and the South Asian American Digital Archive.",
+      "photo": "images/team/JayasenaNalin.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 90,
+      "name": "Bao M. Nguyen",
+      "title": "President of Asianati",
+      "bio": "Bao is a community builder and financial advisor. He is the co-founder of the Asian Food Festival in Cincinnati and has been deeply involved in the Vietnamese community. He is also the president of Asianati, an organization dedicated to celebrating Asian American culture in Cincinnati.",
+      "photo": "images/team/NguyenBao.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 100,
+      "name": "Bo Pang",
+      "title": "Chinese Language Teacher at Summit Country Day School",
+      "bio": "Bo received her Bachelor of Science degree from Nanjing University. As a historian's daughter, reading history and literature is the primary source of her childhood happiness. After settling down in Cincinnati, she obtained a professional teaching license from Miami University and taught college level Chinese. She is now teaching Chinese at Summit Country Day School, and working as a Chinese instructor for UC Clermont's Upward Bound Program in summer.",
+      "photo": "images/team/PangBo.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 110,
+      "name": "Dr. Hou-mei Sung",
+      "title": "Curator of East Asian Art, Prints, and Drawings",
+      "bio": "Dr. Sung is the Curator of East Asian Art, Prints, and Drawings at the Cincinnati Art Museum. She has made tremendous contributions to Asian art in Cincinnati and has worked on important collections and exhibitions emphasizing the importance of art education in breaking down cultural and language barriers.",
+      "photo": "images/team/SungHouMei.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 120,
+      "name": "Johnny K. Wu",
+      "title": "Producer, Director and Editor",
+      "bio": "Mr. Johnny K. Wu is an award-winning producer, director, and editor with over 25 years of experience in film, media, and event production. He is a pioneer in Cleveland's independent filmmaking community, co-founded the Cleveland Asian Festival, and has produced numerous award-winning films, including Bullets, Brothers, and Blood and History of Cleveland's Chinatown.",
+      "photo": "images/team/WuJohnny.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 130,
+      "name": "Meng Qu",
+      "title": "Web Services Librarian",
+      "bio": "Meng Qu leads the technical strategy and implementation for DAAHO, translating archival goals into scalable digital workflows and tools. She drives the project’s modernization work—aligning metadata practices with automation, supporting cross-team collaboration, and guiding student contributions to move DAAHO from concept to usable infrastructure.",
+      "photo": "images/team/QuMeng.jpg"
+    },
+    {
+      "group": "partners",
+      "order": 140,
+      "name": "Lucas Sneller",
+      "title": "DAAHO Student Research Assistant",
+      "bio": "Lucas Sneller is a senior at Miami University studying Political Science, Philosophy, and Economics, with research interests at the intersection of machine learning, AI, and mathematical economics. His work focuses on building computational and econometric pipelines to turn unstructured data into reproducible insights, with applications in mathematical finance, mean field games, and market microstructure.",
+      "photo": "images/team/SnellerLucas.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 10,
+      "name": "Christine Engels",
+      "title": "Archives Manager at Cincinnati Museum Center",
+      "bio": "Christine is the Archives Manager at the Cincinnati Museum Center, overseeing the preservation and organization of historical collections.",
+      "photo": "images/team/EngelsChristine.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 20,
+      "name": "Dr. John D.M. Green",
+      "title": "Director and Chief Curator at the Richard and Carole Cocks Art Museum",
+      "bio": "Dr. Jack Green is the Jeffrey Horrell '75 and Rodney Rose Director and Chief Curator of the Richard and Carole Cocks Art Museum at Miami University.",
+      "photo": "images/team/GreenJack.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 30,
+      "name": "Don Hayashi",
+      "title": "Chapter President, JACL (Dayton)",
+      "bio": "Donald Hayashi is the president of the Dayton chapter of the Japanese American Citizens League and the chairperson of the Asian American Council of Greater Dayton. He was born in Portland, Oregon to Japanese parents, who, alongside Donald's older brothers, lived through World War II internment camps in the U.S.",
+      "photo": "images/team/HayashiDon.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 40,
+      "name": "Jacqueline Johnson",
+      "title": "University Archivist",
+      "bio": "Jacqueline Johnson is the University Archivist and Principal Librarian at the Walter Havighurst Special Collections and University Archives at Miami University Libraries. Her research focuses on the history of Western College for Women, Oxford College for Women, and the Mississippi Summer Project.",
+      "photo": "images/team/JohnsonJacqueline.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 50,
+      "name": "Maria Lee",
+      "title": "Local History and Genealogy Librarian",
+      "bio": "Maria is the Local History and Genealogy Librarian at the Columbus Metropolitan Library, where she assists patrons with research and preserving the community's historical records.",
+      "photo": "images/team/LeeMaria.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 60,
+      "name": "Kazuya Sato",
+      "title": "Chapter President, Japanese American Citizens League (Cincinnati)",
+      "bio": "Kaz Sato was born and raised in the city of Kofu. He attended International Christian University in Tokyo and after graduation came to the U.S. to continue with graduate school in Michigan. Kaz serves as the president of Cincinnati Chapter of Japanese American Citizens League and has been working to promote member's community relations and social issues surrounding Japanese American and other Asian Americans.",
+      "photo": "images/team/SatoKazuya.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 70,
+      "name": "James Tecco",
+      "title": "Co-Founder of APIA History Cincinnati",
+      "bio": "James is a community leader who is passionate about promoting DEI and is the curator and creator of the \"52 Voices\" project, based in Cincinnati, which is dedicated to archiving, documenting, and collecting the history and contemporary experiences of AAPI communities in the Greater Cincinnati region through oral history and storytelling.",
+      "photo": "images/team/TeccoJames.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 80,
+      "name": "Dr. Leticia Wiggins",
+      "title": "Ethnic Studies Librarian",
+      "bio": "Dr. Wiggins serves as the liaison librarian to the Center for Ethnic Studies at The Ohio State University. Leticia establishes programmatic approaches to building partnerships within the Ohio State academic community and beyond. She earned her Ph.D. in U.S. History and Latin American History from Ohio State before embarking on a career that includes winning three Ohio Valley Emmy Awards for her film work.",
+      "photo": "images/team/WigginsLeticia.jpg"
+    },
+    {
+      "group": "committee",
+      "order": 90,
+      "name": "Grace Farrell",
+      "title": "DAAHO Student Research Assistant",
+      "bio": "Grace Farrell is a sophomore honors History and International Studies student at Miami University. Currently, she works in Walter Havighurst Special Collections documenting Asian-American experiences at Miami.",
+      "photo": "images/team/FarrellGrace.jpg"
+    },
+    {
+      "group": "former-students",
+      "order": 10,
+      "name": "Emily Abas",
+      "title": "DAAHO Student Research Assistant",
+      "bio": "Emily is a senior at Miami University double majoring in Media and Communications as well as East Asian Languages and Cultures. She also works as an International Peer Orientation Leader as well as staff for the Global Initiatives front desk.",
+      "photo": "images/team/AbasEmily.jpg"
+    },
+    {
+      "group": "former-students",
+      "order": 20,
+      "name": "Jaewon Back",
+      "title": "DAAHO Graduate Student Research Assistant",
+      "bio": "Jaewon is a Ph.D. student in the English Department at Miami University and holds an M.A. from Hankuk University of Foreign Studies.",
+      "photo": "images/team/BackJaewon.jpg"
+    },
+    {
+      "group": "former-students",
+      "order": 30,
+      "name": "Sharbaditya Bandopadhyay",
+      "title": "DAAHO Graduate Student Research Assistant",
+      "bio": "Sharbaditya is pursuing an M.A. in English at Miami University with a minor in Women, Gender, and Sexuality Studies.",
+      "photo": "images/team/Bandopadhyay.jpg"
+    },
+    {
+      "group": "former-students",
+      "order": 40,
+      "name": "Carver Spangle",
+      "title": "DAAHO Student Research Assistant",
+      "bio": "Carver is an honor student at Miami University majoring in History and Political Science, class of 2025. He works in the Walter Havighurst Special Collections and University Archives to research Asian American experiences at Miami University.",
+      "photo": "images/team/SpangleCarver.jpg"
+    }
+  ],
+  "slides": [
+    {
+      "image": "images/hero/Landscape.jpg",
+      "alt": "A black ink landscape painting by Woo Chong Yung, featuring a simple, serene scene of mountains, rocky outcroppings, and sparse vegetation. Two tall, leafless trees stand near a small hut nestled among bamboo, with rolling hills and distant peaks fading into the background. A red seal stamp is visible in the bottom left corner.",
+      "caption": "Woo Chong Yung 吳仲熊 (1898–1989), Landscape, 1970, hanging scroll, ink on paper, Cincinnati Art Museum, C.Y. Woo Collection, donated by T.H. Wu, 2015.324"
+    },
+    {
+      "image": "images/news/PublicLaunch.jpg",
+      "alt": "Dr. Hongmei Li presents at a podium in a classroom-style conference room. A slide titled \"Significance of the Project\" is projected behind her, listing key points about the project. Attendees sit at long tables, engaged and taking notes, with laptops and drinks in front of them. The room has large windows in the background allowing natural light to enter.",
+      "caption": "Dr. Hongmei Li discusses the \"Significance of the Project\" during the Public Launch event introducing the mission of addressing the invisibility of Asian American history in U.S. curricula."
+    },
+    {
+      "image": "images/hero/JapaneseAmerican.jpg",
+      "alt": "A historical typed letter dated February 21, 1944, from the National Japanese American Student Relocation Council addressed to President A. H. Upham of Miami University. The letter discusses the deferment of Nisei students in scientific fields, emphasizing equal treatment and opportunities. Signed by C.V. Hibbard, National Director.",
+      "caption": "A 1944 letter from the National Japanese American Student Relocation Council to Miami University President A. H. Upham advocates for the inclusion of Japanese American students in scientific and technical programs. Courtesy of the Walter Havighurst Special Collections & University Archives. Miami University, Oxford, Ohio."
+    }
+  ],
+  "events": [
+    {
+      "slug": "sharing-stories-2025-exhibit",
+      "title": "Sharing Our Stories & Histories as Asian Americans in Ohio",
+      "dateText": "October 8-27, 2025",
+      "start": "2025-10-08",
+      "kind": "Featured Event",
+      "location": "Mason Public Library, 200 Reading Road, Mason, OH 45040",
+      "link": null,
+      "summary": "DAAHO is hosting a pop-up exhibit at Mason Public Library, displaying original historical materials about Asian American students at Miami University in the early 20th century.",
+      "description": "Co-led by Miami University's Department of Media, Journalism, and Film (Dr. Hongmei Li) and the Walter Havighurst Special Collections and University Archives (Alia Levar Wegner), the Documenting Asian American Histories in Ohio project (DAAHO) is an interdisciplinary initiative aimed at documenting, preserving, and digitizing the history, culture, and contributions of Asian and Asian American history in Ohio. It is funded by the National Historical Publications & Records Commission.\n\nCurated by former Miami student Carver Spangle, DAAHO is hosting a pop-up exhibit at Mason Public Library, displaying original historical materials about Asian American students at Miami University in the early 20th century. The exhibit lasts from October 8-27, 2025 and features the Japanese students: Pete Hironaka (1927-2015), Koichi Hasegawa, and Chonosuke Ito, as well as Chinese students Chin-Wu Huang, H. H. Chuang, and C. H. Chuang, in addition to Thai prince Prasobsukh Sukhsvasti (1911-1985) and Thai student Swasdi Nitibhon.\n\nA community event will be held from 10am to 12pm on October 25, 2025 at Mason Public Library to share the Asian stories and histories. The event is open to all. Everyone is welcome.",
+      "communityEvent": {
+        "date": "October 25, 2025",
+        "time": "10:00 AM - 12:00 PM",
+        "description": "Community event to share Asian stories and histories. Open to all. Everyone is welcome."
+      },
+      "sponsors": [
+        "DAAHO",
+        "Miami Libraries",
+        "NHPRC",
+        "Miami Dept. of Media, Journalism & Film",
+        "AWARE Ohio"
+      ],
+      "images": [
+        {
+          "file": "images/news/ExhibitionFlyer2025.jpg",
+          "alt": "Exhibit poster for Sharing Our Stories & Histories as Asian Americans in Ohio, Mason Public Library, October 8–27, 2025"
+        },
+        {
+          "file": "images/news/EventFlier2025.png",
+          "alt": "Flyer for the community event at Mason Public Library, October 25, 2025, 10 AM – 12 PM"
+        }
+      ],
+      "end": "2025-10-27",
+      "timeText": "Community event: October 25, 2025, 10 AM – 12 PM"
+    },
+    {
+      "slug": "roundtable-march-2025",
+      "title": "A Roundtable Discussion – Making the Invisible Visible: Documenting Asian Histories in Ohio through a Collaborative Digital Edition",
+      "dateText": "March 13-16, 2025",
+      "start": "2025-03-13",
+      "kind": "Conference",
+      "location": "Columbus, Ohio, Greater Columbus Convention Center",
+      "link": "https://www.asianstudies.org/conference/general-information/past-annual-conferences/",
+      "summary": "The Association of Asian Studies Conference offers a unique opportunity to engage with Asian Studies and explore the latest research and ideas in the field.",
+      "description": "Funded by National Historical Publications & Records Commission, the DAAHO project aims to document and digitize Asian American histories in Ohio since the 19th century. The interdisciplinary research team consists of scholars, librarians and archivists at Miami University, OSU, University of California Irvine and other places, and aims to systematically collect dispersed materials and turn them into a coherent database that allows students, educators, scholars, and community members to access the rich and diverse histories and contributions of Asians in the nation's heartland. Come to learn more about this significant project and see how you can be part of it.\n\nThe Association of Asian Studies Conference offers a unique opportunity to engage with Asian Studies and explore the latest research and ideas in the field. DAAHO project members will present on the current status of the project and future plans in an engaging roundtable discussion. Moderated by Dr. Pranav Jani (The Ohio State University), our roundtable will discuss the project's recent launch, focusing on current engagement and research with community organizations. Dr. Li will discuss the aims and significance of the DAAHO as well as preliminary findings. Co-PI Dr. Yong Chen will discuss research on Asian food culture as an important part of both Asian American community formation and identity expression. Co-PI Alia Levar Wegner and Dr. Ann-Marie Davis will share information about relevant archival collections as well as technical aspects in developing a collaborative digital edition. Community leader and public historian James Tecco will discuss his use of oral history and storytelling with Asian & Pacific Islander communities in the Cincinnati region. Making visible what was previously invisible in American history, our project will offer new insights on Asian border crossings in Ohio while inspiring new models for preserving and promoting marginalized histories of all minority populations.",
+      "communityEvent": null,
+      "sponsors": [
+        "DAAHO",
+        "Association of Asian Studies",
+        "NHPRC"
+      ],
+      "images": [],
+      "end": "2025-03-16",
+      "timeText": null
+    },
+    {
+      "slug": "daaho-project-launch-2024",
+      "title": "DAAHO Project Launch",
+      "dateText": "July 20, 2024",
+      "start": "2024-07-20",
+      "kind": "Launch",
+      "location": "Mason City Hall in Mason, Ohio",
+      "link": null,
+      "summary": "Official launch event for the Asian American History Project: Making the Invisible Visible.",
+      "description": "On July 20, the Asian American History Project: Making the Invisible Visible was officially launched at Mason City Hall in Mason, Ohio. Supported by the National Historical Publications & Records Commission (NHPRC), this initiative seeks to preserve and amplify the underrepresented stories of Asian American communities in Ohio. The event brought together historians, community leaders, educators, and advocates to celebrate this significant milestone. The launch featured presentations that outlined the project’s goals, including documenting oral histories, digitizing historical records, and engaging the public in conversations about the rich and diverse contributions of Asian Americans. Attendees had the opportunity to connect, share personal stories, and discuss ways to collaborate on this important work. The event underscored the collective effort required to ensure these histories are accessible for future generations.",
+      "communityEvent": null,
+      "sponsors": [],
+      "images": [
+        {
+          "file": "images/news/PublicLaunch.jpg",
+          "alt": "DAAHO Project Launch group photo"
+        }
+      ],
+      "end": null,
+      "timeText": null
+    }
+  ],
+  "home": {
+    "mission": "Our mission is to collect, preserve, study, and promote the voices and contributions of Asian American citizens and diasporic Asians in the nation’s heartland in collaboration with local communities, educators, curators, and scholars nationwide. Making visible what was previously invisible in American history, DAAHO also aims to innovate, inspire, and create sustainable models for integrating the experiences of all minority populations into the mainstream historical narrative.",
+    "goalsIntro": "Our project aims to achieve the following six goals by working with scholars, librarians, archivists, local communities, and partners.",
+    "goals": [
+      {
+        "title": "Integration",
+        "text": "Create a new digital edition and repository that integrates Asian and Asian American history into mainstream narratives."
+      },
+      {
+        "title": "Preservation",
+        "text": "Research, document, and preserve the experiences of Asian Americans in Ohio."
+      },
+      {
+        "title": "Empowerment",
+        "text": "Empower individuals and organizations within Asian communities to include their voices in the historical narrative."
+      },
+      {
+        "title": "Amplification",
+        "text": "Amplify the powerful historical work of local activists -- community members, educators, journalists, public historians, librarians, archivists, and artists -- already taking place across Ohio."
+      },
+      {
+        "title": "Transformation",
+        "text": "Transform and inspire a broader movement that builds a long-term awareness and sustainable models for preserving and promoting marginalized histories."
+      },
+      {
+        "title": "Collaboration",
+        "text": "Establish a model of effective collaboration between higher education institutions and diverse community organizations."
+      }
+    ],
+    "eventsIntro": "Our event section is your central resource for past and upcoming events dedicated to exploring and preserving the stories of Asian Americans in Ohio. This page serves as a platform to engage communities, scholars, and enthusiasts in meaningful discussions, conferences, and workshops centered on this vital project. Here, you’ll find information about events designed to share knowledge, foster connections, and inspire action, all while deepening awareness of Asian American contributions and histories. Stay informed and involved as we work together to illuminate the rich and diverse heritage of Asian American communities in Ohio.",
+    "submitLink": {
+      "label": "Submit a collection",
+      "url": "https://forms.gle/XEajS5MZzZ6AHuyv5"
+    },
+    "sponsors": [
+      {
+        "name": "Miami University Libraries",
+        "logo": "images/logos/mul.png",
+        "url": "https://www.lib.miamioh.edu/"
+      },
+      {
+        "name": "National Historical Publications and Records Commission (NHPRC)",
+        "logo": "images/logos/nhprc.png",
+        "url": "https://www.archives.gov/nhprc"
+      }
+    ]
+  },
+  "about": {
+    "logo": {
+      "heading": "About our logo",
+      "image": "images/logos/logo_n.png",
+      "alt": "DAAHO logo: an inward-facing circle of people holding hands around a globe",
+      "text": "This logo is designed by Lauren Menker (Class of 2025), a major in Communication Design & Emerging Technology in Business and Design at Miami University. An inward-facing circle of people holding hands embodies the mission of embracing diverse histories. This formation conveys unity, mutual support, and a shared commitment to making these histories visible.\n\nThe circles represent distinct cultural narratives among Ohio's Asian American communities, showing their intersections at the same time. The globe expands this idea, placing these local histories in a global context.\n\nThis design reflects the project's mission to document, preserve, and integrate these histories into mainstream narratives, while fostering collaboration across communities and institutions."
+    }
+  }
+}

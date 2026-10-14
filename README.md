@@ -98,6 +98,30 @@ approved note sends it back for review. Approved notes appear on the public item
 highlights with the notes listed below the transcript. Rules are in `src/hooks/annotations.ts`,
 tested in `tests/int/annotations.int.spec.ts`.
 
+## Site content: home page, events and team
+
+This site replaces the earlier landing site at daaho.lib.miamioh.edu, and its content is now edited
+here rather than in code:
+
+- **Site → Home page**: introduction, slideshow, mission and goals, events introduction, sponsors,
+  and the *Submit a collection* button in the header.
+- **Site → Project events**: exhibits, talks and conferences. Each is listed as upcoming until its
+  last day (Ohio time), then as a past event — nothing to move by hand. Drafts are not public; an
+  event's images become public when it is published. Not to be confused with **Historical events**,
+  which give context to items.
+- **Site → Team**: shown on the About page in four groups, ordered by the *order* number.
+- **Site → About page**: the project description and the story of the logo.
+
+Old landing-site addresses redirect: `/past/<event>` → `/events/<event>`, `/news` → `/events`.
+
+The landing site's content was loaded once from `data/landing.json` (extracted from the old
+repository's code) with its images read from a checkout of that repository:
+
+```bash
+LANDING_DIR=../daaho pnpm import:landing              # local
+LANDING_DIR=../daaho pnpm import:landing:production   # live; create-only, never overwrites edits
+```
+
 ## Publishing rules
 
 Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
@@ -118,7 +142,7 @@ Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
 
 ```bash
 pnpm test:unit   # name handling and dates — no database needed
-pnpm test:int    # publishing rules, people merges and annotation review, against DATABASE_URL (creates and removes its own test records)
+pnpm test:int    # publishing rules, people merges, annotation review and site content, against DATABASE_URL (creates and removes its own test records)
 ```
 
 ## Deploying
