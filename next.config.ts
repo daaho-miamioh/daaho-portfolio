@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // A self-contained server in .next/standalone, for the library server (see deploy/README.md).
+  output: 'standalone',
   images: {
     localPatterns: [
       {

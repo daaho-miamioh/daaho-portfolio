@@ -147,8 +147,10 @@ pnpm test:int    # publishing rules, people merges, annotation review and site c
 
 ## Deploying
 
-See **[DEPLOY.md](DEPLOY.md)**: Vercel Pro, Neon for Postgres, and a private AWS S3 bucket for the
-scans. Schema changes ship as migrations in `src/migrations`; create one with
+Production runs on the library server at daaho.lib.miamioh.edu — see [deploy/README.md](deploy/README.md).
+
+The earlier Vercel setup — kept as a staging copy until the switch — is in **[DEPLOY.md](DEPLOY.md)**,
+with Neon for Postgres and a private AWS S3 bucket for the scans. Schema changes ship as migrations in `src/migrations`; create one with
 `pnpm payload migrate:create <name>` after changing a collection.
 
 See [PLAN.md](PLAN.md) for the architecture and phases.
