@@ -131,6 +131,23 @@ export default async function ItemPage({ params }: Params) {
   )
   const reviewer = typeof item.review?.reviewedBy === 'object' ? (item.review?.reviewedBy as User | null) : null
   const reviewed = item.review?.status === 'reviewed'
+  const translation = item.translation?.text?.trim() ? item.translation : null
+  const verifier = typeof translation?.verifiedBy === 'object' ? (translation?.verifiedBy as User | null) : null
+  const translationStatus = !translation
+    ? null
+    : translation.status === 'human'
+      ? { short: 'translated by project staff', long: `Translated by ${translation.translator || 'project staff'}.`, checked: true }
+      : translation.status === 'verified'
+        ? {
+            short: 'AI translation, checked by staff',
+            long: `Translated with AI${translation.model ? ` (${translation.model})` : ''} and checked against the original${verifier?.name ? ` by ${verifier.name}` : ' by project staff'}${translation.verifiedAt ? ` on ${new Date(translation.verifiedAt).toLocaleDateString('en-US', { dateStyle: 'long' })}` : ''}.`,
+            checked: true,
+          }
+        : {
+            short: 'AI-generated, not yet checked',
+            long: `Translated with AI${translation.model ? ` (${translation.model})` : ''} and not yet checked by project staff. It may contain errors; the original is authoritative.`,
+            checked: false,
+          }
 
   return (
     <article className="item">
@@ -218,6 +235,14 @@ export default async function ItemPage({ params }: Params) {
                 <dd>{item.language}</dd>
               </>
             )}
+            {translationStatus && (
+              <>
+                <dt>Translation</dt>
+                <dd>
+                  <a href="#translation">English</a> <span className="muted">({translationStatus.short})</span>
+                </dd>
+              </>
+            )}
             {item.archival?.collection && (
               <>
                 <dt>Collection</dt>
@@ -252,8 +277,8 @@ export default async function ItemPage({ params }: Params) {
       </div>
 
       {item.transcript && (
-        <section className="transcript" aria-labelledby="transcript-heading">
-          <h2 id="transcript-heading">Transcript</h2>
+        <section className={`transcript${translation ? ' has-translation' : ''}`} aria-labelledby="transcript-heading">
+          <h2 id="transcript-heading">{translation ? 'Transcript and translation' : 'Transcript'}</h2>
           <p className="transcript-note">
             Transcribed following the DAAHO Transcription Policy: original spelling is kept with corrections in
             [brackets]; [illegible] marks words that could not be read. The document&rsquo;s original wording is kept,
@@ -266,7 +291,30 @@ export default async function ItemPage({ params }: Params) {
               not shown here. <Link href="/review/annotations">Review annotations</Link>
             </p>
           )}
-          <AnnotatedTranscript text={item.transcript} annotations={annotations.approved} lang={langAttr(item.language)} />
+          {translationStatus && (
+            <p className={`translation-status${translationStatus.checked ? ' is-checked' : ''}`}>
+              <strong>About the English translation:</strong> {translationStatus.long}
+            </p>
+          )}
+          <div className="transcript-columns">
+            <div className="transcript-col">
+              {translation && <h3 className="col-label">Original{item.language ? ` · ${item.language}` : ''}</h3>}
+              <AnnotatedTranscript text={item.transcript} annotations={annotations.approved} lang={langAttr(item.language)} />
+            </div>
+            {translation && translationStatus && (
+              <div className="transcript-col" id="translation">
+                <h3 className="col-label">English translation</h3>
+                <div className="transcript-body translation-body" lang="en">
+                  {translation.text}
+                </div>
+                {translation.note && (
+                  <p className="translation-note">
+                    <strong>Note on the translation:</strong> {translation.note}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </section>
       )}
 

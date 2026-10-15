@@ -30,7 +30,7 @@ export function buildItemsWhere(f: ItemFilters, ids: ResolvedIds): Where | undef
   const and: Where[] = []
   if (f.q) {
     // `like` is case-insensitive and requires every word, wherever it appears in the field.
-    and.push({ or: [{ title: { like: f.q } }, { description: { like: f.q } }, { transcript: { like: f.q } }] })
+    and.push({ or: [{ title: { like: f.q } }, { description: { like: f.q } }, { transcript: { like: f.q } }, { 'translation.text': { like: f.q } }] })
   }
   if (f.decade === 'undated') and.push({ dateSort: { exists: false } })
   else if (f.decade) {

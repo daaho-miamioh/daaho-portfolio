@@ -49,6 +49,33 @@ export const stampReview: CollectionBeforeChangeHook = ({ data, originalDoc, req
   return data
 }
 
+/**
+ * Who verified a translation, and when. Verification belongs to the text that was checked: when a
+ * person edits a verified translation they become its verifier; when a script or import replaces
+ * it, it goes back to unverified.
+ */
+export const stampTranslation: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
+  if (!data.translation && !originalDoc?.translation) return data
+  const before = originalDoc?.translation ?? {}
+  const t = { ...before, ...(data.translation ?? {}) }
+  const textChanged = (t.text ?? '') !== (before.text ?? '')
+  if (textChanged && !req.user && t.status === 'verified') t.status = 'ai'
+  if (t.status === 'verified') {
+    if (before.status !== 'verified' || textChanged) {
+      t.verifiedBy = req.user?.id ?? null
+      t.verifiedAt = new Date().toISOString()
+    } else {
+      t.verifiedBy = typeof before.verifiedBy === 'object' && before.verifiedBy ? before.verifiedBy.id : (before.verifiedBy ?? null)
+      t.verifiedAt = before.verifiedAt ?? null
+    }
+  } else {
+    t.verifiedBy = null
+    t.verifiedAt = null
+  }
+  data.translation = t
+  return data
+}
+
 export const deriveDateSort: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
   data.dateSort = sortableDate(data.date ?? originalDoc?.date)
   return data

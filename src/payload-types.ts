@@ -175,6 +175,30 @@ export interface Item {
    * Follows the DAAHO Transcription Policy: [page N] markers, original spelling with [corrections], [illegible], [struck: ...].
    */
   transcript?: string | null;
+  translation?: {
+    /**
+     * Keep the [page N] markers so readers can match pages with the original.
+     */
+    text?: string | null;
+    /**
+     * Choose Verified only after checking it against the original.
+     */
+    status?: ('ai' | 'verified' | 'human') | null;
+    /**
+     * e.g. Claude Opus 5.5
+     */
+    model?: string | null;
+    /**
+     * Name shown on the public page.
+     */
+    translator?: string | null;
+    /**
+     * Shown with the translation, e.g. how names or terms were rendered. Optional.
+     */
+    note?: string | null;
+    verifiedBy?: (number | null) | User;
+    verifiedAt?: string | null;
+  };
   people?:
     | {
         person: number | Person;
@@ -309,6 +333,34 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name: string;
+  role: 'admin' | 'editor' | 'contributor';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "people".
  */
 export interface Person {
@@ -381,34 +433,6 @@ export interface Person {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  name: string;
-  role: 'admin' | 'editor' | 'contributor';
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -810,6 +834,17 @@ export interface ItemsSelect<T extends boolean = true> {
         id?: T;
       };
   transcript?: T;
+  translation?:
+    | T
+    | {
+        text?: T;
+        status?: T;
+        model?: T;
+        translator?: T;
+        note?: T;
+        verifiedBy?: T;
+        verifiedAt?: T;
+      };
   people?:
     | T
     | {

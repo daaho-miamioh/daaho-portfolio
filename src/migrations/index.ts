@@ -4,6 +4,7 @@ import * as migration_20261006_201121_allow_unreviewed_publishing from './202610
 import * as migration_20261007_002925_harmful_language_statement from './20261007_002925_harmful_language_statement';
 import * as migration_20261013_212136_annotations from './20261013_212136_annotations';
 import * as migration_20261014_163232_landing_content from './20261014_163232_landing_content';
+import * as migration_20261015_033615_item_translation from './20261015_033615_item_translation';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261014_163232_landing_content.up,
     down: migration_20261014_163232_landing_content.down,
-    name: '20261014_163232_landing_content'
+    name: '20261014_163232_landing_content',
+  },
+  {
+    up: migration_20261015_033615_item_translation.up,
+    down: migration_20261015_033615_item_translation.down,
+    name: '20261015_033615_item_translation'
   },
 ];

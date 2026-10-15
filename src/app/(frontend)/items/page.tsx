@@ -68,7 +68,7 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
       <h1>Items</h1>
       <form className="filters" method="get" action="/items" role="search" aria-label="Search and filter items">
         <div className="filter-search">
-          <label htmlFor="q">Search titles, descriptions and transcripts</label>
+          <label htmlFor="q">Search titles, descriptions, transcripts and translations</label>
           <input id="q" name="q" type="search" defaultValue={filters.q ?? ''} />
         </div>
         <Select id="decade" label="Decade" value={filters.decade} options={decades.map((d) => ({ value: d.value, label: `${d.label} (${d.count})` }))} />

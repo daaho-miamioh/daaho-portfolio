@@ -318,6 +318,17 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 }
 @media (max-width: 40rem) { .transcript-body { padding: 1.25rem; } }
 
+/* Original and English translation: side by side where there is room, stacked otherwise. */
+.transcript.has-translation { max-width: none; }
+.transcript-columns { display: grid; gap: 2.5rem; }
+@media (min-width: 64rem) { .has-translation .transcript-columns { grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; } }
+.transcript-col { min-width: 0; }
+.col-label { font-family: var(--mono); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin: 0 0 0.85rem; }
+.translation-status { font-size: 0.88rem; line-height: 1.5; margin: 0 0 1.5rem; max-width: 52rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); }
+.translation-status.is-checked { border-left-color: var(--ink); }
+.translation-body { font-family: var(--sans); font-size: 1rem; line-height: 1.8; }
+.translation-note { font-size: 0.9rem; color: var(--ink-soft); margin: 1rem 0 0; }
+
 /* Entity pages and indexes */
 .entity-header { margin-bottom: 2rem; max-width: 56rem; }
 .aliases { color: var(--ink-soft); font-size: 0.95rem; }

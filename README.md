@@ -122,6 +122,21 @@ LANDING_DIR=../daaho pnpm import:landing              # local
 LANDING_DIR=../daaho pnpm import:landing:production   # live; create-only, never overwrites edits
 ```
 
+## Translations
+
+Items in other languages can carry an English translation (**Translation** tab on the item). The
+transcript stays the authoritative text; the public page shows the translation beside it, with
+its status:
+
+- **AI-generated — not yet verified** (the default): labelled as such, with the model if given.
+- **Verified by project staff**: the person who chose Verified, and the date, are recorded and shown.
+  Whoever later edits a verified translation becomes its verifier; if a script replaces the text,
+  it goes back to unverified.
+- **Translated by project staff**: credited to the name in *Translated by*.
+
+Keep the `[page N]` markers so readers can match pages. Search covers translations, so an English
+search also finds documents written in other languages.
+
 ## Publishing rules
 
 Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
@@ -142,7 +157,7 @@ Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
 
 ```bash
 pnpm test:unit   # name handling and dates — no database needed
-pnpm test:int    # publishing rules, people merges, annotation review and site content, against DATABASE_URL (creates and removes its own test records)
+pnpm test:int    # publishing rules, people merges, annotation review, translations and site content, against DATABASE_URL (creates and removes its own test records)
 ```
 
 ## Deploying

@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { editors, loggedIn, publishedOrLoggedIn } from '@/access/roles'
 import { slugField } from '@/fields/slug'
-import { deleteAnnotations, deriveDateSort, publishGate, stampReview, syncVisibility } from '@/hooks/items'
+import { deleteAnnotations, deriveDateSort, publishGate, stampReview, stampTranslation, syncVisibility } from '@/hooks/items'
 import { REGIONS } from '@/lib/regions'
 
 export const PERSON_ROLES = [
@@ -18,14 +18,14 @@ export const Items: CollectionConfig = {
     useAsTitle: 'title',
     group: 'Content',
     defaultColumns: ['itemId', 'title', 'date', 'review.status', '_status'],
-    listSearchableFields: ['itemId', 'title', 'transcript'],
+    listSearchableFields: ['itemId', 'title', 'transcript', 'translation.text'],
     description: 'Archival items. Imported from the metadata pipeline as drafts; published after review.',
   },
   defaultSort: 'dateSort',
   versions: { drafts: true, maxPerDoc: 25 },
   access: { read: publishedOrLoggedIn, create: loggedIn, update: loggedIn, delete: editors },
   hooks: {
-    beforeChange: [publishGate, stampReview, deriveDateSort],
+    beforeChange: [publishGate, stampReview, stampTranslation, deriveDateSort],
     afterChange: [syncVisibility],
     beforeDelete: [deleteAnnotations],
   },
@@ -71,6 +71,70 @@ export const Items: CollectionConfig = {
                 description:
                   'Follows the DAAHO Transcription Policy: [page N] markers, original spelling with [corrections], [illegible], [struck: ...].',
               },
+            },
+          ],
+        },
+        {
+          label: 'Translation',
+          description:
+            'An English translation of a non-English original. The transcript stays the authoritative text; the translation is shown beside it on the public page, labelled with its status.',
+          fields: [
+            {
+              name: 'translation',
+              type: 'group',
+              label: false,
+              fields: [
+                {
+                  name: 'text',
+                  type: 'textarea',
+                  label: 'English translation',
+                  admin: {
+                    rows: 30,
+                    description: 'Keep the [page N] markers so readers can match pages with the original.',
+                  },
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'status',
+                      type: 'select',
+                      defaultValue: 'ai',
+                      options: [
+                        { label: 'AI-generated — not yet verified', value: 'ai' },
+                        { label: 'Verified by project staff', value: 'verified' },
+                        { label: 'Translated by project staff', value: 'human' },
+                      ],
+                      admin: { width: '50%', description: 'Choose Verified only after checking it against the original.' },
+                    },
+                    {
+                      name: 'model',
+                      type: 'text',
+                      label: 'AI model',
+                      admin: { width: '50%', condition: (_, s) => s?.status !== 'human', description: 'e.g. Claude Opus 5.5' },
+                    },
+                    {
+                      name: 'translator',
+                      type: 'text',
+                      label: 'Translated by',
+                      admin: { width: '50%', condition: (_, s) => s?.status === 'human', description: 'Name shown on the public page.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'note',
+                  type: 'textarea',
+                  label: 'Note for readers',
+                  admin: { description: 'Shown with the translation, e.g. how names or terms were rendered. Optional.' },
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'verifiedBy', type: 'relationship', relationTo: 'users', admin: { readOnly: true, width: '50%' } },
+                    { name: 'verifiedAt', type: 'date', admin: { readOnly: true, width: '50%' } },
+                  ],
+                },
+              ],
             },
           ],
         },

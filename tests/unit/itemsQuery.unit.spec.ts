@@ -13,9 +13,18 @@ describe('readFilters', () => {
 })
 
 describe('buildItemsWhere', () => {
-  it('searches title, description and transcript', () => {
+  it('searches title, description, transcript and English translation', () => {
     expect(buildItemsWhere({ q: 'Hasegawa' }, {})).toEqual({
-      and: [{ or: [{ title: { like: 'Hasegawa' } }, { description: { like: 'Hasegawa' } }, { transcript: { like: 'Hasegawa' } }] }],
+      and: [
+        {
+          or: [
+            { title: { like: 'Hasegawa' } },
+            { description: { like: 'Hasegawa' } },
+            { transcript: { like: 'Hasegawa' } },
+            { 'translation.text': { like: 'Hasegawa' } },
+          ],
+        },
+      ],
     })
   })
 
