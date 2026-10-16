@@ -42,7 +42,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <header className="site-header">
           <div className="wrap header-inner">
             <Link href="/" className="site-title">
-              <span className="brand-mark" aria-hidden="true" />
+              {/* The name is in the text beside it, so the logo itself is not announced. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/daaho-mark.svg" alt="" width={32} height={32} className="brand-logo" />
               <span className="site-title-short">DAAHO</span>
               <span className="site-title-long">Documenting Asian American Histories in Ohio</span>
             </Link>
@@ -81,7 +83,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="wrap footer-grid">
             <div className="footer-brand">
               <p className="footer-title">
-                <span className="brand-mark" aria-hidden="true" /> DAAHO
+                <span className="footer-logo">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/brand/daaho-mark.svg" alt="" width={36} height={36} />
+                </span>
+                DAAHO
               </p>
               <p>
                 Documenting Asian American Histories in Ohio — letters, documents and photographs recording Asian

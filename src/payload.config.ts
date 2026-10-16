@@ -60,7 +60,16 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
-    meta: { titleSuffix: ' — DAAHO' },
+    meta: {
+      titleSuffix: ' — DAAHO',
+      icons: [{ rel: 'icon', type: 'image/svg+xml', url: '/brand/daaho-mark.svg' }],
+    },
+    components: {
+      graphics: {
+        Logo: '/components/admin/Brand#Logo',
+        Icon: '/components/admin/Brand#Icon',
+      },
+    },
   },
   collections: [Items, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users],
   globals: [Home, About, Settings],

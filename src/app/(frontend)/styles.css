@@ -106,8 +106,7 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; padding-top: 0.85rem; padding-bottom: 0.85rem; flex-wrap: wrap; }
 .site-title { color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 0.6rem; }
 .site-title:hover { color: var(--ink); }
-.brand-mark { width: 1.35rem; height: 1.35rem; border-radius: 6px; background: var(--ink); position: relative; flex: none; display: inline-block; }
-.brand-mark::after { content: ''; position: absolute; right: 4px; bottom: 4px; width: 6px; height: 6px; border-radius: 999px; background: var(--accent); }
+.brand-logo { width: 2rem; height: 2rem; flex: none; }
 .site-title-short { font-weight: 700; font-size: 1.05rem; letter-spacing: 0.02em; }
 .site-title-long { font-size: 0.85rem; color: var(--ink-soft); padding-left: 0.6rem; border-left: 1px solid var(--rule-strong); }
 .site-header nav ul { display: flex; flex-wrap: wrap; align-items: center; gap: 0.15rem 0.25rem; }
@@ -130,7 +129,9 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .footer-grid { display: grid; gap: 2.5rem; grid-template-columns: 1fr; }
 @media (min-width: 48rem) { .footer-grid { grid-template-columns: 2fr 1fr 1fr; } }
 .footer-title { display: flex; align-items: center; gap: 0.6rem; color: var(--on-dark); font-weight: 700; font-size: 1.05rem; letter-spacing: 0.02em; }
-.site-footer .brand-mark { background: var(--on-dark); }
+/* The logo's black outlines need a light ground; it sits on a white tile rather than being recoloured. */
+.footer-logo { display: inline-grid; place-items: center; width: 2.75rem; height: 2.75rem; background: #fff; border-radius: 10px; flex: none; }
+.footer-logo img { width: 2.1rem; height: 2.1rem; }
 .footer-brand p:last-child { max-width: 28rem; }
 .footer-heading { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; color: var(--on-dark-soft); margin-bottom: 0.85rem; }
 .footer-links li { margin: 0.45rem 0; }
