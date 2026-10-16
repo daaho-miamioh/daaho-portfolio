@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import Link from 'next/link'
 import React from 'react'
@@ -133,6 +134,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </p>
           </div>
         </footer>
+        {/* Visitor counts while the site is on Vercel: cookieless, and served from this site. Off on the
+            library server, which has no Vercel endpoint, and for signed-in staff, so their own browsing
+            does not count as visits. */}
+        {process.env.VERCEL && !user && <Analytics />}
       </body>
     </html>
   )
