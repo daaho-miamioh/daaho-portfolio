@@ -63,8 +63,8 @@ What it will not guess at, and reports instead:
 ## Historical context
 
 Items show events in East Asian and Asian American history from their year, for the regions they
-concern (**Context** tab on each item; `/timeline` for all of them). Events live in the **Historical
-events** collection.
+concern (**Context** tab on each item; `/timeline` for all of them). They live in the **Historical
+contexts** collection.
 
 ```bash
 pnpm import:events      # load data/context-events.json as drafts (create-only)
@@ -107,7 +107,7 @@ here rather than in code:
   and the *Submit a collection* button in the header.
 - **Site → Project events**: exhibits, talks and conferences. Each is listed as upcoming until its
   last day (Ohio time), then as a past event — nothing to move by hand. Drafts are not public; an
-  event's images become public when it is published. Not to be confused with **Historical events**,
+  event's images become public when it is published. Not to be confused with **Historical contexts**,
   which give context to items.
 - **Site → Team**: shown on the About page in four groups, ordered by the *order* number.
 - **Site → About page**: the project description and the story of the logo.

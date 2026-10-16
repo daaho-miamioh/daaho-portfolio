@@ -17,7 +17,7 @@ export const EVENT_KINDS = [
 
 /**
  * The project's own events — exhibits, talks, conferences — for the Events page. Not to be confused
- * with Historical events, which give context to items. Upcoming and past are worked out from the
+ * with Historical contexts, which give context to items. Upcoming and past are worked out from the
  * dates, so nothing has to be moved by hand when an event is over.
  */
 export const ProjectEvents: CollectionConfig = {

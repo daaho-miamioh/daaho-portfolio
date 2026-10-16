@@ -16,7 +16,7 @@ const validDate = (required: boolean) => (value: unknown) =>
  */
 export const Events: CollectionConfig = {
   slug: 'events',
-  labels: { singular: 'Historical event', plural: 'Historical events' },
+  labels: { singular: 'Historical context', plural: 'Historical contexts' },
   admin: {
     useAsTitle: 'title',
     group: 'Content',

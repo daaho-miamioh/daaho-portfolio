@@ -168,7 +168,7 @@ export const Items: CollectionConfig = {
         },
         {
           label: 'Context',
-          description: 'Historical events shown beside this item. They are context for the period, not a claim that the item mentions them.',
+          description: 'Historical contexts shown beside this item. They are context for the period, not a claim that the item mentions them.',
           fields: [
             {
               name: 'regions',
@@ -182,14 +182,14 @@ export const Items: CollectionConfig = {
               type: 'relationship',
               relationTo: 'events',
               hasMany: true,
-              label: 'Pinned events',
-              admin: { description: 'Always shown, first. Only published events appear publicly.' },
+              label: 'Pinned historical contexts',
+              admin: { description: 'Always shown, first. Only published ones appear publicly.' },
             },
             {
               name: 'hideAutoContext',
               type: 'checkbox',
-              label: 'Show only pinned events',
-              admin: { description: 'Turn off events matched automatically by year and region.' },
+              label: 'Show only pinned historical contexts',
+              admin: { description: 'Turn off historical contexts matched automatically by year and region.' },
             },
           ],
         },

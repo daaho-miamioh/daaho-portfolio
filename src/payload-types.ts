@@ -214,11 +214,11 @@ export interface Item {
    */
   regions?: ('China' | 'Japan' | 'Korea' | 'Philippines' | 'Thailand' | 'Burma' | 'Singapore')[] | null;
   /**
-   * Always shown, first. Only published events appear publicly.
+   * Always shown, first. Only published ones appear publicly.
    */
   contextEvents?: (number | Event)[] | null;
   /**
-   * Turn off events matched automatically by year and region.
+   * Turn off historical contexts matched automatically by year and region.
    */
   hideAutoContext?: boolean | null;
   archival?: {
