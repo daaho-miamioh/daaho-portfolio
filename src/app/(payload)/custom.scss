@@ -1,0 +1,16 @@
+// Admin overrides.
+
+// Payload leaves an 18px slot for the logo mark in the top bar; at that size the five petals are a
+// blur. Give the DAAHO mark a little more room (the Icon component fills whatever slot it gets).
+.step-nav__home {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+
+@media (max-width: 768px) {
+  .step-nav__home {
+    width: 24px;
+    height: 24px;
+  }
+}

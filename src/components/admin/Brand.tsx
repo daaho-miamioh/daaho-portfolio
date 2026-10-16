@@ -14,11 +14,11 @@ export function Logo() {
   )
 }
 
-/** The logo mark in the admin's top bar. */
+/** The logo mark in the admin's top bar. Fills the slot Payload gives it (sized in custom.scss). */
 export function Icon() {
   return (
-    <span style={{ ...tile, width: 30, height: 30, borderRadius: 8 }}>
-      <img src="/brand/daaho-mark.svg" alt="DAAHO" width={24} height={24} style={{ width: 24, height: 24 }} />
+    <span style={{ ...tile, width: '100%', height: '100%', borderRadius: 6, overflow: 'hidden' }}>
+      <img src="/brand/daaho-mark.svg" alt="DAAHO" style={{ width: '82%', height: '82%', objectFit: 'contain' }} />
     </span>
   )
 }
