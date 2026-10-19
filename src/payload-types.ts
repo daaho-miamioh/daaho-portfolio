@@ -332,6 +332,8 @@ export interface Media {
   };
 }
 /**
+ * Use Invite someone to add people: they get an email with a link to choose their own password.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -339,6 +341,8 @@ export interface User {
   id: number;
   name: string;
   role: 'admin' | 'editor' | 'contributor';
+  invitedAt?: string | null;
+  invitedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1141,6 +1145,8 @@ export interface TeamSelect<T extends boolean = true> {
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
   role?: T;
+  invitedAt?: T;
+  invitedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

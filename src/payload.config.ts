@@ -20,6 +20,7 @@ import { Users } from './collections/Users'
 import { About } from './globals/About'
 import { Home } from './globals/Home'
 import { Settings } from './globals/Settings'
+import { emailAdapter } from './lib/email'
 
 /**
  * Where uploaded files live. Locally: the ./media folder. In production: a PRIVATE S3-compatible bucket
@@ -74,6 +75,8 @@ export default buildConfig({
   collections: [Items, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users],
   globals: [Home, About, Settings],
   editor: lexicalEditor(),
+  // Invitations and password resets. Resend on Vercel, the library's mail server later: see src/lib/email.ts.
+  email: emailAdapter(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

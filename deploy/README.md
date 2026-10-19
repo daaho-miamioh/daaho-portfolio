@@ -52,6 +52,10 @@ grep '^DATABASE_URL=' .env.production.local | cut -d= -f2- | tr -d '"' | gh secr
 grep -E '^(DATABASE_URL|PAYLOAD_SECRET|S3_BUCKET|S3_REGION|S3_ACCESS_KEY_ID|S3_SECRET_ACCESS_KEY)=' .env.production.local | ssh qum@ulblwebp20.lib.miamioh.edu 'sudo install -o next_daaho -g next_daaho -m 600 /dev/stdin /opt/next_js/daaho/shared/.env'
 ```
 
+Email (optional, for invitations): add `SITE_URL=https://daaho.lib.miamioh.edu`, `EMAIL_FROM`, and
+either the `SMTP_*` settings for the library's mail relay or `RESEND_API_KEY` to the same file — see
+`.env.example`. Without them the site still runs, and admins copy invitation links by hand.
+
 **3. Install the deploy script on the server:**
 
 ```bash

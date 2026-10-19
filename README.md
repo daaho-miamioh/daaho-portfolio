@@ -137,6 +137,23 @@ its status:
 Keep the `[page N]` markers so readers can match pages. Search covers translations, so an English
 search also finds documents written in other languages.
 
+## Inviting people
+
+Admins invite people from **Admin → Users → Invite someone**: name, email and role (Contributor,
+Editor or Admin). The site creates the account and emails a link, valid for **three days** and
+usable once, to choose a password at `/admin/reset/…`. Nobody, including the admin, ever knows or
+sets their password. If a link expires or goes astray, open the person under Users and choose **Send
+a new invitation**; the old link stops working.
+
+The panel also shows the link, with a **Copy link** button, so it can be sent by hand if email is not
+set up or a message does not arrive. With email set up, **Forgot password?** on the sign-in screen
+works too (its link lasts one hour).
+
+Email is configured by environment variables (see `.env.example` and `src/lib/email.ts`): Resend
+while on Vercel (`RESEND_API_KEY`), the library server's mail relay later (`SMTP_*`). Either way it
+needs `EMAIL_FROM` on a verified domain, and `SITE_URL`, the only addresses links in emails may point
+to.
+
 ## Publishing rules
 
 Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
@@ -157,7 +174,7 @@ Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in
 
 ```bash
 pnpm test:unit   # name handling and dates — no database needed
-pnpm test:int    # publishing rules, people merges, annotation review, translations and site content, against DATABASE_URL (creates and removes its own test records)
+pnpm test:int    # publishing rules, people merges, annotation review, translations, invitations and site content, against DATABASE_URL (creates and removes its own test records)
 ```
 
 ## Deploying
