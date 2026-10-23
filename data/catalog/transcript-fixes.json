@@ -1,0 +1,31 @@
+{
+  "note": "Misreadings in AI transcripts, read against the full-resolution scans. Each edit replaces `from` with `to`, exactly `count` times (default 1), and follows the transcription policy: the document's own spelling and punctuation are kept, a misspelling is followed by its correction in brackets, struck words are kept as [struck: ...]. Typists' overstrikes (a letter typed over another to correct it) are read as the corrected letter. These are not full checks: the transcript stays unchecked until someone reads it through.",
+  "checkedOn": "2026-10-23",
+  "items": [
+    {
+      "itemId": "AAMU-0045",
+      "edits": [
+        { "page": 1, "from": "December 15, 1921.", "to": "December 16, 1924.", "why": "date misread" },
+        { "page": 2, "from": "December 16, 1921.", "to": "December 16, 1924.", "count": 2, "why": "year misread (pages 2 and 3)" },
+        { "page": 2, "from": "classification given Mr. Huo.", "to": "classification given Mr. Kao.", "why": "name misread" },
+        { "page": 2, "from": "I note they have indicated that Huo", "to": "I note that they have indicated that Kao", "why": "word dropped; name misread" },
+        { "page": 2, "from": "Tsing Hua College this year", "to": "Tsing Hua College [struck: this] year", "why": "word struck out on the letter" },
+        { "page": 3, "from": "Mr. W. W. Chao", "to": "Mr. W. Chao", "why": "initial added" },
+        { "page": 3, "from": "2512 Nineteenth", "to": "2312 Nineteenth", "why": "number misread" },
+        { "page": 3, "from": "classification of students of Tsing Hua College", "to": "classification of graduates of Tsing Hua College", "why": "word misread" },
+        { "page": 3, "from": "enter the junior classes", "to": "enter the junior class", "why": "word misread" },
+        { "page": 3, "from": "in general enrolling in engineering", "to": "in general entering engineering", "why": "words misread" }
+      ]
+    },
+    {
+      "itemId": "AAMU-0033",
+      "edits": [
+        { "page": 1, "from": "forgotten Miami. The very fact", "to": "forgotten Miami, The very fact", "why": "punctuation as written" },
+        { "page": 1, "from": "Alumni loyalty Fund", "to": "Alumni Loyalty Fund", "why": "capitalization as written" },
+        { "page": 1, "from": "only for two or three hours", "to": "only for tow [two] or three hours", "why": "misspelling kept, with its correction" },
+        { "page": 1, "from": "Kindly send the enclosed", "to": "Kidnly [Kindly] send the enclosed", "why": "misspelling kept, with its correction" },
+        { "page": 1, "from": "[underlined: C. C. Huang]", "to": "[underlined: C. H. Chuang]", "why": "signature misread; the catalog has the letter from C.H. Chuang" }
+      ]
+    }
+  ]
+}
