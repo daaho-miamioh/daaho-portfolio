@@ -1,9 +1,12 @@
 {
-  "note": "Documents in the collection for each story, by item ID. Chin-Wu Huang and Chonosuke Ito follow Carver Spangle's groupings (Chinese Material for Mason Library; AAMU Display Notes). AAMU-0041 is addressed to 'C. M. Huang' in the catalog, but the middle initial is faded on the scan, and the letter is to Chin-Wu Huang: it goes to 3 Elliott Hall, the address of AAMU-0045 to 'Ching Wu Huang' two weeks later, and both concern his junior rank (see also AAMU-0042 to 0044). Edit in the CMS afterwards.",
+  "note": "Documents in the collection for each story, by item ID. Chin-Wu Huang and Chonosuke Ito follow Carver Spangle's groupings (Chinese Material for Mason Library; AAMU Display Notes). For Chin-Wu Huang, AAMU-0042 to 0045 are Miami's inquiry into his class rank, December 1924: letters to Williams College, Colorado College, Stephen Duggan and Allan Robertson (0042, 0043), the Williams dean's reply (0044), and Hughes's letters to Huang, the dean and the Chinese Educational Mission (0045). AAMU-0041 is addressed to 'C. M. Huang' in the catalog, but the middle initial is faded on the scan, and the letter is to Chin-Wu Huang: it goes to 3 Elliott Hall, the address of AAMU-0045 to 'Ching Wu Huang' two weeks later, and both concern his junior rank. Edit in the CMS afterwards.",
   "documents": {
     "chin-wu-huang": [
       "AAMU-0038",
       "AAMU-0041",
+      "AAMU-0042",
+      "AAMU-0043",
+      "AAMU-0044",
       "AAMU-0045",
       "AAMU-0036",
       "AAMU-0060",
