@@ -2,7 +2,17 @@ import type { CollectionConfig } from 'payload'
 
 import { editors, loggedIn, publishedOrLoggedIn } from '@/access/roles'
 import { slugField } from '@/fields/slug'
-import { deleteAnnotations, deriveDateSort, publishGate, stampReview, stampTranslation, syncVisibility } from '@/hooks/items'
+import {
+  deleteAnnotations,
+  deriveDateSort,
+  derivePublic,
+  hideUnchecked,
+  publishGate,
+  stampChecks,
+  stampTranslation,
+  syncVisibility,
+} from '@/hooks/items'
+import { publicOnceChecked, publicOnceTranslated, staffOnly } from '@/lib/publicView'
 import { REGIONS } from '@/lib/regions'
 
 export const PERSON_ROLES = [
@@ -21,12 +31,14 @@ export const Items: CollectionConfig = {
     listSearchableFields: ['itemId', 'title', 'transcript', 'translation.text'],
     description: 'Archival items. Imported from the metadata pipeline as drafts; published after review.',
   },
-  defaultSort: 'dateSort',
+  // Not dateSort: the public may not sort by a date nobody has checked. Pages choose their own order.
+  defaultSort: 'itemId',
   versions: { drafts: true, maxPerDoc: 25 },
   access: { read: publishedOrLoggedIn, create: loggedIn, update: loggedIn, delete: editors },
   hooks: {
-    beforeChange: [publishGate, stampReview, stampTranslation, deriveDateSort],
+    beforeChange: [publishGate, stampChecks, stampTranslation, deriveDateSort, derivePublic],
     afterChange: [syncVisibility],
+    afterRead: [hideUnchecked],
     beforeDelete: [deleteAnnotations],
   },
   fields: [
@@ -36,13 +48,14 @@ export const Items: CollectionConfig = {
         {
           label: 'Description',
           fields: [
-            { name: 'title', type: 'text', required: true },
+            { name: 'title', type: 'text', required: true, access: { read: publicOnceChecked('titleChecked') } },
             {
               name: 'date',
               type: 'text',
+              access: { read: publicOnceChecked('titleChecked') },
               admin: { description: 'YYYY-MM-DD, YYYY-MM or YYYY. Leave empty if undated.' },
             },
-            { name: 'description', type: 'textarea' },
+            { name: 'description', type: 'textarea', access: { read: publicOnceChecked('descriptionChecked') } },
             { name: 'rights', type: 'textarea', admin: { description: 'Required before publishing.' } },
           ],
         },
@@ -66,6 +79,7 @@ export const Items: CollectionConfig = {
             {
               name: 'transcript',
               type: 'textarea',
+              access: { read: publicOnceChecked('transcriptChecked') },
               admin: {
                 rows: 30,
                 description:
@@ -82,6 +96,7 @@ export const Items: CollectionConfig = {
             {
               name: 'translation',
               type: 'group',
+              access: { read: publicOnceTranslated },
               label: false,
               fields: [
                 {
@@ -195,17 +210,33 @@ export const Items: CollectionConfig = {
         },
         {
           label: 'Archival',
-          description: 'Filled by archivists. The pipeline cannot know these.',
+          description: 'The library catalog record, written by people and always public. The pipeline cannot know these.',
           fields: [
             {
               name: 'archival',
               type: 'group',
               fields: [
+                { name: 'creator', type: 'text', admin: { description: 'As in the catalog record, e.g. Shriver, Phillip R.' } },
+                { name: 'digitalCollection', type: 'text', admin: { description: 'e.g. Asian American Experience at Miami University' } },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'type', type: 'text', admin: { description: 'e.g. Text, Still image' } },
+                    { name: 'theme', type: 'text' },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'extent', type: 'text', admin: { description: 'e.g. 2 pages' } },
+                    { name: 'dimensions', type: 'text', admin: { description: 'e.g. 28 x 21.5 cm' } },
+                  ],
+                },
                 { name: 'repository', type: 'text' },
                 { name: 'collection', type: 'text' },
                 { name: 'series', type: 'text' },
                 { type: 'row', fields: [{ name: 'box', type: 'text' }, { name: 'folder', type: 'text' }] },
-                { name: 'callNumber', type: 'text' },
+                { type: 'row', fields: [{ name: 'shelf', type: 'text' }, { name: 'callNumber', type: 'text' }] },
               ],
             },
           ],
@@ -222,32 +253,42 @@ export const Items: CollectionConfig = {
       admin: { position: 'sidebar', description: 'Pipeline identifier, e.g. AAMU-0001.' },
     },
     slugField('itemId'),
-    { name: 'dateSort', type: 'date', index: true, admin: { position: 'sidebar', readOnly: true } },
+    { name: 'dateSort', type: 'date', index: true, access: { read: publicOnceChecked('titleChecked') }, admin: { position: 'sidebar', readOnly: true } },
     { name: 'language', type: 'text', admin: { position: 'sidebar' } },
     {
       name: 'review',
       type: 'group',
-      admin: { position: 'sidebar' },
+      label: 'Checked by staff',
+      admin: {
+        position: 'sidebar',
+        description: 'Only checked parts are shown to the public. Everything stays visible to signed-in staff.',
+      },
       fields: [
+        { name: 'titleChecked', type: 'checkbox', label: 'Title and date checked' },
+        { name: 'descriptionChecked', type: 'checkbox', label: 'Description checked' },
+        { name: 'transcriptChecked', type: 'checkbox', label: 'Transcript checked' },
+        { name: 'linksChecked', type: 'checkbox', label: 'People, places and subjects checked' },
         {
           name: 'status',
           type: 'select',
           defaultValue: 'ai_generated',
+          admin: { readOnly: true, description: 'Follows the checks above.' },
           options: [
             { label: 'AI-generated, not reviewed', value: 'ai_generated' },
             { label: 'In review', value: 'in_review' },
             { label: 'Reviewed', value: 'reviewed' },
           ],
         },
-        { name: 'reviewedBy', type: 'relationship', relationTo: 'users', admin: { readOnly: true } },
-        { name: 'reviewedAt', type: 'date', admin: { readOnly: true } },
-        { name: 'notes', type: 'textarea' },
+        { name: 'reviewedBy', type: 'relationship', relationTo: 'users', label: 'Last checked by', admin: { readOnly: true } },
+        { name: 'reviewedAt', type: 'date', label: 'Last checked', admin: { readOnly: true } },
+        { name: 'notes', type: 'textarea', access: { read: staffOnly }, admin: { description: 'Staff only.' } },
       ],
     },
     {
       name: 'ai',
       type: 'group',
       label: 'AI provenance',
+      access: { read: staffOnly },
       admin: { position: 'sidebar', readOnly: true },
       fields: [
         { name: 'model', type: 'text' },
@@ -255,11 +296,20 @@ export const Items: CollectionConfig = {
         { name: 'transcriptConfidence', type: 'number' },
         { name: 'lowConfidence', type: 'checkbox', admin: { description: 'Transcript confidence below 70.' } },
         { name: 'fieldConfidence', type: 'json' },
+        // Kept when a person's version replaces the AI's, so staff can see what changed.
+        { name: 'originalTitle', type: 'text', label: 'AI title (replaced)' },
+        { name: 'originalDate', type: 'text', label: 'AI date (replaced)' },
+        { name: 'originalDescription', type: 'textarea', label: 'AI description (replaced)' },
       ],
     },
+    // Derived from checked parts only (hooks/items.ts derivePublic): what the public search matches
+    // and the order and decades the public sees.
+    { name: 'publicText', type: 'textarea', admin: { hidden: true } },
+    { name: 'publicDateSort', type: 'date', index: true, admin: { hidden: true } },
     {
       name: 'importIssues',
       type: 'array',
+      access: { read: staffOnly },
       admin: {
         position: 'sidebar',
         description: 'Problems the importer found and would not guess at. Resolve, then delete the row.',

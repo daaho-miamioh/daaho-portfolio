@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { EventEntry } from '@/components/ContextEvents'
 import { yearOf } from '@/lib/context'
+import { dateField } from '@/lib/itemsQuery'
 import { asMedia, src } from '@/lib/media'
 import { getViewer } from '@/lib/viewer'
 import type { Event, Item } from '@/payload-types'
@@ -18,16 +19,16 @@ export default async function TimelinePage() {
       pagination: false,
       depth: 1,
       draft,
-      sort: 'dateSort',
-      select: { dateSort: true, title: true, slug: true, pages: true },
+      sort: dateField(!user),
+      select: { dateSort: true, publicDateSort: true, title: true, itemId: true, archival: true, review: true, slug: true, pages: true },
       ...access,
     })
-  ).docs as Pick<Item, 'id' | 'dateSort' | 'title' | 'slug' | 'pages'>[]
+  ).docs as Pick<Item, 'id' | 'dateSort' | 'publicDateSort' | 'title' | 'slug' | 'pages'>[]
 
   const itemsPerDecade = new Map<number, number>()
   const thumbsPerDecade = new Map<number, { slug: string; title: string; src: string }[]>()
   for (const it of items) {
-    const y = yearOf(it.dateSort)
+    const y = yearOf(user ? it.dateSort : it.publicDateSort)
     if (y === null) continue
     const d = Math.floor(y / 10) * 10
     itemsPerDecade.set(d, (itemsPerDecade.get(d) ?? 0) + 1)

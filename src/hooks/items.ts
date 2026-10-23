@@ -1,7 +1,14 @@
-import { APIError, type CollectionAfterChangeHook, type CollectionBeforeDeleteHook, type CollectionBeforeChangeHook } from 'payload'
+import {
+  APIError,
+  type CollectionAfterChangeHook,
+  type CollectionAfterReadHook,
+  type CollectionBeforeChangeHook,
+  type CollectionBeforeDeleteHook,
+} from 'payload'
 
 import { hasRole } from '@/access/roles'
 import { sortableDate } from '@/lib/dates'
+import { CHECKS, publicSearchText, stripForPublic } from '@/lib/publicView'
 
 type Page = { image?: number | { id: number } | null }
 const mediaIds = (pages: Page[] | null | undefined) =>
@@ -19,22 +26,27 @@ export const publishGate: CollectionBeforeChangeHook = async ({ data, originalDo
   if (req.user && !hasRole(req, 'admin', 'editor')) {
     throw new APIError('Contributors can save drafts but cannot publish. Ask an editor to publish.', 403)
   }
-  const status = data.review?.status ?? originalDoc?.review?.status
+  // Reviewed means every AI-drafted part has been checked (see src/lib/publicView.ts).
+  const review = { ...(originalDoc?.review ?? {}), ...(data.review ?? {}) }
+  const allChecked = CHECKS.every((c) => review[c.name] === true)
   // The site-wide statement in Site settings covers items without their own.
   const settings = await req.payload.findGlobal({ slug: 'settings', req, depth: 0, overrideAccess: true })
   const rights = (data.rights ?? originalDoc?.rights ?? settings.defaultRights ?? '').trim()
   // The project may publish before review; the item page then says it is unreviewed. What it may not
   // do is mark an item Reviewed that nobody reviewed, so the switch exists instead of a bulk "Reviewed".
-  const reviewOk = status === 'reviewed' || !!settings.allowUnreviewedPublishing
+  const reviewOk = allChecked || !!settings.allowUnreviewedPublishing
   const missing = [
-    !reviewOk && 'mark the description as Reviewed (or allow publishing before review in Site settings)',
+    !reviewOk && 'check every part under Checked by staff (or allow publishing before review in Site settings)',
     !rights && 'add a rights statement (on the item, or a default in Site settings)',
   ].filter(Boolean)
   if (missing.length) throw new APIError(`Before publishing: ${missing.join(' and ')}.`, 400)
   return data
 }
 
-/** Record who reviewed a description and when, so the public page can say so truthfully. */
+/**
+ * Record who reviewed a record and when, from its review status. Used by Historical contexts
+ * (collections/Events.ts); items record their reviews per part, with stampChecks.
+ */
 export const stampReview: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   const review = { ...(originalDoc?.review ?? {}), ...(data.review ?? {}) }
   const wasReviewed = originalDoc?.review?.status === 'reviewed'
@@ -45,6 +57,27 @@ export const stampReview: CollectionBeforeChangeHook = ({ data, originalDoc, req
     review.reviewedBy = null
     review.reviewedAt = null
   }
+  data.review = review
+  return data
+}
+
+/**
+ * Record who last checked part of an item, and when, so the public page can say so truthfully. The
+ * overall status follows the checks: Reviewed once all four parts are checked, In review once any is.
+ */
+export const stampChecks: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
+  const before = originalDoc?.review ?? {}
+  const review = { ...before, ...(data.review ?? {}) }
+  const newlyChecked = CHECKS.some((c) => review[c.name] === true && before[c.name] !== true)
+  const checkedCount = CHECKS.filter((c) => review[c.name] === true).length
+  if (newlyChecked) {
+    review.reviewedBy = req.user?.id ?? null
+    review.reviewedAt = new Date().toISOString()
+  } else if (checkedCount === 0) {
+    review.reviewedBy = null
+    review.reviewedAt = null
+  }
+  review.status = checkedCount === CHECKS.length ? 'reviewed' : checkedCount > 0 ? 'in_review' : 'ai_generated'
   data.review = review
   return data
 }
@@ -76,6 +109,28 @@ export const stampTranslation: CollectionBeforeChangeHook = ({ data, originalDoc
   return data
 }
 
+/**
+ * What the public search and the public date order use: built only from checked parts (see
+ * src/lib/publicView.ts), so hidden AI text can never be found, nor sort an item into a decade.
+ */
+export const derivePublic: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
+  const o = originalDoc ?? {}
+  const merged = {
+    ...o,
+    ...data,
+    review: { ...(o.review ?? {}), ...(data.review ?? {}) },
+    archival: { ...(o.archival ?? {}), ...(data.archival ?? {}) },
+    translation: { ...(o.translation ?? {}), ...(data.translation ?? {}) },
+  }
+  data.publicText = publicSearchText(merged)
+  data.publicDateSort = merged.review?.titleChecked ? sortableDate(merged.date) : null
+  return data
+}
+
+/** Visitors who are not signed in read only the checked parts. Staff and the site's own code read everything. */
+export const hideUnchecked: CollectionAfterReadHook = ({ doc, req, overrideAccess }) =>
+  req.user || overrideAccess ? doc : stripForPublic(doc)
+
 export const deriveDateSort: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
   data.dateSort = sortableDate(data.date ?? originalDoc?.date)
   return data
@@ -99,8 +154,19 @@ export const syncVisibility: CollectionAfterChangeHook = async ({ doc, previousD
   const isPublished = published?._status === 'published'
 
   const visibleMedia = new Set(isPublished ? mediaIds(published.pages) : [])
+  // Each scan's alternative text names its item by a title someone has checked, or else only by its
+  // ID: the media library is public, and an AI title (with misread names and dates) must not leak there.
+  const altFor = new Map<number, string>()
+  const name = doc.review?.titleChecked ? `“${doc.title}”` : doc.itemId
+  ;(doc.pages ?? []).forEach((p: Page & { label?: string | null }, i: number) => {
+    const id = mediaIds([p])[0]
+    const label = p.label && !/^page\s*\d+$/i.test(p.label.trim()) ? ` (${p.label.trim()})` : ''
+    if (id) altFor.set(id, `Page ${i + 1}${label} of ${name}`)
+  })
   for (const id of new Set([...mediaIds(doc.pages), ...mediaIds(previousDoc?.pages), ...visibleMedia])) {
-    await req.payload.update({ collection: 'media', id, data: { public: visibleMedia.has(id) }, req, overrideAccess: true })
+    const data: { public: boolean; alt?: string } = { public: visibleMedia.has(id) }
+    if (altFor.has(id)) data.alt = altFor.get(id)
+    await req.payload.update({ collection: 'media', id, data, req, overrideAccess: true })
   }
 
   // A person can appear in several items, so their visibility depends on all of them, not this one.
@@ -108,7 +174,8 @@ export const syncVisibility: CollectionAfterChangeHook = async ({ doc, previousD
   for (const id of people) {
     const { totalDocs } = await req.payload.count({
       collection: 'items',
-      where: { and: [{ 'people.person': { equals: id } }, { _status: { equals: 'published' } }] },
+      // Names the AI found are public only once someone has checked the item's people.
+      where: { and: [{ 'people.person': { equals: id } }, { _status: { equals: 'published' } }, { 'review.linksChecked': { equals: true } }] },
       req,
       overrideAccess: true,
     })

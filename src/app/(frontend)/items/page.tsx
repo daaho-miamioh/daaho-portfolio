@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { ItemGrid } from '@/components/ItemCard'
 import { Pagination } from '@/components/Pagination'
-import { buildItemsWhere, decadeOptions, filterHref, readFilters, type ResolvedIds } from '@/lib/itemsQuery'
+import { buildItemsWhere, dateField, decadeOptions, filterHref, readFilters, type ResolvedIds } from '@/lib/itemsQuery'
 import { getViewer } from '@/lib/viewer'
 import type { Item } from '@/payload-types'
 
@@ -17,7 +17,8 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
   const params = await searchParams
   const filters = readFilters(params)
   const page = Math.max(1, Number(params.page) || 1)
-  const { payload, draft, access } = await getViewer()
+  const { payload, user, draft, access } = await getViewer()
+  const publicView = !user
 
   // Menu options come from the items this visitor can see, with counts, so no option leads nowhere.
   const visible = (
@@ -26,10 +27,11 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
       pagination: false,
       depth: 0,
       draft,
-      select: { places: true, subjects: true, genres: true, dateSort: true },
+      // `review` lets the read hook tell which of these the public may see.
+      select: { places: true, subjects: true, genres: true, dateSort: true, publicDateSort: true, review: true },
       ...access,
     })
-  ).docs as Pick<Item, 'id' | 'places' | 'subjects' | 'genres' | 'dateSort'>[]
+  ).docs as Pick<Item, 'id' | 'places' | 'subjects' | 'genres' | 'dateSort' | 'publicDateSort'>[]
 
   const options = {} as Record<TermKind, { slug: string; name: string; count: number }[]>
   const resolved: ResolvedIds = {}
@@ -49,12 +51,12 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
     const match = terms.find((t) => t.slug === wanted)
     if (match) resolved[FILTER_OF[kind]] = match.id
   }
-  const decades = decadeOptions(visible.map((v) => v.dateSort))
+  const decades = decadeOptions(visible.map((v) => (publicView ? v.publicDateSort : v.dateSort)))
 
   const res = await payload.find({
     collection: 'items',
-    where: buildItemsWhere(filters, resolved),
-    sort: 'dateSort',
+    where: buildItemsWhere(filters, resolved, publicView),
+    sort: dateField(publicView),
     limit: PER_PAGE,
     page,
     depth: 1,
@@ -68,7 +70,7 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
       <h1>Items</h1>
       <form className="filters" method="get" action="/items" role="search" aria-label="Search and filter items">
         <div className="filter-search">
-          <label htmlFor="q">Search titles, descriptions, transcripts and translations</label>
+          <label htmlFor="q">{publicView ? 'Search the collection' : 'Search titles, descriptions, transcripts and translations'}</label>
           <input id="q" name="q" type="search" defaultValue={filters.q ?? ''} />
         </div>
         <Select id="decade" label="Decade" value={filters.decade} options={decades.map((d) => ({ value: d.value, label: `${d.label} (${d.count})` }))} />

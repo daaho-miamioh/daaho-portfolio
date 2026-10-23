@@ -21,8 +21,13 @@ export function ItemCard({ item, note }: { item: Item; note?: string }) {
         <div className="card-body">
           <h3 className="card-title">{item.title}</h3>
           <p className="card-meta">
-            {displayDate(item.date)}
-            {item.pages && item.pages.length > 1 ? ` · ${item.pages.length} pages` : ''}
+            {[
+              // A date nobody has checked is not shown at all, rather than as "Undated".
+              item.date || item.review?.titleChecked ? displayDate(item.date) : null,
+              item.pages && item.pages.length > 1 ? `${item.pages.length} pages` : null,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </p>
           {note && <p className="card-note">{note}</p>}
           {item._status !== 'published' && <p className="badge badge-draft">Draft</p>}

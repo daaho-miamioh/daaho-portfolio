@@ -278,6 +278,7 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 
 /* Item page */
 .item-header { margin-bottom: 2.5rem; max-width: 56rem; }
+.item-header h1.title-long { font-size: clamp(1.45rem, 2.6vw, 2.1rem); line-height: 1.2; letter-spacing: -0.02em; }
 .item-date { font-family: var(--mono); color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
 .item-layout { display: grid; gap: 3rem; }
 /* Not sticky: the text column is often taller than the screen, and a sticky column that tall hides

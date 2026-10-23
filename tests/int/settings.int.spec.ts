@@ -6,6 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { readMedia } from '@/collections/Media'
 import type { Media, User } from '@/payload-types'
 
+const ALL_CHECKED = { titleChecked: true, descriptionChecked: true, transcriptChecked: true, linksChecked: true }
+
 /** Site-wide decisions: a default rights statement, and whether the public gets original files. */
 let payload: Payload
 const stamp = Date.now()
@@ -57,7 +59,7 @@ describe('default rights statement', () => {
     const item = await payload.create({
       collection: 'items',
       draft: true,
-      data: { itemId: `S-${stamp}`, title: 'Settings test', review: { status: 'reviewed' }, _status: 'draft' },
+      data: { itemId: `S-${stamp}`, title: 'Settings test', review: ALL_CHECKED, _status: 'draft' },
     })
     made.items.push(item.id)
     await setSettings({ defaultRights: null })

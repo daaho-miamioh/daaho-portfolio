@@ -222,11 +222,33 @@ export interface Item {
    */
   hideAutoContext?: boolean | null;
   archival?: {
+    /**
+     * As in the catalog record, e.g. Shriver, Phillip R.
+     */
+    creator?: string | null;
+    /**
+     * e.g. Asian American Experience at Miami University
+     */
+    digitalCollection?: string | null;
+    /**
+     * e.g. Text, Still image
+     */
+    type?: string | null;
+    theme?: string | null;
+    /**
+     * e.g. 2 pages
+     */
+    extent?: string | null;
+    /**
+     * e.g. 28 x 21.5 cm
+     */
+    dimensions?: string | null;
     repository?: string | null;
     collection?: string | null;
     series?: string | null;
     box?: string | null;
     folder?: string | null;
+    shelf?: string | null;
     callNumber?: string | null;
   };
   /**
@@ -239,10 +261,23 @@ export interface Item {
   slug?: string | null;
   dateSort?: string | null;
   language?: string | null;
+  /**
+   * Only checked parts are shown to the public. Everything stays visible to signed-in staff.
+   */
   review?: {
+    titleChecked?: boolean | null;
+    descriptionChecked?: boolean | null;
+    transcriptChecked?: boolean | null;
+    linksChecked?: boolean | null;
+    /**
+     * Follows the checks above.
+     */
     status?: ('ai_generated' | 'in_review' | 'reviewed') | null;
     reviewedBy?: (number | null) | User;
     reviewedAt?: string | null;
+    /**
+     * Staff only.
+     */
     notes?: string | null;
   };
   ai?: {
@@ -262,7 +297,12 @@ export interface Item {
       | number
       | boolean
       | null;
+    originalTitle?: string | null;
+    originalDate?: string | null;
+    originalDescription?: string | null;
   };
+  publicText?: string | null;
+  publicDateSort?: string | null;
   /**
    * Problems the importer found and would not guess at. Resolve, then delete the row.
    */
@@ -865,11 +905,18 @@ export interface ItemsSelect<T extends boolean = true> {
   archival?:
     | T
     | {
+        creator?: T;
+        digitalCollection?: T;
+        type?: T;
+        theme?: T;
+        extent?: T;
+        dimensions?: T;
         repository?: T;
         collection?: T;
         series?: T;
         box?: T;
         folder?: T;
+        shelf?: T;
         callNumber?: T;
       };
   itemId?: T;
@@ -879,6 +926,10 @@ export interface ItemsSelect<T extends boolean = true> {
   review?:
     | T
     | {
+        titleChecked?: T;
+        descriptionChecked?: T;
+        transcriptChecked?: T;
+        linksChecked?: T;
         status?: T;
         reviewedBy?: T;
         reviewedAt?: T;
@@ -892,7 +943,12 @@ export interface ItemsSelect<T extends boolean = true> {
         transcriptConfidence?: T;
         lowConfidence?: T;
         fieldConfidence?: T;
+        originalTitle?: T;
+        originalDate?: T;
+        originalDescription?: T;
       };
+  publicText?: T;
+  publicDateSort?: T;
   importIssues?:
     | T
     | {

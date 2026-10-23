@@ -5,6 +5,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import type { User } from '@/payload-types'
 
+const ALL_CHECKED = { titleChecked: true, descriptionChecked: true, transcriptChecked: true, linksChecked: true }
+
 /**
  * The rules an archival site must enforce, exercised against a real database. Everything here
  * uses throwaway records that are deleted afterwards; imported data is never touched.
@@ -65,7 +67,7 @@ describe('publishing rules', () => {
     const item = await draftItem({ rights: 'In copyright' })
     await expect(
       payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false }),
-    ).rejects.toThrow(/Reviewed/)
+    ).rejects.toThrow(/Checked by staff/)
   })
 
   it('publishes an unreviewed item only when Site settings allow it, and never without rights', async () => {
@@ -89,14 +91,14 @@ describe('publishing rules', () => {
   })
 
   it('refuses to publish without a rights statement', async () => {
-    const item = await draftItem({ review: { status: 'reviewed' } })
+    const item = await draftItem({ review: ALL_CHECKED })
     await expect(
       payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false }),
     ).rejects.toThrow(/rights statement/)
   })
 
   it('does not let a contributor publish, even a reviewed item with rights', async () => {
-    const item = await draftItem({ review: { status: 'reviewed' }, rights: 'In copyright' })
+    const item = await draftItem({ review: ALL_CHECKED, rights: 'In copyright' })
     await expect(
       payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: contributor, overrideAccess: false }),
     ).rejects.toThrow(/cannot publish/)
@@ -108,7 +110,7 @@ describe('publishing rules', () => {
       collection: 'items',
       id: item.id,
       draft: true,
-      data: { review: { status: 'reviewed' } },
+      data: { review: ALL_CHECKED },
       user: editor,
       overrideAccess: false,
       depth: 0,
@@ -118,7 +120,7 @@ describe('publishing rules', () => {
   })
 
   it('makes scans public on publish and private again on unpublish', async () => {
-    const item = await draftItem({ review: { status: 'reviewed' }, rights: 'In copyright' })
+    const item = await draftItem({ review: ALL_CHECKED, rights: 'In copyright' })
     expect(await isPublic(mediaId)).toBe(false)
 
     await payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false })
@@ -146,7 +148,7 @@ describe('publishing rules', () => {
     const visible = async () =>
       (await payload.find({ collection: 'people', where: { id: { equals: person.id } }, overrideAccess: false })).totalDocs
     try {
-      const item = await draftItem({ review: { status: 'reviewed' }, rights: 'In copyright', people: [{ person: person.id, role: 'creator' }] })
+      const item = await draftItem({ review: ALL_CHECKED, rights: 'In copyright', people: [{ person: person.id, role: 'creator' }] })
       expect(await visible()).toBe(0)
 
       await payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false })

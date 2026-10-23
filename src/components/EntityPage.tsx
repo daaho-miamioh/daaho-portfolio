@@ -5,6 +5,7 @@ import type { Where } from 'payload'
 
 import { PERSON_ROLES } from '@/collections/Items'
 import { ItemGrid } from '@/components/ItemCard'
+import { dateField } from '@/lib/itemsQuery'
 import { getViewer } from '@/lib/viewer'
 import type { Item, Person } from '@/payload-types'
 
@@ -24,9 +25,11 @@ export async function EntityPage({ kind, slug }: { kind: Kind; slug: string }) {
   const entity = await loadEntity(kind, slug)
   if (!entity) notFound()
 
-  const where: Where = kind === 'people' ? { 'people.person': { equals: entity.id } } : { [kind]: { in: [entity.id] } }
+  const link: Where = kind === 'people' ? { 'people.person': { equals: entity.id } } : { [kind]: { in: [entity.id] } }
+  // The public sees a link only once someone has checked the item's people, places and subjects.
+  const where: Where = user ? link : { and: [link, { 'review.linksChecked': { equals: true } }] }
   const items = (
-    await payload.find({ collection: 'items', where, sort: 'dateSort', limit: 200, depth: 1, draft, ...access })
+    await payload.find({ collection: 'items', where, sort: dateField(!user), limit: 200, depth: 1, draft, ...access })
   ).docs as Item[]
 
   // Places and subjects are controlled headings and readable by anyone, but a public page listing

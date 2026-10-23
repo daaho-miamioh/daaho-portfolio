@@ -154,6 +154,32 @@ while on Vercel (`RESEND_API_KEY`), the library server's mail relay later (`SMTP
 needs `EMAIL_FROM` on a verified domain, and `SITE_URL`, the only addresses links in emails may point
 to.
 
+## What the public sees
+
+An item is published as soon as it has scans and some metadata, but much of an item is drafted by AI
+from the scans: its title and date, description, transcript, and the people, places and subjects it
+names. **None of that is shown to the public until a member of staff has checked it.** Each item has
+four boxes under **Checked by staff** in the editor's sidebar: *Title and date*, *Description*,
+*Transcript*, and *People, places and subjects*. Staff always see everything, with a note on the item
+page listing what the public cannot see yet.
+
+What the public always sees: the scans of a published item, and the library's catalog record
+(Archival tab: creator, type, extent, repository, collection, box and folder, shelf, rights). An
+unchecked title shows as the item's ID and type, e.g. *BC-0698 · Archival item*; an unchecked date is
+not shown. A translation is public once it is verified or made by staff.
+
+This is enforced where the data is read (`src/lib/publicView.ts`, `hooks/items.ts`), so it holds for
+the API too: a visitor who is not signed in cannot read unchecked fields, cannot search or filter by
+them (`/api/items?where[transcript][like]=…` is refused), and the public search matches only checked
+text. People named by the AI are public only once an item naming them has its people checked. Scans'
+alternative text names the item by its checked title, or else only by its ID.
+
+**Catalog records.** `pnpm import:catalog` (or `:production`) applies the library's checked records
+in `data/catalog/aamu-phase2.csv`: their titles and dates replace the AI's (which are kept under AI
+provenance) and mark *Title and date* checked. The exhibit labels in `data/catalog/exhibit-labels.json`
+become credited descriptions. `DRY_RUN=1` lists the changes first. After changing these rules, run
+`pnpm sync:visibility` (or `:production`) to bring every record in line.
+
 ## Publishing rules
 
 Enforced by the CMS, not by convention (see `src/hooks/items.ts`, tested in

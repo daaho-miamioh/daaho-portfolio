@@ -22,26 +22,41 @@ export function readFilters(params: Record<string, string | string[] | undefined
   }
 }
 
+/** The date field that orders and groups items: for the public, only checked dates count. */
+export const dateField = (publicView: boolean) => (publicView ? 'publicDateSort' : 'dateSort')
+
 /**
  * Filters as a Payload query. A filter naming a slug that does not exist matches nothing — it must
  * not silently widen to "everything", or a mistyped link shows the whole collection as its results.
+ *
+ * For the public (`publicView`), search matches only text the public can read, dates only checked
+ * dates, and place, subject and genre only items whose links have been checked — otherwise results
+ * would reveal what the hidden AI drafts contain.
  */
-export function buildItemsWhere(f: ItemFilters, ids: ResolvedIds): Where | undefined {
+export function buildItemsWhere(f: ItemFilters, ids: ResolvedIds, publicView = false): Where | undefined {
   const and: Where[] = []
   if (f.q) {
     // `like` is case-insensitive and requires every word, wherever it appears in the field.
-    and.push({ or: [{ title: { like: f.q } }, { description: { like: f.q } }, { transcript: { like: f.q } }, { 'translation.text': { like: f.q } }] })
+    and.push(
+      publicView
+        ? { publicText: { like: f.q } }
+        : { or: [{ title: { like: f.q } }, { description: { like: f.q } }, { transcript: { like: f.q } }, { 'translation.text': { like: f.q } }] },
+    )
   }
-  if (f.decade === 'undated') and.push({ dateSort: { exists: false } })
+  const date = dateField(publicView)
+  if (f.decade === 'undated') and.push({ [date]: { exists: false } })
   else if (f.decade) {
     const start = Number(DECADE.exec(f.decade)![1]) * 10
-    and.push({ dateSort: { greater_than_equal: `${start}-01-01` } }, { dateSort: { less_than: `${start + 10}-01-01` } })
+    and.push({ [date]: { greater_than_equal: `${start}-01-01` } }, { [date]: { less_than: `${start + 10}-01-01` } })
   }
+  let linked = false
   for (const key of ['place', 'subject', 'genre'] as const) {
     if (!f[key]) continue
     const field = `${key === 'place' ? 'places' : `${key}s`}`
     and.push({ [field]: { in: [ids[key] ?? -1] } })
+    linked = true
   }
+  if (linked && publicView) and.push({ 'review.linksChecked': { equals: true } })
   return and.length ? { and } : undefined
 }
 

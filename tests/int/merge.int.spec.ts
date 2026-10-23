@@ -5,6 +5,8 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { markNotDuplicates, mergePeople } from '@/lib/mergePeople'
 import type { Item, Person, User } from '@/payload-types'
 
+const ALL_CHECKED = { titleChecked: true, descriptionChecked: true, transcriptChecked: true, linksChecked: true }
+
 /** Merging duplicate people, against a real database. Throwaway records only, removed afterwards. */
 let payload: Payload
 const stamp = Date.now()
@@ -101,7 +103,7 @@ describe('mergePeople', () => {
     const keep = await person('PendKeep')
     const gone = await person('PendGone')
     const draftItem = await item([{ person: gone.id, role: 'creator' }])
-    const pub = await item([{ person: gone.id, role: 'creator' }], { review: { status: 'reviewed' }, rights: 'In copyright' })
+    const pub = await item([{ person: gone.id, role: 'creator' }], { review: ALL_CHECKED, rights: 'In copyright' })
     await payload.update({ collection: 'items', id: pub.id, data: { _status: 'published' }, user: editor, overrideAccess: false })
     await payload.update({ collection: 'items', id: pub.id, data: { title: 'Edited, not published' }, draft: true, user: editor, overrideAccess: false })
 
@@ -114,7 +116,7 @@ describe('mergePeople', () => {
     const keep = await person('StateKeep')
     const gone = await person('StateGone')
     const draftItem = await item([{ person: gone.id, role: 'creator' }])
-    const pub = await item([{ person: gone.id, role: 'creator' }], { review: { status: 'reviewed' }, rights: 'In copyright' })
+    const pub = await item([{ person: gone.id, role: 'creator' }], { review: ALL_CHECKED, rights: 'In copyright' })
     await payload.update({ collection: 'items', id: pub.id, data: { _status: 'published' }, user: editor, overrideAccess: false })
 
     await mergePeople(payload, editor, keep.id, [gone.id])

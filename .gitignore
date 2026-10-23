@@ -51,3 +51,6 @@ node_modules/
 
 # deploy/package.sh output
 /dist/
+
+# Working notes and forwarded emails (contain personal addresses). Never commit.
+/notes/
