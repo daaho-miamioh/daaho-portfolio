@@ -3,6 +3,13 @@ import Link from 'next/link'
 import { asMedia, src } from '@/lib/media'
 import type { Story } from '@/payload-types'
 
+/** The decades as a span when they run on (1900s–1940s), so they fit on the card's one line; otherwise listed. */
+function decadesLabel(decades: string[]): string {
+  const years = decades.map((d) => parseInt(d, 10)).sort((a, b) => a - b)
+  const runOn = years.length > 2 && years.every((y, i) => !Number.isNaN(y) && (i === 0 || y === years[i - 1] + 10))
+  return runOn ? `${years[0]}s–${years.at(-1)}s` : decades.join(' · ')
+}
+
 export function StoryCard({ story }: { story: Story }) {
   const portrait = asMedia(story.subject?.portrait)
   const docs = (story.documents ?? []).length
@@ -19,7 +26,7 @@ export function StoryCard({ story }: { story: Story }) {
           )}
         </div>
         <div className="story-card-body">
-          {(story.decades ?? []).length > 0 && <p className="story-card-eyebrow">{(story.decades ?? []).join(' · ')}</p>}
+          {(story.decades ?? []).length > 0 && <p className="story-card-eyebrow">{decadesLabel(story.decades ?? [])}</p>}
           <h3 className="story-card-title">{story.title}</h3>
           {story.subject?.lifeDates && <p className="card-meta">{story.subject.lifeDates}</p>}
           {story.dek && <p className="story-card-dek">{story.dek}</p>}
