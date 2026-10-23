@@ -154,6 +154,23 @@ while on Vercel (`RESEND_API_KEY`), the library server's mail relay later (`SMTP
 needs `EMAIL_FROM` on a verified domain, and `SITE_URL`, the only addresses links in emails may point
 to.
 
+## Stories
+
+**Content → Stories** holds biographies and themes written by the project, each set beside the
+documents in the collection it draws on. It follows Carver Spangle's plan for the 2025 exhibit
+cases: one narrative, with the items shown left to right in date order. A story page has a portrait
+and facts, the narrative, the documents as a timeline, links to documents elsewhere, sources,
+credits, and citations in Chicago, APA and MLA. Each item page lists the stories it appears in.
+Stories are written by people and are public once published. The documents in them still show the
+public only their checked parts.
+
+The first six, from Lived Experiences at Miami (LivedMU), were written by members of the project
+and are shared there under CC BY-NC-SA 4.0. Each page credits its author and links to the original.
+They were loaded once with `pnpm import:stories` (or `:production`) from `data/stories/livedmu.json`,
+exported from LivedMU's public dataset, with portraits downloaded into the media library.
+`data/stories/documents.json` lists which items each story draws on; edit them in the CMS afterwards.
+Item IDs in a story's sources (e.g. "AAMU-0061") link to those items.
+
 ## What the public sees
 
 An item is published as soon as it has scans and some metadata, but much of an item is drafted by AI

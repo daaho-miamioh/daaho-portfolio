@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     items: Item;
+    stories: Story;
     annotations: Annotation;
     events: Event;
     people: Person;
@@ -86,6 +87,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     items: ItemsSelect<false> | ItemsSelect<true>;
+    stories: StoriesSelect<false> | StoriesSelect<true>;
     annotations: AnnotationsSelect<false> | AnnotationsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     people: PeopleSelect<false> | PeopleSelect<true>;
@@ -638,6 +640,106 @@ export interface Event {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Biographies and themes written by the project, each with the documents from the collection it draws on.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories".
+ */
+export interface Story {
+  id: number;
+  title: string;
+  /**
+   * Two or three sentences for the story list and the top of the page.
+   */
+  dek?: string | null;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * e.g. Written by Grace Farrell (B.A., History & International Studies, 2028)
+   */
+  credit?: string | null;
+  /**
+   * Author names, for the citation: First Last.
+   */
+  authors?: string[] | null;
+  subject?: {
+    name?: string | null;
+    /**
+     * e.g. 1889–1951
+     */
+    lifeDates?: string | null;
+    /**
+     * e.g. B.A., Liberal Arts, 1943
+     */
+    atMiami?: string | null;
+    portrait?: (number | null) | Media;
+    portraitCaption?: string | null;
+  };
+  /**
+   * Shown in date order. Only what the public may see of each item is shown to the public.
+   */
+  documents?: (number | Item)[] | null;
+  elsewhere?:
+    | {
+        title: string;
+        url: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  sources?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  storyType?: ('biography' | 'theme') | null;
+  /**
+   * e.g. 1920s
+   */
+  decades?: string[] | null;
+  themes?: string[] | null;
+  publishedAt?: string | null;
+  /**
+   * Where the story first appeared, if elsewhere.
+   */
+  origin?: {
+    site?: string | null;
+    url?: string | null;
+    license?: string | null;
+    licenseUrl?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Written from the item editor (Annotations tab). Public only after approval by someone other than the author.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -778,6 +880,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'items';
         value: number | Item;
+      } | null)
+    | ({
+        relationTo: 'stories';
+        value: number | Story;
       } | null)
     | ({
         relationTo: 'annotations';
@@ -954,6 +1060,52 @@ export interface ItemsSelect<T extends boolean = true> {
     | {
         issue?: T;
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories_select".
+ */
+export interface StoriesSelect<T extends boolean = true> {
+  title?: T;
+  dek?: T;
+  body?: T;
+  credit?: T;
+  authors?: T;
+  subject?:
+    | T
+    | {
+        name?: T;
+        lifeDates?: T;
+        atMiami?: T;
+        portrait?: T;
+        portraitCaption?: T;
+      };
+  documents?: T;
+  elsewhere?:
+    | T
+    | {
+        title?: T;
+        url?: T;
+        description?: T;
+        id?: T;
+      };
+  sources?: T;
+  slug?: T;
+  storyType?: T;
+  decades?: T;
+  themes?: T;
+  publishedAt?: T;
+  origin?:
+    | T
+    | {
+        site?: T;
+        url?: T;
+        license?: T;
+        licenseUrl?: T;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -20,6 +20,7 @@ export const metadata = {
 
 const NAV = [
   ['/items', 'Items'],
+  ['/stories', 'Stories'],
   ['/people', 'People'],
   ['/places', 'Places'],
   ['/subjects', 'Subjects'],
@@ -98,7 +99,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <nav aria-label="Explore" className="footer-links">
               <p className="footer-heading">Explore</p>
               <ul role="list">
-                {NAV.slice(0, 5).map(([href, label]) => (
+                {NAV.slice(0, 6).map(([href, label]) => (
                   <li key={href}>
                     <Link href={href}>{label}</Link>
                   </li>

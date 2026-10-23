@@ -14,6 +14,7 @@ import { Media } from './collections/Media'
 import { People } from './collections/People'
 import { Places } from './collections/Places'
 import { ProjectEvents } from './collections/ProjectEvents'
+import { Stories } from './collections/Stories'
 import { Subjects } from './collections/Subjects'
 import { Team } from './collections/Team'
 import { Users } from './collections/Users'
@@ -72,7 +73,7 @@ export default buildConfig({
       },
     },
   },
-  collections: [Items, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users],
+  collections: [Items, Stories, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users],
   globals: [Home, About, Settings],
   editor: lexicalEditor(),
   // Invitations and password resets. Resend on Vercel, the library's mail server later: see src/lib/email.ts.

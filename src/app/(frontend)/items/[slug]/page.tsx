@@ -14,7 +14,7 @@ import { asMedia, src, srcSet } from '@/lib/media'
 import { relatedItems, toLinkable, type Kind } from '@/lib/related'
 import { hiddenParts } from '@/lib/publicView'
 import { getViewer } from '@/lib/viewer'
-import type { Annotation, Event, Genre, Item, Person, Place, Subject, User } from '@/payload-types'
+import type { Annotation, Event, Genre, Item, Person, Place, Story, Subject, User } from '@/payload-types'
 
 type Params = { params: Promise<{ slug: string }> }
 
@@ -103,12 +103,19 @@ async function loadAnnotations(item: Item) {
   return { approved, pending }
 }
 
+/** Stories that draw on this item. */
+async function loadStories(item: Item) {
+  const { payload, draft, access } = await getViewer()
+  return (await payload.find({ collection: 'stories', where: { documents: { in: [item.id] } }, depth: 1, pagination: false, draft, ...access })).docs as Story[]
+}
+
 export default async function ItemPage({ params }: Params) {
   const item = await load((await params).slug)
   if (!item) notFound()
   const related = await loadRelated(item)
   const context = await loadContext(item)
   const annotations = await loadAnnotations(item)
+  const stories = await loadStories(item)
   const { payload, user } = await getViewer()
   const settings = await payload.findGlobal({ slug: 'settings', depth: 0 })
   const rights = item.rights || settings.defaultRights
@@ -228,6 +235,29 @@ export default async function ItemPage({ params }: Params) {
             <section aria-labelledby="desc-heading">
               <h2 id="desc-heading">Description</h2>
               <Paragraphs text={item.description} />
+            </section>
+          )}
+
+          {stories.length > 0 && (
+            <section aria-labelledby="stories-heading" className="item-stories">
+              <h2 id="stories-heading">In the stories</h2>
+              <ul role="list">
+                {stories.map((s) => {
+                  const portrait = asMedia(s.subject?.portrait)
+                  return (
+                    <li key={s.id}>
+                      <Link href={`/stories/${s.slug}`}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        {portrait && <img src={src(portrait, 'thumbnail')} alt="" width={48} height={48} />}
+                        <span>
+                          <strong>{s.title}</strong>
+                          {s.subject?.lifeDates && <span className="card-meta">{s.subject.lifeDates}</span>}
+                        </span>
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
             </section>
           )}
 

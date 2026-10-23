@@ -1,0 +1,11 @@
+{
+  "note": "Documents in the collection for each story, by item ID. Chin-Wu Huang and Chonosuke Ito follow Carver Spangle's groupings (Chinese Material for Mason Library; AAMU Display Notes). AAMU-0041, addressed to 'C.M. Huang', is left out: Carver notes that Huang and Chuang are different people, and the name does not match. Edit in the CMS afterwards.",
+  "documents": {
+    "chin-wu-huang": ["AAMU-0038", "AAMU-0045", "AAMU-0036", "AAMU-0060", "AAMU-0062", "AAMU-0061", "AAMU-0063", "AAMU-0064", "AAMU-0030"],
+    "chonosuke-ito": ["AAMU-0065", "AAMU-0066", "AAMU-0067", "AAMU-0068"],
+    "herbert-saito": [],
+    "kiyoshi-tomizawa": ["BC-0694"],
+    "prasobsukh-sukhsvasti": ["BC-0695", "BC-0688"],
+    "wing-kong-chong": ["BC-0897"]
+  }
+}

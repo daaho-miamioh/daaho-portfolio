@@ -5,11 +5,12 @@ import { EventList } from '@/components/EventList'
 import { ItemGrid } from '@/components/ItemCard'
 import { Paragraphs } from '@/components/Paragraphs'
 import { Slideshow } from '@/components/Slideshow'
+import { StoryGrid } from '@/components/StoryCard'
 import { dateField, decadeOptions } from '@/lib/itemsQuery'
 import { asMedia, src, srcSet } from '@/lib/media'
 import { loadProjectEvents } from '@/lib/projectEvents'
 import { getViewer } from '@/lib/viewer'
-import type { Item } from '@/payload-types'
+import type { Item, Story } from '@/payload-types'
 
 export default async function HomePage() {
   const viewer = await getViewer()
@@ -39,6 +40,7 @@ export default async function HomePage() {
   const placeCount = { totalDocs: placesSeen.size }
 
   const events = await loadProjectEvents(payload, viewer)
+  const stories = (await payload.find({ collection: 'stories', limit: 3, depth: 1, draft, sort: '-publishedAt', ...access })).docs as Story[]
   const recentPast = events.past.slice(0, events.upcoming.length ? 2 : 3)
   const slides = (home.slides ?? []).flatMap((s) => {
     const m = asMedia(s.image)
@@ -162,6 +164,21 @@ export default async function HomePage() {
         </div>
         <ItemGrid items={items} />
       </section>
+
+      {stories.length > 0 && (
+        <section aria-labelledby="stories-heading" className="section">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Stories</p>
+              <h2 id="stories-heading">Lives in the collection</h2>
+            </div>
+            <Link href="/stories" className="section-link">
+              All stories <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+          <StoryGrid stories={stories} />
+        </section>
+      )}
 
       {(events.upcoming.length > 0 || recentPast.length > 0) && (
         <section id="events" aria-labelledby="events-heading" className="section">
