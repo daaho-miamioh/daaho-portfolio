@@ -11,6 +11,7 @@ import {
   stampChecks,
   stampTranslation,
   syncVisibility,
+  syncVisibilityOnDelete,
 } from '@/hooks/items'
 import { publicOnceChecked, publicOnceTranslated, staffOnly } from '@/lib/publicView'
 import { REGIONS } from '@/lib/regions'
@@ -38,6 +39,7 @@ export const Items: CollectionConfig = {
   hooks: {
     beforeChange: [publishGate, stampChecks, stampTranslation, deriveDateSort, derivePublic],
     afterChange: [syncVisibility],
+    afterDelete: [syncVisibilityOnDelete],
     afterRead: [hideUnchecked],
     beforeDelete: [deleteAnnotations],
   },
@@ -145,7 +147,7 @@ export const Items: CollectionConfig = {
                 {
                   type: 'row',
                   fields: [
-                    { name: 'verifiedBy', type: 'relationship', relationTo: 'users', admin: { readOnly: true, width: '50%' } },
+                    { name: 'verifiedBy', type: 'relationship', relationTo: 'users', admin: { width: '50%', description: 'Your name when you mark it verified; choose someone else if they verified it.' } },
                     { name: 'verifiedAt', type: 'date', admin: { readOnly: true, width: '50%' } },
                   ],
                 },
@@ -279,7 +281,13 @@ export const Items: CollectionConfig = {
             { label: 'Reviewed', value: 'reviewed' },
           ],
         },
-        { name: 'reviewedBy', type: 'relationship', relationTo: 'users', label: 'Last checked by', admin: { readOnly: true } },
+        {
+          name: 'reviewedBy',
+          type: 'relationship',
+          relationTo: 'users',
+          label: 'Last checked by',
+          admin: { description: 'Fills in with your name when you tick a check. Choose someone else if they did the checking.' },
+        },
         { name: 'reviewedAt', type: 'date', label: 'Last checked', admin: { readOnly: true } },
         { name: 'notes', type: 'textarea', access: { read: staffOnly }, admin: { description: 'Staff only.' } },
       ],

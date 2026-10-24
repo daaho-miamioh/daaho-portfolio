@@ -1,9 +1,11 @@
 import {
   APIError,
   type CollectionAfterChangeHook,
+  type CollectionAfterDeleteHook,
   type CollectionAfterReadHook,
   type CollectionBeforeChangeHook,
   type CollectionBeforeDeleteHook,
+  type PayloadRequest,
 } from 'payload'
 
 import { hasRole } from '@/access/roles'
@@ -43,19 +45,32 @@ export const publishGate: CollectionBeforeChangeHook = async ({ data, originalDo
   return data
 }
 
+const idOf = (v: unknown) => (typeof v === 'object' && v ? (v as { id: number }).id : ((v as number | null | undefined) ?? null))
+
+/**
+ * Whether the person saving chose a name in a "checked by" field themselves. The field fills in with
+ * whoever ticks the box, but anyone may choose another name instead (a check done on paper, or by a
+ * colleague), and a name chosen that way is kept.
+ */
+const chose = (incoming: Record<string, unknown> | undefined, before: Record<string, unknown>, field: string) =>
+  !!incoming && field in incoming && idOf(incoming[field]) !== idOf(before[field])
+
 /**
  * Record who reviewed a record and when, from its review status. Used by Historical contexts
  * (collections/Events.ts); items record their reviews per part, with stampChecks.
  */
 export const stampReview: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
-  const review = { ...(originalDoc?.review ?? {}), ...(data.review ?? {}) }
-  const wasReviewed = originalDoc?.review?.status === 'reviewed'
-  if (review.status === 'reviewed' && !wasReviewed) {
-    review.reviewedBy = req.user?.id ?? null
-    review.reviewedAt = new Date().toISOString()
-  } else if (review.status !== 'reviewed') {
+  const before = originalDoc?.review ?? {}
+  const review = { ...before, ...(data.review ?? {}) }
+  if (review.status !== 'reviewed') {
     review.reviewedBy = null
     review.reviewedAt = null
+  } else if (chose(data.review, before, 'reviewedBy')) {
+    review.reviewedBy = idOf(review.reviewedBy)
+    review.reviewedAt = review.reviewedBy ? new Date().toISOString() : null
+  } else if (before.status !== 'reviewed') {
+    review.reviewedBy = req.user?.id ?? null
+    review.reviewedAt = new Date().toISOString()
   }
   data.review = review
   return data
@@ -70,12 +85,15 @@ export const stampChecks: CollectionBeforeChangeHook = ({ data, originalDoc, req
   const review = { ...before, ...(data.review ?? {}) }
   const newlyChecked = CHECKS.some((c) => review[c.name] === true && before[c.name] !== true)
   const checkedCount = CHECKS.filter((c) => review[c.name] === true).length
-  if (newlyChecked) {
-    review.reviewedBy = req.user?.id ?? null
-    review.reviewedAt = new Date().toISOString()
-  } else if (checkedCount === 0) {
+  if (checkedCount === 0) {
     review.reviewedBy = null
     review.reviewedAt = null
+  } else if (chose(data.review, before, 'reviewedBy')) {
+    review.reviewedBy = idOf(review.reviewedBy)
+    review.reviewedAt = review.reviewedBy ? new Date().toISOString() : null
+  } else if (newlyChecked) {
+    review.reviewedBy = req.user?.id ?? null
+    review.reviewedAt = new Date().toISOString()
   }
   review.status = checkedCount === CHECKS.length ? 'reviewed' : checkedCount > 0 ? 'in_review' : 'ai_generated'
   data.review = review
@@ -94,7 +112,10 @@ export const stampTranslation: CollectionBeforeChangeHook = ({ data, originalDoc
   const textChanged = (t.text ?? '') !== (before.text ?? '')
   if (textChanged && !req.user && t.status === 'verified') t.status = 'ai'
   if (t.status === 'verified') {
-    if (before.status !== 'verified' || textChanged) {
+    if (req.user && chose(data.translation, before, 'verifiedBy')) {
+      t.verifiedBy = idOf(t.verifiedBy)
+      t.verifiedAt = t.verifiedBy ? new Date().toISOString() : null
+    } else if (before.status !== 'verified' || textChanged) {
       t.verifiedBy = req.user?.id ?? null
       t.verifiedAt = new Date().toISOString()
     } else {
@@ -147,10 +168,36 @@ const personIds = (rows: PersonRow[] | null | undefined) =>
  * names, are public only while some published item shows them. The hook cannot tell a draft save
  * from an unpublish, so it asks the database for the published state instead of guessing.
  */
-export const syncVisibility: CollectionAfterChangeHook = async ({ doc, previousDoc, req }) => {
-  const published = await req.payload
-    .findByID({ collection: 'items', id: doc.id, draft: false, depth: 0, req, overrideAccess: true })
-    .catch(() => null)
+export const syncVisibility: CollectionAfterChangeHook = ({ context, doc, previousDoc, req }) => oneAtATime(context, () => syncItemVisibility({ doc, previousDoc, req }))
+
+/** A deleted item shows nothing: its scans, and people no other published item names, leave public view. */
+export const syncVisibilityOnDelete: CollectionAfterDeleteHook = ({ context, doc, req }) =>
+  oneAtATime(context, () => syncItemVisibility({ doc: { ...doc, pages: [], people: [] }, previousDoc: doc, req, deleted: true }))
+
+/**
+ * One item's visibility work at a time within a request. A bulk edit in the admin saves the selected
+ * items in parallel inside one transaction; two of them naming the same person would save that person
+ * at once, and as each save rewrites the person's aliases, the second fails and takes the batch with it.
+ */
+function oneAtATime<T>(context: Record<string, unknown>, task: () => Promise<T>): Promise<T> {
+  const queue = (context.visibilityQueue as Promise<unknown> | undefined) ?? Promise.resolve()
+  const run = queue.then(task, task)
+  context.visibilityQueue = run.catch(() => undefined)
+  return run
+}
+
+type ItemDoc = Parameters<CollectionAfterChangeHook>[0]['doc']
+type SyncArgs = { doc: ItemDoc; previousDoc?: ItemDoc; req: PayloadRequest; deleted?: boolean }
+
+/*
+ * Lookups here use find, never findByID: findByID throws when a record is missing, and a Payload
+ * operation that throws rolls back the whole transaction it shares (a bulk edit, or the delete this
+ * runs after), even when the error is caught.
+ */
+async function syncItemVisibility({ doc, previousDoc, req, deleted }: SyncArgs) {
+  const published = deleted
+    ? undefined
+    : (await req.payload.find({ collection: 'items', where: { id: { equals: doc.id } }, draft: false, depth: 0, limit: 1, pagination: false, req, overrideAccess: true })).docs[0]
   const isPublished = published?._status === 'published'
 
   const visibleMedia = new Set(isPublished ? mediaIds(published.pages) : [])
@@ -163,15 +210,32 @@ export const syncVisibility: CollectionAfterChangeHook = async ({ doc, previousD
     const label = p.label && !/^page\s*\d+$/i.test(p.label.trim()) ? ` (${p.label.trim()})` : ''
     if (id) altFor.set(id, `Page ${i + 1}${label} of ${name}`)
   })
-  for (const id of new Set([...mediaIds(doc.pages), ...mediaIds(previousDoc?.pages), ...visibleMedia])) {
+  // Saves only what changes: a bulk publish of many items would otherwise re-save every scan and person.
+  const scans = [...new Set([...mediaIds(doc.pages), ...mediaIds(previousDoc?.pages), ...visibleMedia])]
+  const scansNow = new Map(
+    scans.length
+      ? (await req.payload.find({ collection: 'media', where: { id: { in: scans } }, depth: 0, pagination: false, select: { public: true, alt: true }, req, overrideAccess: true })).docs.map((m) => [m.id, m])
+      : [],
+  )
+  for (const id of scans) {
+    const now = scansNow.get(id)
+    if (!now) continue
     const data: { public: boolean; alt?: string } = { public: visibleMedia.has(id) }
     if (altFor.has(id)) data.alt = altFor.get(id)
+    if (now.public === data.public && (data.alt === undefined || now.alt === data.alt)) continue
     await req.payload.update({ collection: 'media', id, data, req, overrideAccess: true })
   }
 
   // A person can appear in several items, so their visibility depends on all of them, not this one.
-  const people = new Set([...personIds(doc.people), ...personIds(previousDoc?.people), ...personIds(published?.people)])
+  const people = [...new Set([...personIds(doc.people), ...personIds(previousDoc?.people), ...personIds(published?.people)])]
+  const peopleNow = new Map(
+    people.length
+      ? (await req.payload.find({ collection: 'people', where: { id: { in: people } }, depth: 0, pagination: false, select: { public: true }, req, overrideAccess: true })).docs.map((p) => [p.id, p])
+      : [],
+  )
   for (const id of people) {
+    const now = peopleNow.get(id)
+    if (!now) continue
     const { totalDocs } = await req.payload.count({
       collection: 'items',
       // Names the AI found are public only once someone has checked the item's people.
@@ -179,6 +243,7 @@ export const syncVisibility: CollectionAfterChangeHook = async ({ doc, previousD
       req,
       overrideAccess: true,
     })
+    if (!!now.public === totalDocs > 0) continue
     await req.payload.update({ collection: 'people', id, data: { public: totalDocs > 0 }, req, overrideAccess: true })
   }
   return doc

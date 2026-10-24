@@ -21,7 +21,8 @@ const adminEndpoint =
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
-    useAsTitle: 'email',
+    // Names, not addresses, in every "checked by" and "verified by" list.
+    useAsTitle: 'name',
     defaultColumns: ['name', 'email', 'role', 'invitedAt'],
     group: 'Admin',
     description: 'Use Invite someone to add people: they get an email with a link to choose their own password.',

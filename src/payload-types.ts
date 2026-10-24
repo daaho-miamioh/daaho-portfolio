@@ -198,6 +198,9 @@ export interface Item {
      * Shown with the translation, e.g. how names or terms were rendered. Optional.
      */
     note?: string | null;
+    /**
+     * Your name when you mark it verified; choose someone else if they verified it.
+     */
     verifiedBy?: (number | null) | User;
     verifiedAt?: string | null;
   };
@@ -275,6 +278,9 @@ export interface Item {
      * Follows the checks above.
      */
     status?: ('ai_generated' | 'in_review' | 'reviewed') | null;
+    /**
+     * Fills in with your name when you tick a check. Choose someone else if they did the checking.
+     */
     reviewedBy?: (number | null) | User;
     reviewedAt?: string | null;
     /**
@@ -627,6 +633,9 @@ export interface Event {
   endYear?: number | null;
   review?: {
     status?: ('ai_drafted' | 'reviewed') | null;
+    /**
+     * Fills in with your name when you mark it Reviewed. Choose someone else if they reviewed it.
+     */
     reviewedBy?: (number | null) | User;
     reviewedAt?: string | null;
     notes?: string | null;
