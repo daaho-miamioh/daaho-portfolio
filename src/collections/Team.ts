@@ -7,6 +7,7 @@ export const TEAM_GROUPS = [
   { label: 'Project team', value: 'project-team' },
   { label: 'Partners', value: 'partners' },
   { label: 'Archives and Content Committee', value: 'committee' },
+  { label: 'Former project team', value: 'former-team' },
   { label: 'Previous student assistants', value: 'former-students' },
 ] as const
 

@@ -8,6 +8,7 @@ import * as migration_20261015_033615_item_translation from './20261015_033615_i
 import * as migration_20261019_155844_user_invitations from './20261019_155844_user_invitations';
 import * as migration_20261023_131909_item_public_view from './20261023_131909_item_public_view';
 import * as migration_20261023_145012_stories from './20261023_145012_stories';
+import * as migration_20261029_202456_team_former_group from './20261029_202456_team_former_group';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261023_145012_stories.up,
     down: migration_20261023_145012_stories.down,
-    name: '20261023_145012_stories'
+    name: '20261023_145012_stories',
+  },
+  {
+    up: migration_20261029_202456_team_former_group.up,
+    down: migration_20261029_202456_team_former_group.down,
+    name: '20261029_202456_team_former_group'
   },
 ];

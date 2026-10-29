@@ -847,7 +847,7 @@ export interface ProjectEvent {
 export interface Team {
   id: number;
   name: string;
-  group: 'project-team' | 'partners' | 'committee' | 'former-students';
+  group: 'project-team' | 'partners' | 'committee' | 'former-team' | 'former-students';
   /**
    * Role or position, e.g. Co-Principal Investigator
    */

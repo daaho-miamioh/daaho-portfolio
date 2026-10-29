@@ -9,13 +9,17 @@ import type { Team } from '@/payload-types'
 
 export const metadata: Metadata = { title: 'About' }
 
+/** "Dr. John D.M. Green" → "Green", "William (Bill) Hilt" → "Hilt": for ordering people who share an order number. */
+const surname = (name: string) => name.replace(/\([^)]*\)/g, '').trim().split(/\s+/).at(-1) ?? name
+
 export default async function AboutPage() {
   const { payload, access } = await getViewer()
   const [about, team] = await Promise.all([
     payload.findGlobal({ slug: 'about', depth: 1, ...access }),
     payload.find({ collection: 'team', sort: 'order', pagination: false, depth: 1, ...access }),
   ])
-  const members = team.docs as Team[]
+  // Within a group, the order number decides; people with the same number are listed by surname.
+  const members = (team.docs as Team[]).sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || surname(a.name).localeCompare(surname(b.name)))
   const logo = asMedia(about.logo?.image)
 
   return (
