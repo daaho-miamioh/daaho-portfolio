@@ -48,7 +48,8 @@ async function loadRelated(item: Item) {
     pagination: false,
     depth: 0,
     draft,
-    select: { people: true, places: true, subjects: true, genres: true },
+    // `review` lets the read hook tell which links the public may see; without it, it hides them all.
+    select: { people: true, places: true, subjects: true, genres: true, review: true },
     ...access,
   })
   const ranked = relatedItems(toLinkable(item), all.docs.map((d) => toLinkable(d as Item)))

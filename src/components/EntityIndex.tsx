@@ -13,7 +13,8 @@ type Kind = 'people' | 'places' | 'subjects'
 export async function EntityIndex({ kind, title, intro }: { kind: Kind; title: string; intro: string }) {
   const { payload, draft, access } = await getViewer()
   const items = (
-    await payload.find({ collection: 'items', pagination: false, depth: 0, draft, select: { people: true, places: true, subjects: true }, ...access })
+    // `review` lets the read hook tell which links the public may see; without it, it hides them all.
+    await payload.find({ collection: 'items', pagination: false, depth: 0, draft, select: { people: true, places: true, subjects: true, review: true }, ...access })
   ).docs as Pick<Item, 'id' | 'people' | 'places' | 'subjects'>[]
 
   const counts = new Map<number, number>()
