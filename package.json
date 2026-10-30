@@ -29,6 +29,8 @@
     "import:catalog:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload run src/scripts/import-catalog.ts",
     "import:phase1": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-phase1.ts",
     "import:phase1:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload run src/scripts/import-phase1.ts",
+    "import:asianfest": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/import-asianfest.ts",
+    "import:asianfest:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload run src/scripts/import-asianfest.ts",
     "sync:visibility:production": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload run src/scripts/sync-visibility.ts",
     "sync:visibility": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/sync-visibility.ts",
     "fix:transcripts": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/fix-transcripts.ts",

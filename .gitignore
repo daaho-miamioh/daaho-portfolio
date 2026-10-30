@@ -54,3 +54,6 @@ node_modules/
 
 # Working notes and forwarded emails (contain personal addresses). Never commit.
 /notes/
+
+# Scans for import (2 GB). They live in the media bucket once imported; the originals stay on Google Drive.
+/data/AsianFest JPG/
