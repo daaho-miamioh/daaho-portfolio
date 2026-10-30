@@ -3,8 +3,8 @@ import Link from 'next/link'
 
 import { EventList } from '@/components/EventList'
 import { ItemGrid } from '@/components/ItemCard'
-import { Paragraphs } from '@/components/Paragraphs'
 import { Slideshow } from '@/components/Slideshow'
+import { Sponsors } from '@/components/Sponsors'
 import { StoryGrid } from '@/components/StoryCard'
 import { dateField, decadeOptions } from '@/lib/itemsQuery'
 import { asMedia, src, srcSet } from '@/lib/media'
@@ -46,7 +46,6 @@ export default async function HomePage() {
     const m = asMedia(s.image)
     return m ? [{ src: src(m, 'reading'), srcSet: srcSet(m, ['card', 'reading']), alt: m.alt, caption: s.caption, width: m.width, height: m.height }] : []
   })
-  const sponsors = (home.sponsors ?? []).map((s) => ({ ...s, logo: asMedia(s.logo) }))
   // Six document scans for the hero: featured items first, then the rest of what this visitor can see.
   const seen = new Set<number>()
   const mosaic = [...items, ...visible.docs]
@@ -86,14 +85,19 @@ export default async function HomePage() {
               <dt>Items</dt>
               <dd>{itemCount.totalDocs}</dd>
             </div>
-            <div>
-              <dt>People</dt>
-              <dd>{peopleCount.totalDocs}</dd>
-            </div>
-            <div>
-              <dt>Places</dt>
-              <dd>{placeCount.totalDocs}</dd>
-            </div>
+            {/* The public sees an item's people and places only once its links are checked, so these can be zero. */}
+            {peopleCount.totalDocs > 0 && (
+              <div>
+                <dt>People</dt>
+                <dd>{peopleCount.totalDocs}</dd>
+              </div>
+            )}
+            {placeCount.totalDocs > 0 && (
+              <div>
+                <dt>Places</dt>
+                <dd>{placeCount.totalDocs}</dd>
+              </div>
+            )}
           </dl>
         </div>
         {mosaic.length >= 3 && (
@@ -123,34 +127,6 @@ export default async function HomePage() {
       )}
 
       {slides.length > 0 && <Slideshow slides={slides} />}
-
-      {home.mission && (
-        <section id="mission-statement" aria-labelledby="mission-heading" className="band band-dark home-mission">
-          <p className="eyebrow">Mission</p>
-          <h2 id="mission-heading">Making visible what was previously invisible</h2>
-          <Paragraphs text={home.mission} className="mission-text" />
-        </section>
-      )}
-
-      {(home.goals ?? []).length > 0 && (
-        <section id="project-goals" aria-labelledby="goals-heading" className="section">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow">Project goals</p>
-              <h2 id="goals-heading">What we are working toward</h2>
-            </div>
-          </div>
-          <Paragraphs text={home.goalsIntro} className="lede" />
-          <ol className="goals">
-            {(home.goals ?? []).map((g) => (
-              <li key={g.id ?? g.title}>
-                <h3>{g.title}</h3>
-                <p>{g.text}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
 
       <section aria-labelledby="featured-heading" className="section">
         <div className="section-head">
@@ -198,37 +174,25 @@ export default async function HomePage() {
       <section id="about-us" aria-labelledby="about-heading" className="section about-teaser">
         <div>
           <p className="eyebrow">About us</p>
-          <h2 id="about-heading">Scholars, librarians, archivists and community partners</h2>
+          <h2 id="about-heading">Making visible what was previously invisible</h2>
         </div>
         <div>
           <p className="lede">
-            DAAHO brings together people across Ohio and beyond to collect, preserve and share Asian American
-            histories.
+            DAAHO brings together scholars, librarians, archivists and community partners across Ohio and beyond to
+            collect, preserve and share Asian American histories.
           </p>
-          <Link href="/about#team" className="button-secondary">
-            Meet our team <span aria-hidden="true">→</span>
-          </Link>
+          <p className="hero-actions">
+            <Link href="/about" className="button-secondary">
+              Our mission and goals <span aria-hidden="true">→</span>
+            </Link>
+            <Link href="/about/team" className="section-link">
+              Meet our team <span aria-hidden="true">→</span>
+            </Link>
+          </p>
         </div>
       </section>
 
-      {sponsors.length > 0 && (
-        <section aria-labelledby="sponsors-heading" className="sponsors">
-          <p id="sponsors-heading" className="eyebrow">
-            Supported by
-          </p>
-          <ul role="list">
-            {sponsors.map((s) => {
-              const content = s.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={src(s.logo, 'card')} alt={s.name} loading="lazy" />
-              ) : (
-                s.name
-              )
-              return <li key={s.id ?? s.name}>{s.url ? <a href={s.url}>{content}</a> : content}</li>
-            })}
-          </ul>
-        </section>
-      )}
+      <Sponsors sponsors={home.sponsors} />
     </>
   )
 }

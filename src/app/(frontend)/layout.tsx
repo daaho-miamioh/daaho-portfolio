@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import Link from 'next/link'
 import React from 'react'
 
+import { MainNav, SectionNav } from '@/components/SiteNav'
 import { getViewer } from '@/lib/viewer'
 import type { User } from '@/payload-types'
 
@@ -18,21 +19,19 @@ export const metadata = {
     'Letters, documents and photographs recording Asian American lives in Ohio, from the collections of Miami University.',
 }
 
-const NAV = [
+const EXPLORE = [
   ['/items', 'Items'],
   ['/stories', 'Stories'],
   ['/people', 'People'],
   ['/places', 'Places'],
   ['/subjects', 'Subjects'],
   ['/timeline', 'Timeline'],
-  ['/events', 'Events'],
-  ['/about', 'About'],
 ] as const
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { payload, user } = await getViewer()
   const home = await payload.findGlobal({ slug: 'home', depth: 0, overrideAccess: false, user })
-  const submit = home.submitLink?.url ? home.submitLink : null
+  const submit = home.submitLink?.url ? { url: home.submitLink.url, label: home.submitLink.label || 'Submit a collection' } : null
   const role = (user as User | null)?.role
   const canReview = role === 'admin' || role === 'editor'
   return (
@@ -50,22 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <span className="site-title-short">DAAHO</span>
               <span className="site-title-long">Documenting Asian American Histories in Ohio</span>
             </Link>
-            <nav aria-label="Main">
-              <ul role="list">
-                {NAV.map(([href, label]) => (
-                  <li key={href}>
-                    <Link href={href}>{label}</Link>
-                  </li>
-                ))}
-                {submit && (
-                  <li>
-                    <a href={submit.url!} className="nav-cta">
-                      {submit.label || 'Submit a collection'}
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </nav>
+            <MainNav submit={submit} />
           </div>
           {canReview && (
             <nav className="staff-bar" aria-label="Staff">
@@ -78,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </nav>
           )}
         </header>
+        <SectionNav />
         <main id="main" className="wrap">
           {children}
         </main>
@@ -99,7 +84,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <nav aria-label="Explore" className="footer-links">
               <p className="footer-heading">Explore</p>
               <ul role="list">
-                {NAV.slice(0, 6).map(([href, label]) => (
+                {EXPLORE.map(([href, label]) => (
                   <li key={href}>
                     <Link href={href}>{label}</Link>
                   </li>
@@ -110,7 +95,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <p className="footer-heading">Project</p>
               <ul role="list">
                 <li>
-                  <Link href="/about">About and team</Link>
+                  <Link href="/about">About the project</Link>
+                </li>
+                <li>
+                  <Link href="/about/team">Team</Link>
                 </li>
                 <li>
                   <Link href="/events">Events</Link>

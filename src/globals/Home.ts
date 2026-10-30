@@ -64,6 +64,7 @@ export const Home: GlobalConfig = {
         },
         {
           label: 'Mission and goals',
+          description: 'Shown on the About page.',
           fields: [
             { name: 'mission', type: 'textarea', admin: { rows: 6 } },
             { name: 'goalsIntro', type: 'textarea', label: 'Goals introduction' },
@@ -86,6 +87,7 @@ export const Home: GlobalConfig = {
               name: 'sponsors',
               type: 'array',
               labels: { singular: 'Sponsor', plural: 'Sponsors' },
+              admin: { description: 'Shown at the foot of the home page and the About page.' },
               fields: [
                 { name: 'name', type: 'text', required: true },
                 { name: 'logo', type: 'upload', relationTo: 'media' },

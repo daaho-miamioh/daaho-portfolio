@@ -1,25 +1,21 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
-import { TEAM_GROUPS } from '@/collections/Team'
 import { Paragraphs } from '@/components/Paragraphs'
+import { Sponsors } from '@/components/Sponsors'
 import { asMedia, src } from '@/lib/media'
 import { getViewer } from '@/lib/viewer'
-import type { Team } from '@/payload-types'
 
 export const metadata: Metadata = { title: 'About' }
 
-/** "Dr. John D.M. Green" → "Green", "William (Bill) Hilt" → "Hilt": for ordering people who share an order number. */
-const surname = (name: string) => name.replace(/\([^)]*\)/g, '').trim().split(/\s+/).at(-1) ?? name
-
 export default async function AboutPage() {
   const { payload, access } = await getViewer()
-  const [about, team] = await Promise.all([
+  // The mission, goals and funders are edited with the Home page settings.
+  const [about, home] = await Promise.all([
     payload.findGlobal({ slug: 'about', depth: 1, ...access }),
-    payload.find({ collection: 'team', sort: 'order', pagination: false, depth: 1, ...access }),
+    payload.findGlobal({ slug: 'home', depth: 1, ...access }),
   ])
-  // Within a group, the order number decides; people with the same number are listed by surname.
-  const members = (team.docs as Team[]).sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || surname(a.name).localeCompare(surname(b.name)))
   const logo = asMedia(about.logo?.image)
 
   return (
@@ -36,41 +32,50 @@ export default async function AboutPage() {
         </p>
       )}
 
-      {members.length > 0 && (
-        <section id="team" aria-labelledby="team-heading">
-          <h2 id="team-heading">Meet our team</h2>
-          {TEAM_GROUPS.map((g) => {
-            const list = members.filter((m) => m.group === g.value)
-            if (!list.length) return null
-            return (
-              <section key={g.value} aria-labelledby={`team-${g.value}`} className="team-group">
-                <h3 id={`team-${g.value}`}>{g.label}</h3>
-                <ul className="team" role="list">
-                  {list.map((m) => {
-                    const photo = asMedia(m.photo)
-                    return (
-                      <li key={m.id} className="team-member">
-                        {photo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={src(photo, 'thumbnail')} alt="" width={160} height={160} loading="lazy" />
-                        ) : (
-                          <span className="team-nophoto" aria-hidden="true" />
-                        )}
-                        <div>
-                          <h4>{m.name}</h4>
-                          {m.title && <p className="role">{m.title}</p>}
-                          {m.affiliation && <p className="card-meta">{m.affiliation}</p>}
-                          <Paragraphs text={m.bio} className="team-bio" />
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </section>
-            )
-          })}
+      {home.mission && (
+        <section id="mission-statement" aria-labelledby="mission-heading" className="band band-dark home-mission">
+          <p className="eyebrow">Mission</p>
+          <h2 id="mission-heading">Making visible what was previously invisible</h2>
+          <Paragraphs text={home.mission} className="mission-text" />
         </section>
       )}
+
+      {(home.goals ?? []).length > 0 && (
+        <section id="project-goals" aria-labelledby="goals-heading" className="section">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Project goals</p>
+              <h2 id="goals-heading">What we are working toward</h2>
+            </div>
+          </div>
+          <Paragraphs text={home.goalsIntro} className="lede" />
+          <ol className="goals">
+            {(home.goals ?? []).map((g) => (
+              <li key={g.id ?? g.title}>
+                <h3>{g.title}</h3>
+                <p>{g.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {/* Keeps old links to /about#team landing next to the way in. */}
+      <section id="team" aria-labelledby="team-heading" className="section about-teaser">
+        <div>
+          <p className="eyebrow">Team</p>
+          <h2 id="team-heading">Scholars, librarians, archivists and community partners</h2>
+        </div>
+        <div>
+          <p className="lede">
+            DAAHO brings together people across Ohio and beyond to collect, preserve and share Asian American
+            histories.
+          </p>
+          <Link href="/about/team" className="button-secondary">
+            Meet our team <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </section>
 
       {about.logo?.text && (
         <section id="logo" aria-labelledby="logo-heading" className="about-logo">
@@ -82,6 +87,8 @@ export default async function AboutPage() {
           </div>
         </section>
       )}
+
+      <Sponsors sponsors={home.sponsors} />
     </>
   )
 }

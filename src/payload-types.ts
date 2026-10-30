@@ -1478,6 +1478,9 @@ export interface Home {
    * Shown above the events on the home page and the Events page.
    */
   eventsIntro?: string | null;
+  /**
+   * Shown at the foot of the home page and the About page.
+   */
   sponsors?:
     | {
         name: string;
