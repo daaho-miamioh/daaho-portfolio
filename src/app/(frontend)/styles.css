@@ -109,12 +109,40 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .brand-logo { width: 2rem; height: 2rem; flex: none; }
 .site-title-short { font-weight: 700; font-size: 1.05rem; letter-spacing: 0.02em; }
 .site-title-long { font-size: 0.85rem; color: var(--ink-soft); padding-left: 0.6rem; border-left: 1px solid var(--rule-strong); }
-.site-header nav ul { display: flex; flex-wrap: wrap; align-items: center; gap: 0.15rem 0.25rem; }
+.site-header nav > ul { display: flex; flex-wrap: wrap; align-items: center; gap: 0.15rem 0.25rem; }
 .site-header nav a { display: inline-block; color: var(--ink-soft); text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 0.35rem 0.7rem; border-radius: 999px; transition: background 0.15s, color 0.15s; }
 .site-header nav a:hover { color: var(--ink); background: rgb(0 0 0 / 0.05); }
 .site-header nav a[aria-current] { color: var(--ink); background: rgb(0 0 0 / 0.06); }
 .site-header nav a.nav-cta { color: var(--on-dark); background: var(--ink); margin-left: 0.35rem; }
 .site-header nav a.nav-cta:hover { background: #262626; color: var(--on-dark); }
+/* Menus that open: the button shows the section's pages. */
+.nav-menu { position: relative; }
+.nav-menu > button {
+  display: inline-flex; align-items: center; gap: 0.3rem; font: inherit; font-size: 0.92rem; font-weight: 500; color: var(--ink-soft);
+  background: none; border: 0; cursor: pointer; padding: 0.35rem 0.55rem 0.35rem 0.7rem; border-radius: 999px; transition: background 0.15s, color 0.15s;
+}
+.nav-menu > button:hover, .nav-menu[data-open] > button { color: var(--ink); background: rgb(0 0 0 / 0.05); }
+.nav-menu.is-here > button { color: var(--ink); background: rgb(0 0 0 / 0.06); }
+.nav-menu > button svg { transition: transform 0.2s var(--ease); }
+.nav-menu[data-open] > button svg { transform: rotate(180deg); }
+/* Lets the pointer cross the gap between the button and its panel without the panel closing. */
+.nav-menu::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 0.5rem; }
+.site-header .nav-panel {
+  display: none; position: absolute; z-index: 60; top: calc(100% + 0.4rem); left: 0; min-width: 12rem; padding: 0.35rem;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--shadow-lift);
+}
+.site-header .nav-panel-end { left: auto; right: 0; }
+.nav-menu[data-open] .nav-panel { display: block; }
+@media (hover: hover) and (pointer: fine) { .nav-menu:hover:not([data-dismissed]) .nav-panel { display: block; } }
+.site-header nav .nav-panel a { display: block; border-radius: 8px; padding: 0.45rem 0.75rem; white-space: nowrap; }
+.site-header nav .nav-panel a[aria-current] { color: var(--ink); background: rgb(0 0 0 / 0.05); }
+/* Small screens: the panel spans the header, under it, rather than hanging off one button. */
+@media (max-width: 47.99rem) {
+  .header-inner { position: relative; }
+  .nav-menu { position: static; }
+  .site-header .nav-panel { top: calc(100% - 0.35rem); left: 1.25rem; right: 1.25rem; }
+  .site-header nav .nav-panel a { padding: 0.65rem 0.8rem; white-space: normal; }
+}
 .staff-bar { background: var(--ink); color: var(--on-dark-soft); font-size: 0.82rem; }
 .staff-bar .wrap { display: flex; gap: 1.25rem; align-items: center; padding-top: 0.35rem; padding-bottom: 0.35rem; flex-wrap: wrap; }
 .staff-bar a { color: var(--on-dark); text-decoration: none; }
