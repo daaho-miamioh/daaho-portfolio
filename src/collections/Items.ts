@@ -271,6 +271,21 @@ export const Items: CollectionConfig = {
         { name: 'transcriptChecked', type: 'checkbox', label: 'Transcript checked' },
         { name: 'linksChecked', type: 'checkbox', label: 'People, places and subjects checked' },
         {
+          name: 'byPeople',
+          type: 'select',
+          hasMany: true,
+          label: 'Written by people',
+          admin: {
+            description: 'Parts that came from the library catalog or were written by staff, not drafted with AI. The item page says which.',
+          },
+          options: [
+            { label: 'Title and date', value: 'title' },
+            { label: 'Description', value: 'description' },
+            { label: 'Transcript', value: 'transcript' },
+            { label: 'People, places and subjects', value: 'links' },
+          ],
+        },
+        {
           name: 'status',
           type: 'select',
           defaultValue: 'ai_generated',

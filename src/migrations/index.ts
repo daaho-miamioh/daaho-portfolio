@@ -9,6 +9,7 @@ import * as migration_20261019_155844_user_invitations from './20261019_155844_u
 import * as migration_20261023_131909_item_public_view from './20261023_131909_item_public_view';
 import * as migration_20261023_145012_stories from './20261023_145012_stories';
 import * as migration_20261029_202456_team_former_group from './20261029_202456_team_former_group';
+import * as migration_20261030_035928_items_written_by_people from './20261030_035928_items_written_by_people';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261029_202456_team_former_group.up,
     down: migration_20261029_202456_team_former_group.down,
-    name: '20261029_202456_team_former_group'
+    name: '20261029_202456_team_former_group',
+  },
+  {
+    up: migration_20261030_035928_items_written_by_people.up,
+    down: migration_20261030_035928_items_written_by_people.down,
+    name: '20261030_035928_items_written_by_people'
   },
 ];

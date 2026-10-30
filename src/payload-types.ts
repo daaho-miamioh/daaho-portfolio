@@ -275,6 +275,10 @@ export interface Item {
     transcriptChecked?: boolean | null;
     linksChecked?: boolean | null;
     /**
+     * Parts that came from the library catalog or were written by staff, not drafted with AI. The item page says which.
+     */
+    byPeople?: ('title' | 'description' | 'transcript' | 'links')[] | null;
+    /**
      * Follows the checks above.
      */
     status?: ('ai_generated' | 'in_review' | 'reviewed') | null;
@@ -1045,6 +1049,7 @@ export interface ItemsSelect<T extends boolean = true> {
         descriptionChecked?: T;
         transcriptChecked?: T;
         linksChecked?: T;
+        byPeople?: T;
         status?: T;
         reviewedBy?: T;
         reviewedAt?: T;

@@ -7,14 +7,14 @@
  *   pnpm import:catalog:production         the live database
  *
  * From data/catalog/aamu-phase2.csv (the AAEM metadata, Phase 2):
- *   - title and date replace the AI's, and the item is marked "Title and date checked". The AI's
- *     versions are kept under AI provenance for staff.
+ *   - title and date replace the AI's, and the item is marked "Title and date checked" and as
+ *     written by people. The AI's versions are kept under AI provenance for staff.
  *   - creator, type, theme, extent, dimensions, repository, collection, box, folder, shelf, digital
  *     collection, language and rights fill the catalog record.
  *   - AAMU-0073 is one catalog record for the five parts AAMU-0073a–e: they get its shared fields
  *     (where it is held, type, theme, rights, language), not its title, date, creator or extent.
  * From data/catalog/exhibit-labels.json: the label becomes the description, credited, and the item
- * is marked "Description checked"; the AI's description is kept for staff.
+ * is marked "Description checked" and as written by people; the AI's description is kept for staff.
  *
  * Safe to run again: it sets the same values, and never overwrites a saved AI original.
  */
@@ -109,6 +109,7 @@ async function main() {
           report.dates.push(`${id}: ${item.date || '(none)'} → ${date || '(undated)'}`)
         }
         review.titleChecked = true
+        review.byPeople = [...new Set([...(review.byPeople ?? []), 'title' as const])]
       } else if (!exact) {
         report.catalogOnly++
       }
@@ -122,6 +123,7 @@ async function main() {
           report.descriptions++
         }
         review.descriptionChecked = true
+        review.byPeople = [...new Set([...(review.byPeople ?? []), 'description' as const])]
       }
 
       data.ai = ai

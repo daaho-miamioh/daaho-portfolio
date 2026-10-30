@@ -141,12 +141,19 @@ export default async function ItemPage({ params }: Params) {
   const reviewer = typeof item.review?.reviewedBy === 'object' ? (item.review?.reviewedBy as User | null) : null
   // Staff read the whole record; this lists what the public cannot see yet.
   const hidden = user ? hiddenParts(item) : []
-  const checkedParts = [
-    item.review?.titleChecked && 'title and date',
-    item.review?.descriptionChecked && 'description',
-    item.review?.transcriptChecked && 'transcript',
-    item.review?.linksChecked && 'people, places and subjects',
-  ].filter(Boolean) as string[]
+  const parts = [
+    ['title', item.review?.titleChecked, 'title and date'],
+    ['description', item.review?.descriptionChecked, 'description'],
+    ['transcript', item.review?.transcriptChecked, 'transcript'],
+    ['links', item.review?.linksChecked, 'people, places and subjects'],
+  ] as const
+  const checkedParts = parts.filter(([, checked]) => checked).map(([, , label]) => label)
+  // Checked parts split by who wrote them: people (the catalog, staff) or AI, then checked by staff.
+  const byPeople = new Set(item.review?.byPeople ?? [])
+  const peopleParts = parts.filter(([key, checked]) => checked && byPeople.has(key)).map(([, , label]) => label)
+  const aiParts = parts.filter(([key, checked]) => checked && !byPeople.has(key)).map(([, , label]) => label)
+  // "The description was", but "the title and date were".
+  const were = (list: string[]) => (list.length > 1 || list[0].includes(' and ') ? 'were' : 'was')
   const archival = item.archival ?? {}
   const translation = item.translation?.text?.trim() ? item.translation : null
   const verifier = typeof translation?.verifiedBy === 'object' ? (translation?.verifiedBy as User | null) : null
@@ -321,9 +328,15 @@ export default async function ItemPage({ params }: Params) {
           <aside className="provenance" aria-label="How this record was made">
             <p>
               The scans and catalog record come from the library.{' '}
-              {checkedParts.length > 0 ? (
+              {peopleParts.length > 0 && (
                 <>
-                  The {checkedParts.join(', ')} {checkedParts.length === 1 ? 'was' : 'were'} drafted with AI and checked by
+                  The {peopleParts.join(', ')} {were(peopleParts)} written by library and project
+                  staff.{' '}
+                </>
+              )}
+              {aiParts.length > 0 ? (
+                <>
+                  The {aiParts.join(', ')} {were(aiParts)} drafted with AI and checked by
                   project staff{reviewer?.name ? ` (last by ${reviewer.name}` : ''}
                   {reviewer?.name && item.review?.reviewedAt
                     ? `, ${new Date(item.review.reviewedAt).toLocaleDateString('en-US', { dateStyle: 'long' })})`
@@ -333,7 +346,9 @@ export default async function ItemPage({ params }: Params) {
                   .
                 </>
               ) : (
-                <>Other parts of the record are drafted with AI and shown once project staff have checked them.</>
+                checkedParts.length === 0 && (
+                  <>Other parts of the record are drafted with AI and shown once project staff have checked them.</>
+                )
               )}
             </p>
           </aside>

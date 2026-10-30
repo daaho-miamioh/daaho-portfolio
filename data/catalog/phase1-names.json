@@ -1,0 +1,20 @@
+{
+  "note": "How names in phase1.csv map to records already on the site, where the spelling alone does not show they are the same. Names that differ only in spacing or punctuation (\"Hibbard, C.V.\" and \"Hibbard, C. V.\") are matched without an entry here. A name that matches nobody becomes a new record. Each catalog spelling is added to the record's aliases.",
+  "checkedOn": "2026-10-29",
+  "corrections": {
+    "Pramoj, Senil Upham, Alfred Horatio": { "to": "Pramoj, Seni; Upham, Alfred Horatio", "why": "BC-0713: a semicolon typed as an \"l\"" },
+    "National Japanese American Relocation Council": { "to": "National Japanese American Student Relocation Council", "why": "BC-0718: the council's name, as in the same record's subjects and in AAMU-0104" }
+  },
+  "people": {
+    "Upham, Alfred Horatio": { "site": "Upham, Alfred H.", "why": "Miami's president, 1928–1945; the site's record has the fuller form" },
+    "Tomizawa, K.": { "site": "Tomizawa, Kiyoshi", "why": "BC-0694 is addressed to Mr. Kiyoshi Tomizawa, the Miami alumnus of the Tomizawa story" },
+    "Hasegawa, K.": { "site": "Hasegawa, Koichi", "why": "BC-0699 is addressed to Mr. Koichi Hasegawa, the Miami alumnus in AAMU-0070–0074" },
+    "Sukhsvasti, Prasobsukh": { "site": "Prasobsukh Sukhsvasti, M. C.", "why": "the same Thai student; M. C. (Mom Chao) is his title" },
+    "Pramoj, Seni": { "site": "Pramoj, M.R. Seni", "why": "the Thai minister in Washington; M.R. (Mom Rajawongse) is his title" },
+    "Jardine, W.N.": { "site": "Jardine, William N.", "why": "BC-0696 is addressed to President William N. Jardine" },
+    "United States Department of State": { "site": "Department of State", "why": "the same body" }
+  },
+  "subjects": {
+    "World War II": { "to": "World War (1939-1945)", "why": "BC-0718: the FAST heading the site already uses" }
+  }
+}

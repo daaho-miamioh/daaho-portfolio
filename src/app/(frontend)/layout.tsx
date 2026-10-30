@@ -114,8 +114,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
           <div className="wrap footer-fine">
             <p>
-              Item descriptions and transcriptions are generated with AI from the original scans. Each item page says
-              whether project staff have reviewed it yet. Some documents contain language that is harmful.
+              Most item descriptions and transcriptions are generated with AI from the original scans. Each item page
+              says which parts were written by people and which project staff have checked. Some documents contain
+              language that is harmful.
             </p>
             <p>
               &copy; {new Date().getFullYear()} Miami University Libraries · Funded by the National Historical Publications
