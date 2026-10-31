@@ -80,6 +80,7 @@ export interface Config {
     'project-events': ProjectEvent;
     team: Team;
     users: User;
+    activity: Activity;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -100,6 +101,7 @@ export interface Config {
     'project-events': ProjectEventsSelect<false> | ProjectEventsSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    activity: ActivitySelect<false> | ActivitySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -955,6 +957,47 @@ export interface Team {
   createdAt: string;
 }
 /**
+ * Every change anyone makes here, and every sign-in, newest first. Entries cannot be edited or deleted. Open one to see what changed.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activity".
+ */
+export interface Activity {
+  id: number;
+  summary: string;
+  createdAt: string;
+  action:
+    | 'create'
+    | 'update'
+    | 'publish'
+    | 'unpublish'
+    | 'delete'
+    | 'invite'
+    | 'login'
+    | 'logout'
+    | 'login_failed'
+    | 'reset_requested'
+    | 'password';
+  /**
+   * Empty when no one was signed in: an import script, or a failed sign-in.
+   */
+  user?: (number | null) | User;
+  who?: string | null;
+  recordType?: string | null;
+  recordId?: string | null;
+  recordTitle?: string | null;
+  changes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -1029,6 +1072,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'activity';
+        value: number | Activity;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1502,6 +1549,22 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activity_select".
+ */
+export interface ActivitySelect<T extends boolean = true> {
+  summary?: T;
+  createdAt?: T;
+  action?: T;
+  user?: T;
+  who?: T;
+  recordType?: T;
+  recordId?: T;
+  recordTitle?: T;
+  changes?: T;
+  updatedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

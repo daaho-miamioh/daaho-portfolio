@@ -12,6 +12,7 @@ import * as migration_20261029_202456_team_former_group from './20261029_202456_
 import * as migration_20261030_035928_items_written_by_people from './20261030_035928_items_written_by_people';
 import * as migration_20261030_164022_items_format_and_original_online from './20261030_164022_items_format_and_original_online';
 import * as migration_20261030_195630_collections_within_the_collection from './20261030_195630_collections_within_the_collection';
+import * as migration_20261031_051949_activity_log from './20261031_051949_activity_log';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20261030_195630_collections_within_the_collection.up,
     down: migration_20261030_195630_collections_within_the_collection.down,
-    name: '20261030_195630_collections_within_the_collection'
+    name: '20261030_195630_collections_within_the_collection',
+  },
+  {
+    up: migration_20261031_051949_activity_log.up,
+    down: migration_20261031_051949_activity_log.down,
+    name: '20261031_051949_activity_log',
   },
 ];

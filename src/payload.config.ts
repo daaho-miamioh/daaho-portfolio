@@ -22,6 +22,7 @@ import { Users } from './collections/Users'
 import { About } from './globals/About'
 import { Home } from './globals/Home'
 import { Settings } from './globals/Settings'
+import { activityLog } from './hooks/activity'
 import { emailAdapter } from './lib/email'
 
 /**
@@ -92,5 +93,6 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
-  plugins: [storage],
+  // The activity log comes last, so it also sees what other plugins add.
+  plugins: [storage, activityLog],
 })
