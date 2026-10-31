@@ -1,0 +1,53 @@
+{
+  "about": "The collections within the DAAHO collection, and which items go in each. `pnpm import:sets` creates any collection here that the site does not have yet, with these texts as a first draft for staff to rewrite in the admin, and puts every item that has no collection into the one whose prefix its item ID starts with. It never changes a collection that exists, or an item's collection once set.",
+  "sets": [
+    {
+      "slug": "asian-american-experience-at-miami-university",
+      "title": "Asian American Experience at Miami University",
+      "shortTitle": "Asian American Experience",
+      "kind": "University archives",
+      "color": "red",
+      "prefix": "AAMU-",
+      "order": 1,
+      "summary": "Letters and records on Asian students at Miami and the university's ties with Asia, across most of the twentieth century.",
+      "holder": "Walter Havighurst Special Collections & University Archives, Miami University",
+      "url": "https://digital.lib.miamioh.edu/digital/collection/aamu"
+    },
+    {
+      "slug": "race-at-miami-university",
+      "title": "Race at Miami University",
+      "shortTitle": "Race at Miami",
+      "kind": "University archives",
+      "color": "blue",
+      "prefix": "BC-",
+      "order": 2,
+      "summary": "President Upham's letters on Asian students at Miami and his 1937–38 journey through Asia, catalogued by library staff.",
+      "holder": "Walter Havighurst Special Collections & University Archives, Miami University",
+      "url": "https://digital.lib.miamioh.edu/digital/collection/race"
+    },
+    {
+      "slug": "asian-festival-programs",
+      "title": "Asian Festival programs",
+      "shortTitle": "AsianFest programs",
+      "kind": "Festival programs",
+      "color": "amber",
+      "prefix": "AF-",
+      "order": 3,
+      "summary": "Program booklets from the Asian Festival in Columbus.",
+      "holder": null,
+      "url": null
+    },
+    {
+      "slug": "columbus-metropolitan-library-oral-histories",
+      "title": "Oral histories at Columbus Metropolitan Library",
+      "shortTitle": "CML oral histories",
+      "kind": "Oral histories",
+      "color": "green",
+      "prefix": "CML-",
+      "order": 4,
+      "summary": "Asian Americans in Ohio talk about immigrating and making their lives here. The recordings play on the library's website.",
+      "holder": "Columbus Metropolitan Library",
+      "url": "https://digital-collections.columbuslibrary.org/digital/collection/oralhistory"
+    }
+  ]
+}

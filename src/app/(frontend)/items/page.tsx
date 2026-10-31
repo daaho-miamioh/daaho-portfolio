@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ItemGrid } from '@/components/ItemCard'
 import { Pagination } from '@/components/Pagination'
 import { buildItemsWhere, dateField, decadeOptions, filterHref, readFilters, type ResolvedIds } from '@/lib/itemsQuery'
+import { loadSets } from '@/lib/sets'
 import { getViewer } from '@/lib/viewer'
 import type { Item } from '@/payload-types'
 
@@ -17,7 +18,8 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
   const params = await searchParams
   const filters = readFilters(params)
   const page = Math.max(1, Number(params.page) || 1)
-  const { payload, user, draft, access } = await getViewer()
+  const viewer = await getViewer()
+  const { payload, user, draft, access } = viewer
   const publicView = !user
 
   // Menu options come from the items this visitor can see, with counts, so no option leads nowhere.
@@ -52,6 +54,9 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
     if (match) resolved[FILTER_OF[kind]] = match.id
   }
   const decades = decadeOptions(visible.map((v) => (publicView ? v.publicDateSort : v.dateSort)))
+  const sets = (await loadSets(viewer)).filter((s) => s.count > 0)
+  const inSet = sets.find((s) => s.set.slug === filters.set)
+  if (inSet) resolved.set = inSet.set.id
 
   const res = await payload.find({
     collection: 'items',
@@ -68,11 +73,17 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <h1>Items</h1>
+      {inSet && (
+        <p className="filter-context">
+          In <Link href={`/collection/${inSet.set.slug}`}>{inSet.set.title}</Link>
+        </p>
+      )}
       <form className="filters" method="get" action="/items" role="search" aria-label="Search and filter items">
         <div className="filter-search">
           <label htmlFor="q">{publicView ? 'Search the collection' : 'Search titles, descriptions, transcripts and translations'}</label>
           <input id="q" name="q" type="search" defaultValue={filters.q ?? ''} />
         </div>
+        <Select id="set" label="Collection" value={filters.set} options={sets.map((s) => ({ value: s.set.slug ?? '', label: `${s.set.title} (${s.count})` }))} />
         <Select id="decade" label="Decade" value={filters.decade} options={decades.map((d) => ({ value: d.value, label: `${d.label} (${d.count})` }))} />
         <Select id="place" label="Place" value={filters.place} options={options.places.map((o) => ({ value: o.slug, label: `${o.name} (${o.count})` }))} />
         <Select id="subject" label="Subject" value={filters.subject} options={options.subjects.map((o) => ({ value: o.slug, label: `${o.name} (${o.count})` }))} />

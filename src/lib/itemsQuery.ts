@@ -1,7 +1,7 @@
 import type { Where } from 'payload'
 
-export type ItemFilters = { q?: string; decade?: string; place?: string; subject?: string; genre?: string }
-export type ResolvedIds = { place?: number; subject?: number; genre?: number }
+export type ItemFilters = { q?: string; set?: string; decade?: string; place?: string; subject?: string; genre?: string }
+export type ResolvedIds = { set?: number; place?: number; subject?: number; genre?: number }
 
 const DECADE = /^(\d{3})0s?$/
 
@@ -15,6 +15,7 @@ export function readFilters(params: Record<string, string | string[] | undefined
   const decade = one('decade')
   return {
     q: one('q'),
+    set: one('set'),
     decade: decade === 'undated' || (decade && DECADE.test(decade)) ? decade : undefined,
     place: one('place'),
     subject: one('subject'),
@@ -28,6 +29,7 @@ export const dateField = (publicView: boolean) => (publicView ? 'publicDateSort'
 /**
  * Filters as a Payload query. A filter naming a slug that does not exist matches nothing — it must
  * not silently widen to "everything", or a mistyped link shows the whole collection as its results.
+ * A collection is not a link drafted with AI, so it filters for the public too, checked or not.
  *
  * For the public (`publicView`), search matches only text the public can read, dates only checked
  * dates, and place, subject and genre only items whose links have been checked — otherwise results
@@ -43,6 +45,7 @@ export function buildItemsWhere(f: ItemFilters, ids: ResolvedIds, publicView = f
         : { or: [{ title: { like: f.q } }, { description: { like: f.q } }, { transcript: { like: f.q } }, { 'translation.text': { like: f.q } }] },
     )
   }
+  if (f.set) and.push({ set: { equals: ids.set ?? -1 } })
   const date = dateField(publicView)
   if (f.decade === 'undated') and.push({ [date]: { exists: false } })
   else if (f.decade) {

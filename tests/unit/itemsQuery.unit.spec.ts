@@ -39,6 +39,11 @@ describe('buildItemsWhere', () => {
     expect(buildItemsWhere({ place: 'japan-tokyo' }, { place: 12 })).toEqual({ and: [{ places: { in: [12] } }] })
   })
 
+  it('filters by collection, for the public too, since no one has to check it', () => {
+    expect(buildItemsWhere({ set: 'race-at-miami-university' }, { set: 3 }, true)).toEqual({ and: [{ set: { equals: 3 } }] })
+    expect(buildItemsWhere({ set: 'no-such-collection' }, {}, true)).toEqual({ and: [{ set: { equals: -1 } }] })
+  })
+
   it('makes an unknown slug match nothing rather than everything', () => {
     expect(buildItemsWhere({ subject: 'no-such-subject' }, {})).toEqual({ and: [{ subjects: { in: [-1] } }] })
   })

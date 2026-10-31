@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { PERSON_ROLES } from '@/collections/Items'
+import { FORMATS, PERSON_ROLES } from '@/collections/Items'
 import { AnnotatedTranscript } from '@/components/AnnotatedTranscript'
 import { ContextEvents } from '@/components/ContextEvents'
 import { Paragraphs } from '@/components/Paragraphs'
@@ -37,6 +37,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 const roleLabel = Object.fromEntries(PERSON_ROLES.map((r) => [r.value, r.label]))
+const formatLabel: Record<string, string> = Object.fromEntries(FORMATS.map((f) => [f.value, f.label]))
+const RECORDINGS = new Set(['oral_history', 'audio', 'video'])
 const populated = <T extends { id: number }>(xs: (number | T)[] | null | undefined) =>
   (xs ?? []).filter((x): x is T => typeof x === 'object' && !!x)
 
@@ -149,13 +151,24 @@ export default async function ItemPage({ params }: Params) {
     ['links', item.review?.linksChecked, 'people, places and subjects'],
   ] as const
   const checkedParts = parts.filter(([, checked]) => checked).map(([, , label]) => label)
-  // Checked parts split by who wrote them: people (the catalog, staff) or AI, then checked by staff.
+  const archival = item.archival ?? {}
+  // Held and shown by another institution: we keep the record and a link to the original, not the file.
+  const elsewhere = !pages.length && archival.url ? archival.url : null
+  const holder = archival.repository || 'the holding institution'
+  const recording = RECORDINGS.has(item.format ?? '')
+  // Checked parts split by who wrote them: people (the catalog, staff) or AI, then checked by staff. The
+  // transcript of an item held elsewhere is the holder's, credited as such, so it is in neither.
   const byPeople = new Set(item.review?.byPeople ?? [])
-  const peopleParts = parts.filter(([key, checked]) => checked && byPeople.has(key)).map(([, , label]) => label)
-  const aiParts = parts.filter(([key, checked]) => checked && !byPeople.has(key)).map(([, , label]) => label)
+  const attributed = parts.filter(([key]) => !(elsewhere && key === 'transcript'))
+  const peopleParts = attributed.filter(([key, checked]) => checked && byPeople.has(key)).map(([, , label]) => label)
+  const aiParts = attributed.filter(([key, checked]) => checked && !byPeople.has(key)).map(([, , label]) => label)
   // "The description was", but "the title and date were".
   const were = (list: string[]) => (list.length > 1 || list[0].includes(' and ') ? 'were' : 'was')
-  const archival = item.archival ?? {}
+  // After "The": "title and date, the description and the people, places and subjects".
+  const listed = (list: string[]) => {
+    const xs = list.map((l, i) => (i ? `the ${l}` : l))
+    return xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}` : xs[0]
+  }
   const translation = item.translation?.text?.trim() ? item.translation : null
   const verifier = typeof translation?.verifiedBy === 'object' ? (translation?.verifiedBy as User | null) : null
   const translationStatus = !translation
@@ -182,8 +195,21 @@ export default async function ItemPage({ params }: Params) {
         </p>
       )}
 
+      {/* The collection on this site it belongs to; the public sees it only once that is published. */}
+      {typeof item.set === 'object' && item.set && (
+        <p className={`set-crumb set-${item.set.color ?? 'slate'}`}>
+          <Link href={`/collection/${item.set.slug}`}>
+            <span className="visually-hidden">Collection: </span>
+            {item.set.title}
+          </Link>
+        </p>
+      )}
+
       <header className="item-header">
-        <p className="eyebrow">{item.itemId}</p>
+        <p className="eyebrow">
+          {item.format && item.format !== 'document' ? `${formatLabel[item.format]} · ` : ''}
+          {item.itemId}
+        </p>
         {/* Catalog titles can run to a sentence or two; set them smaller so the scans stay in view. */}
         <h1 className={item.title.length > 90 ? 'title-long' : undefined}>{item.title}</h1>
         {/* "Undated" only when someone has checked that it is; an unchecked date is simply not shown. */}
@@ -196,15 +222,45 @@ export default async function ItemPage({ params }: Params) {
         )}
         {!user && checkedParts.length < 4 && (
           <p className="notice notice-unreviewed">
-            Project staff are still checking parts of this record that were drafted with AI
-            {checkedParts.length ? '' : ' — its description, transcript and the people and places it names'}. They will
-            appear here once checked. The scans are the authoritative record.
+            {elsewhere ? (
+              <>
+                Project staff are still checking parts of this record. They will appear here once checked. The original
+                at {holder} is the authoritative record.
+              </>
+            ) : (
+              <>
+                Project staff are still checking parts of this record that were drafted with AI
+                {checkedParts.length ? '' : ' — its description, transcript and the people and places it names'}. They
+                will appear here once checked. The scans are the authoritative record.
+              </>
+            )}
           </p>
         )}
       </header>
 
       <div className="item-layout">
-        <section className="item-pages" aria-label="Scans">
+        <section
+          className={elsewhere ? 'item-elsewhere' : 'item-pages'}
+          aria-label={elsewhere ? undefined : 'Scans'}
+          aria-labelledby={elsewhere ? 'elsewhere-heading' : undefined}
+        >
+          {/* No scans: the original is held and shown by another institution, so link to it. */}
+          {elsewhere && (
+            <>
+              {/* The format is already above the title; the length is new here. */}
+              {archival.extent && <p className="eyebrow">{archival.extent}</p>}
+              <h2 id="elsewhere-heading">{recording ? 'The recording' : 'The original'}</h2>
+              <p>
+                {recording ? 'This recording is' : 'The original is'} held by {holder}, and{' '}
+                {recording ? 'plays' : 'can be seen'} on its website.
+              </p>
+              <a className="button" href={elsewhere}>
+                {item.format === 'video' ? 'Watch' : recording ? 'Listen' : 'View'} at {holder}
+                <span className="visually-hidden"> (another website)</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </>
+          )}
           {pages.map(({ media, label }, i) => (
             <figure key={media!.id} className="page">
               {(() => {
@@ -309,7 +365,7 @@ export default async function ItemPage({ params }: Params) {
                 ['Theme', archival.theme],
                 ['Digital collection', archival.digitalCollection],
                 ['Repository', archival.repository],
-                ['Collection', archival.collection],
+                ['Archival collection', archival.collection],
                 ['Box and folder', [archival.box, archival.folder].filter(Boolean).join(', ')],
                 ['Shelf', archival.shelf],
               ] as const
@@ -318,6 +374,14 @@ export default async function ItemPage({ params }: Params) {
               .map(([label, v]) => (
                 <Fact key={label} label={label} value={v as string} />
               ))}
+            {archival.url && !elsewhere && (
+              <>
+                <dt>Online</dt>
+                <dd>
+                  <a href={archival.url}>{archival.repository || new URL(archival.url).hostname}</a>
+                </dd>
+              </>
+            )}
             {rights && (
               <>
                 <dt>Rights</dt>
@@ -328,16 +392,22 @@ export default async function ItemPage({ params }: Params) {
 
           <aside className="provenance" aria-label="How this record was made">
             <p>
-              The scans and catalog record come from the library.{' '}
+              {elsewhere
+                ? `The catalog record${item.transcript ? ' and transcript come' : ' comes'} from ${holder}.${
+                    item.transcript && item.review?.transcriptChecked
+                      ? ` Project staff have checked the transcript against the ${recording ? 'recording' : 'original'}.`
+                      : ''
+                  }`
+                : 'The scans and catalog record come from the library.'}{' '}
               {peopleParts.length > 0 && (
                 <>
-                  The {peopleParts.join(', ')} {were(peopleParts)} written by library and project
+                  The {listed(peopleParts)} {were(peopleParts)} written by library and project
                   staff.{' '}
                 </>
               )}
               {aiParts.length > 0 ? (
                 <>
-                  The {aiParts.join(', ')} {were(aiParts)} drafted with AI and checked by
+                  The {listed(aiParts)} {were(aiParts)} drafted with AI and checked by
                   project staff{reviewer?.name ? ` (last by ${reviewer.name}` : ''}
                   {reviewer?.name && item.review?.reviewedAt
                     ? `, ${new Date(item.review.reviewedAt).toLocaleDateString('en-US', { dateStyle: 'long' })})`
@@ -361,12 +431,21 @@ export default async function ItemPage({ params }: Params) {
       {item.transcript && (
         <section className={`transcript${translation ? ' has-translation' : ''}`} aria-labelledby="transcript-heading">
           <h2 id="transcript-heading">{translation ? 'Transcript and translation' : 'Transcript'}</h2>
-          <p className="transcript-note">
-            Transcribed following the DAAHO Transcription Policy: original spelling is kept with corrections in
-            [brackets]; [illegible] marks words that could not be read. The document&rsquo;s original wording is kept,
-            including language that may be harmful &mdash; see our{' '}
-            <Link href="/harmful-language">statement on potentially harmful language</Link>.
-          </p>
+          {elsewhere ? (
+            <p className="transcript-note">
+              Transcript from {holder}
+              {recording ? ', with times counted from the start of the recording' : ''}. It keeps the speakers&rsquo;
+              own words, including language that may be harmful &mdash; see our{' '}
+              <Link href="/harmful-language">statement on potentially harmful language</Link>.
+            </p>
+          ) : (
+            <p className="transcript-note">
+              Transcribed following the DAAHO Transcription Policy: original spelling is kept with corrections in
+              [brackets]; [illegible] marks words that could not be read. The document&rsquo;s original wording is kept,
+              including language that may be harmful &mdash; see our{' '}
+              <Link href="/harmful-language">statement on potentially harmful language</Link>.
+            </p>
+          )}
           {annotations.pending > 0 && (
             <p className="notice notice-staff" role="status">
               {annotations.pending} {annotations.pending === 1 ? 'annotation is' : 'annotations are'} awaiting review and

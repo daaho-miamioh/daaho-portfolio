@@ -16,10 +16,11 @@ const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono', display: 
 export const metadata = {
   title: { default: 'Documenting Asian American Histories in Ohio', template: '%s — DAAHO' },
   description:
-    'Letters, documents and photographs recording Asian American lives in Ohio, from the collections of Miami University.',
+    'Letters, records and recordings on Asian American lives in Ohio, from the archives of Miami University and from partner collections.',
 }
 
 const EXPLORE = [
+  ['/collection#collections', 'Collections'],
   ['/items', 'Items'],
   ['/stories', 'Stories'],
   ['/people', 'People'],

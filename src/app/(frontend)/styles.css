@@ -293,7 +293,11 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .card-image { aspect-ratio: 4 / 5; background: var(--panel); overflow: hidden; border-bottom: 1px solid var(--rule); }
 .card-image img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.6s var(--ease); }
 .card-link:hover .card-image img { transform: scale(1.045); }
-.card-noimage { display: block; width: 100%; height: 100%; background: repeating-linear-gradient(135deg, var(--panel) 0 10px, #ececee 10px 11px); }
+.card-noimage {
+  display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
+  background: repeating-linear-gradient(135deg, var(--panel) 0 10px, #ececee 10px 11px);
+  font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft);
+}
 .card-body { padding: 1rem 1.1rem 1.15rem; }
 .card-title { font-size: 0.98rem; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
 .card-meta { font-family: var(--mono); color: var(--ink-soft); font-size: 0.78rem; margin: 0.5rem 0 0; letter-spacing: 0.01em; }
@@ -328,6 +332,14 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .page a, .page-frame { display: block; border: 1px solid var(--rule); background: var(--surface); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: box-shadow 0.3s var(--ease), border-color 0.2s; }
 .page a:hover { box-shadow: var(--shadow-lift); border-color: var(--rule-strong); }
 .page figcaption { font-family: var(--mono); color: var(--ink-soft); font-size: 0.78rem; margin-top: 0.5rem; }
+/* In place of the scans, for an original held and shown by another institution. */
+.item-elsewhere {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 1.75rem 1.75rem 2rem;
+}
+.item-elsewhere h2 { font-size: 1.25rem; margin: 0 0 0.6rem; }
+.item-elsewhere p:not(.eyebrow) { color: var(--ink-soft); margin: 0 0 1.4rem; max-width: 34rem; }
+.item-elsewhere .button { white-space: normal; }
 .item-text h2 { font-size: 1.25rem; margin: 2.25rem 0 0.85rem; }
 .item-text h2:first-child, .item-text section:first-child h2 { margin-top: 0; }
 .links li { margin: 0.3rem 0; }
@@ -487,6 +499,104 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .browse a:hover { color: var(--ink); border-color: var(--rule-strong); box-shadow: var(--shadow-lift); }
 .browse-label { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; font-weight: 600; font-size: 1.1rem; letter-spacing: -0.01em; }
 .browse-text { color: var(--ink-soft); font-size: 0.92rem; line-height: 1.5; }
+/* Collections within the collection. Each has its own colour, chosen in the admin and used on its card,
+   its page and its items' cards, so the collections can be told apart at a glance. Each colour is at
+   least 5.5:1 as text on white and on its own tint. */
+.set-red    { --set: #b4122f; --set-tint: #fbeaed; }
+.set-blue   { --set: #1d4ed8; --set-tint: #e9eefc; }
+.set-green  { --set: #0b6b5f; --set-tint: #e1f2ee; }
+.set-amber  { --set: #9a4a00; --set-tint: #fcefdc; }
+.set-violet { --set: #6d28d9; --set-tint: #f0eafc; }
+.set-slate  { --set: #334155; --set-tint: #eceff3; }
+.set-kind {
+  display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; color: var(--set);
+  font-family: var(--mono); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+}
+.set-kind::before { content: ''; flex: none; width: 0.6rem; height: 0.6rem; border-radius: 2px; background: var(--set); }
+
+/* Its picture: scans fanned out from across its dates, or a sound wave for recordings */
+.set-art { position: relative; aspect-ratio: 16 / 7; background: var(--set-tint); overflow: hidden; display: grid; place-items: center; }
+.set-art img {
+  position: absolute; left: 50%; top: 16%; width: 30%; aspect-ratio: 4 / 5; object-fit: cover; object-position: top;
+  background: #fff; border: 3px solid #fff; border-radius: 3px; box-shadow: 0 14px 28px -12px rgb(0 0 0 / 0.45);
+  transform: translateX(-50%); transition: transform 0.5s var(--ease);
+}
+.set-art .fan-front { z-index: 2; }
+.set-art .fan-left { top: 24%; transform: translateX(-118%) rotate(-8deg); }
+.set-art .fan-right { top: 24%; transform: translateX(18%) rotate(8deg); }
+.set-art .fan-back { top: 22%; transform: translateX(-12%) rotate(7deg); }
+.set-art .fan-back + .fan-front, .set-art .fan-front:has(+ .fan-back) { transform: translateX(-88%) rotate(-3deg); }
+.set-wave { width: 78%; height: 60%; fill: var(--set); }
+.set-art-word { color: var(--set); font-family: var(--mono); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.12em; }
+
+/* Its count and dates, large */
+.set-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 2.25rem; margin: 0; }
+.set-stats div { display: flex; flex-direction: column-reverse; }
+.set-stats dd { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.1rem); font-weight: 600; line-height: 1; letter-spacing: -0.035em; font-variant-numeric: tabular-nums; color: var(--ink); }
+.set-stats dt { margin-top: 0.4rem; font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); }
+
+/* Cards, two across */
+ul.set-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+@media (min-width: 48rem) { ul.set-grid { grid-template-columns: repeat(2, 1fr); } }
+.set-card { min-width: 0; }
+.set-card-link {
+  display: flex; flex-direction: column; height: 100%; color: var(--ink); text-decoration: none; background: var(--surface);
+  border: 1px solid var(--rule); border-top: 4px solid var(--set); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.set-card-link:hover { color: var(--ink); box-shadow: var(--shadow-lift); transform: translateY(-3px); }
+.set-card-link:hover .fan-left { transform: translateX(-126%) rotate(-11deg); }
+.set-card-link:hover .fan-right { transform: translateX(26%) rotate(11deg); }
+.set-card-body { display: flex; flex-direction: column; flex: 1; padding: 1.4rem 1.5rem 1.5rem; }
+.set-card-body > * { margin: 0; }
+.set-card-title { margin-top: 0.55rem; font-size: clamp(1.3rem, 2vw, 1.6rem); line-height: 1.2; letter-spacing: -0.025em; }
+.set-card-summary { margin-top: 0.65rem; color: var(--ink-soft); line-height: 1.55; }
+/* At the foot, so the numbers line up across a row whatever the summaries' length. */
+.set-card .set-stats { margin-top: auto; padding-top: 1.4rem; }
+.set-card-holder { margin-top: 0.85rem; font-size: 0.85rem; color: var(--ink-faint); }
+.set-card-body .badge { align-self: flex-start; margin-top: 0.75rem; }
+
+/* The Collection page: the collections first, then what works across them all */
+.set-shelf { margin-top: 2.5rem; }
+.across { margin-top: 5rem; padding-top: 3rem; border-top: 1px solid var(--rule); }
+.across > h2 { margin: 0; }
+.across .collection-search { margin-top: 1.5rem; }
+.across .hub-section h3 { font-size: 1.15rem; margin: 0 0 1rem; }
+
+/* A collection's own page */
+.set-hero {
+  display: grid; gap: 2rem; align-items: center; margin: 0.5rem 0 0; padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--set-tint); border-top: 4px solid var(--set); border-radius: var(--radius);
+}
+@media (min-width: 60rem) { .set-hero { grid-template-columns: 1.3fr 1fr; gap: 3rem; } }
+.set-hero h1 { margin: 0.75rem 0 0.75rem; }
+.set-hero .lede { margin: 0 0 1.75rem; }
+.set-hero-holder { margin: 1.1rem 0 1.75rem; font-size: 0.9rem; color: var(--ink-soft); }
+.set-hero-art { aspect-ratio: 16 / 9; background: transparent; }
+.set-hero-art img { width: 34%; top: 10%; }
+.set-hero-art .set-wave { width: 100%; height: 72%; }
+.set-intro { margin-top: 3rem; }
+.set-rights { color: var(--ink-soft); font-size: 0.9rem; }
+.set-search { margin: 0; width: min(100%, 26rem); }
+.set-decades { margin: -0.5rem 0 1.75rem; }
+.filter-context { font-family: var(--mono); font-size: 0.85rem; color: var(--ink-soft); margin: -0.5rem 0 0; }
+
+/* On an item: its collection, as a tag on its card and a link above its title */
+.card.has-set .card-link { border-top: 3px solid var(--set); }
+.card-set {
+  margin: 0 0 0.45rem; color: var(--set); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.card-set::before { content: ''; display: inline-block; width: 0.5rem; height: 0.5rem; margin-right: 0.4rem; border-radius: 2px; background: var(--set); }
+.set-crumb { margin: 0 0 1.25rem; }
+.set-crumb a {
+  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.9rem 0.35rem 0.75rem; border-radius: 999px;
+  background: var(--set-tint); color: var(--set); text-decoration: none; transition: background 0.15s, color 0.15s;
+  font-family: var(--mono); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.set-crumb a::before { content: ''; flex: none; width: 0.55rem; height: 0.55rem; border-radius: 2px; background: currentColor; }
+.set-crumb a:hover { background: var(--set); color: #fff; }
+
 .about-logo-body { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 1.75rem; }
 .about-logo-body img { max-width: 12rem; height: auto; }
 .about-logo-body .prose { flex: 1 1 20rem; }

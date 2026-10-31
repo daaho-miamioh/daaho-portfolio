@@ -19,7 +19,17 @@ import { REGIONS } from '@/lib/regions'
 export const PERSON_ROLES = [
   { label: 'Creator', value: 'creator' },
   { label: 'Correspondent', value: 'correspondent' },
+  { label: 'Interviewee', value: 'interviewee' },
+  { label: 'Interviewer', value: 'interviewer' },
   { label: 'Named in document', value: 'contributor' },
+] as const
+
+export const FORMATS = [
+  { label: 'Document', value: 'document' },
+  { label: 'Photograph', value: 'photograph' },
+  { label: 'Oral history', value: 'oral_history' },
+  { label: 'Audio recording', value: 'audio' },
+  { label: 'Video recording', value: 'video' },
 ] as const
 
 export const Items: CollectionConfig = {
@@ -235,10 +245,20 @@ export const Items: CollectionConfig = {
                   ],
                 },
                 { name: 'repository', type: 'text' },
-                { name: 'collection', type: 'text' },
+                { name: 'collection', type: 'text', label: 'Archival collection', admin: { description: "As in the holder's catalog, e.g. President, Alfred Horatio Upham, Office Files, 1937-38" } },
                 { name: 'series', type: 'text' },
                 { type: 'row', fields: [{ name: 'box', type: 'text' }, { name: 'folder', type: 'text' }] },
                 { type: 'row', fields: [{ name: 'shelf', type: 'text' }, { name: 'callNumber', type: 'text' }] },
+                {
+                  name: 'url',
+                  type: 'text',
+                  label: 'Original online',
+                  validate: (v: string | null | undefined) => !v || /^https?:\/\/\S+$/.test(v) || 'A full web address, starting https://',
+                  admin: {
+                    description:
+                      'For an item held and shown by another institution: its page there. The item page links to it as the place to see or hear the original, and we keep no copy of the file.',
+                  },
+                },
               ],
             },
           ],
@@ -255,6 +275,21 @@ export const Items: CollectionConfig = {
       admin: { position: 'sidebar', description: 'Pipeline identifier, e.g. AAMU-0001.' },
     },
     slugField('itemId'),
+    {
+      name: 'format',
+      type: 'select',
+      required: true,
+      defaultValue: 'document',
+      options: [...FORMATS],
+      admin: { position: 'sidebar', description: 'Shown on the item page and its card.' },
+    },
+    {
+      name: 'set',
+      type: 'relationship',
+      relationTo: 'sets',
+      label: 'Collection',
+      admin: { position: 'sidebar', description: 'The collection on this site it belongs to, by where it comes from.' },
+    },
     { name: 'dateSort', type: 'date', index: true, access: { read: publicOnceChecked('titleChecked') }, admin: { position: 'sidebar', readOnly: true } },
     { name: 'language', type: 'text', admin: { position: 'sidebar' } },
     {

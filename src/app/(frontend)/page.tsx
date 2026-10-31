@@ -3,12 +3,14 @@ import Link from 'next/link'
 
 import { EventList } from '@/components/EventList'
 import { ItemGrid } from '@/components/ItemCard'
+import { SetGrid } from '@/components/SetCard'
 import { Slideshow } from '@/components/Slideshow'
 import { Sponsors } from '@/components/Sponsors'
 import { StoryGrid } from '@/components/StoryCard'
 import { dateField, decadeOptions } from '@/lib/itemsQuery'
 import { asMedia, src, srcSet } from '@/lib/media'
 import { loadProjectEvents } from '@/lib/projectEvents'
+import { loadSets } from '@/lib/sets'
 import { getViewer } from '@/lib/viewer'
 import type { Item, Story } from '@/payload-types'
 
@@ -39,6 +41,7 @@ export default async function HomePage() {
   const peopleCount = { totalDocs: peopleSeen.size }
   const placeCount = { totalDocs: placesSeen.size }
 
+  const sets = await loadSets(viewer)
   const events = await loadProjectEvents(payload, viewer)
   const stories = (await payload.find({ collection: 'stories', limit: 3, depth: 1, draft, sort: '-publishedAt', ...access })).docs as Story[]
   const recentPast = events.past.slice(0, events.upcoming.length ? 2 : 3)
@@ -68,8 +71,8 @@ export default async function HomePage() {
             </div>
           ) : (
             <p className="lede">
-              Letters, memoranda and photographs from the collections of Miami University, recording Asian American
-              lives, students and communities in Ohio across the twentieth century.
+              Letters, records and recordings on Asian American lives, students and communities in Ohio, from the
+              archives of Miami University and from partner collections.
             </p>
           )}
           <p className="hero-actions">
@@ -124,6 +127,21 @@ export default async function HomePage() {
             ))}
           </ul>
         </nav>
+      )}
+
+      {sets.length > 0 && (
+        <section aria-labelledby="collections-heading" className="section">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Start here</p>
+              <h2 id="collections-heading">The collections</h2>
+            </div>
+            <Link href="/collection" className="section-link">
+              Search and browse it all <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+          <SetGrid sets={sets} />
+        </section>
       )}
 
       {slides.length > 0 && <Slideshow slides={slides} />}

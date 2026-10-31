@@ -14,7 +14,7 @@ export const SECTIONS: readonly Section[] = [
     href: '/collection',
     label: 'Collection',
     tabs: [
-      ['/collection', 'Overview'],
+      ['/collection', 'Collections'],
       ['/items', 'Items'],
       ['/people', 'People'],
       ['/places', 'Places'],

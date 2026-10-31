@@ -1,0 +1,29 @@
+{
+  "about": "Oral histories held by Columbus Metropolitan Library, shown on our site as linked records: we keep the catalog record, transcript and our own links, and link to CML for the recording. The record and transcript are fetched from CML; the names (inverted, as on our site), roles and places below are ours, read from CML's description.",
+  "holder": "Columbus Metropolitan Library",
+  "addedOn": "2026-10-30",
+  "items": [
+    {
+      "url": "https://digital-collections.columbuslibrary.org/digital/collection/oralhistory/id/37",
+      "itemId": "CML-OH-37",
+      "format": "oral_history",
+      "people": [
+        { "name": "Turiaga, Jeremiah", "role": "interviewee" },
+        { "name": "Lee, Maria", "role": "interviewer" },
+        { "name": "Ohio Progressive Asian Women's Leadership", "role": "contributor" }
+      ],
+      "places": ["Ohio--Columbus", "Ohio--Gahanna"]
+    },
+    {
+      "url": "https://digital-collections.columbuslibrary.org/digital/collection/oralhistory/id/36",
+      "itemId": "CML-OH-36",
+      "format": "oral_history",
+      "people": [
+        { "name": "Luong, Sunmin", "role": "interviewee" },
+        { "name": "Lee, Maria", "role": "interviewer" },
+        { "name": "Ohio Progressive Asian Women's Leadership", "role": "contributor" }
+      ],
+      "places": ["Ohio--Columbus", "Ohio--Lima"]
+    }
+  ]
+}

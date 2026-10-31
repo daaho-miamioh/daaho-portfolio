@@ -10,6 +10,8 @@ import * as migration_20261023_131909_item_public_view from './20261023_131909_i
 import * as migration_20261023_145012_stories from './20261023_145012_stories';
 import * as migration_20261029_202456_team_former_group from './20261029_202456_team_former_group';
 import * as migration_20261030_035928_items_written_by_people from './20261030_035928_items_written_by_people';
+import * as migration_20261030_164022_items_format_and_original_online from './20261030_164022_items_format_and_original_online';
+import * as migration_20261030_195630_collections_within_the_collection from './20261030_195630_collections_within_the_collection';
 
 export const migrations = [
   {
@@ -70,6 +72,16 @@ export const migrations = [
   {
     up: migration_20261030_035928_items_written_by_people.up,
     down: migration_20261030_035928_items_written_by_people.down,
-    name: '20261030_035928_items_written_by_people'
+    name: '20261030_035928_items_written_by_people',
+  },
+  {
+    up: migration_20261030_164022_items_format_and_original_online.up,
+    down: migration_20261030_164022_items_format_and_original_online.down,
+    name: '20261030_164022_items_format_and_original_online',
+  },
+  {
+    up: migration_20261030_195630_collections_within_the_collection.up,
+    down: migration_20261030_195630_collections_within_the_collection.down,
+    name: '20261030_195630_collections_within_the_collection'
   },
 ];

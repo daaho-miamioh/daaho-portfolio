@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     items: Item;
+    sets: ItemSet;
     stories: Story;
     annotations: Annotation;
     events: Event;
@@ -87,6 +88,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     items: ItemsSelect<false> | ItemsSelect<true>;
+    sets: SetsSelect<false> | SetsSelect<true>;
     stories: StoriesSelect<false> | StoriesSelect<true>;
     annotations: AnnotationsSelect<false> | AnnotationsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
@@ -207,7 +209,7 @@ export interface Item {
   people?:
     | {
         person: number | Person;
-        role: 'creator' | 'correspondent' | 'contributor';
+        role: 'creator' | 'correspondent' | 'interviewee' | 'interviewer' | 'contributor';
         id?: string | null;
       }[]
     | null;
@@ -249,12 +251,19 @@ export interface Item {
      */
     dimensions?: string | null;
     repository?: string | null;
+    /**
+     * As in the holder's catalog, e.g. President, Alfred Horatio Upham, Office Files, 1937-38
+     */
     collection?: string | null;
     series?: string | null;
     box?: string | null;
     folder?: string | null;
     shelf?: string | null;
     callNumber?: string | null;
+    /**
+     * For an item held and shown by another institution: its page there. The item page links to it as the place to see or hear the original, and we keep no copy of the file.
+     */
+    url?: string | null;
   };
   /**
    * Pipeline identifier, e.g. AAMU-0001.
@@ -264,6 +273,14 @@ export interface Item {
    * Used in the page address. Changing it breaks existing links.
    */
   slug?: string | null;
+  /**
+   * Shown on the item page and its card.
+   */
+  format: 'document' | 'photograph' | 'oral_history' | 'audio' | 'video';
+  /**
+   * The collection on this site it belongs to, by where it comes from.
+   */
+  set?: (number | null) | ItemSet;
   dateSort?: string | null;
   language?: string | null;
   /**
@@ -653,6 +670,77 @@ export interface Event {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Groups of items by where they come from, each with its own page. An item's collection is set in its sidebar.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sets".
+ */
+export interface ItemSet {
+  id: number;
+  title: string;
+  /**
+   * Two or three words, shown above its title: e.g. Festival programs, Oral histories.
+   */
+  kind?: string | null;
+  /**
+   * On item cards and item pages, e.g. AsianFest programs. Its title if empty.
+   */
+  shortTitle?: string | null;
+  /**
+   * One sentence for its card and the top of its page: what sets it apart from the other collections.
+   */
+  summary?: string | null;
+  /**
+   * What it is, who made it, and how it came to the project.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional. Without one, its card shows the first scan among its items.
+   */
+  cover?: (number | null) | Media;
+  /**
+   * The institution that holds the originals.
+   */
+  holder?: string | null;
+  /**
+   * Its page on the holder's website.
+   */
+  url?: string | null;
+  /**
+   * For the collection as a whole. Each item's own rights statement still applies.
+   */
+  rights?: string | null;
+  /**
+   * Used in the page address. Changing it breaks existing links.
+   */
+  slug?: string | null;
+  /**
+   * So its cards, page and items can be told apart at a glance. Give each collection its own.
+   */
+  color: 'red' | 'blue' | 'green' | 'amber' | 'violet' | 'slate';
+  /**
+   * Lower numbers are listed first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Biographies and themes written by the project, each with the documents from the collection it draws on.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -895,6 +983,10 @@ export interface PayloadLockedDocument {
         value: number | Item;
       } | null)
     | ({
+        relationTo: 'sets';
+        value: number | ItemSet;
+      } | null)
+    | ({
         relationTo: 'stories';
         value: number | Story;
       } | null)
@@ -1037,9 +1129,12 @@ export interface ItemsSelect<T extends boolean = true> {
         folder?: T;
         shelf?: T;
         callNumber?: T;
+        url?: T;
       };
   itemId?: T;
   slug?: T;
+  format?: T;
+  set?: T;
   dateSort?: T;
   language?: T;
   review?:
@@ -1075,6 +1170,27 @@ export interface ItemsSelect<T extends boolean = true> {
         issue?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sets_select".
+ */
+export interface SetsSelect<T extends boolean = true> {
+  title?: T;
+  kind?: T;
+  shortTitle?: T;
+  summary?: T;
+  intro?: T;
+  cover?: T;
+  holder?: T;
+  url?: T;
+  rights?: T;
+  slug?: T;
+  color?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
