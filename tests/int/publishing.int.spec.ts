@@ -91,10 +91,17 @@ describe('publishing rules', () => {
   })
 
   it('refuses to publish without a rights statement', async () => {
-    const item = await draftItem({ review: ALL_CHECKED })
-    await expect(
-      payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false }),
-    ).rejects.toThrow(/rights statement/)
+    // With no site default either: the default in Site settings counts as the item's statement.
+    const before = await payload.findGlobal({ slug: 'settings', depth: 0 })
+    try {
+      await payload.updateGlobal({ slug: 'settings', data: { defaultRights: null } })
+      const item = await draftItem({ review: ALL_CHECKED })
+      await expect(
+        payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false }),
+      ).rejects.toThrow(/rights statement/)
+    } finally {
+      await payload.updateGlobal({ slug: 'settings', data: { defaultRights: before.defaultRights ?? null } })
+    }
   })
 
   it('does not let a contributor publish, even a reviewed item with rights', async () => {
