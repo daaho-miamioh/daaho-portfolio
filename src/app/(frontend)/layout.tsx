@@ -108,6 +108,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Link href="/harmful-language">Statement on harmful language</Link>
                 </li>
                 <li>
+                  <Link href="/join">Join the project</Link>
+                </li>
+                <li>
                   <Link href="/admin">Staff sign-in</Link>
                 </li>
               </ul>

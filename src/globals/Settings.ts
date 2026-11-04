@@ -50,5 +50,15 @@ export const Settings: GlobalConfig = {
           'Off: the public sees reading-size images only (2000 px). Signed-in staff can always open originals. Pending the PI\'s decision.',
       },
     },
+    {
+      name: 'acceptAccessRequests',
+      type: 'checkbox',
+      defaultValue: true,
+      label: 'Accept requests to join the project',
+      admin: {
+        description:
+          'On: anyone can ask to join at /join, and admins approve or decline each request under Admin → Access requests. Off: the form says requests are closed, for example during a wave of spam.',
+      },
+    },
   ],
 }

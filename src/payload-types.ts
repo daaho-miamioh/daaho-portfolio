@@ -80,6 +80,7 @@ export interface Config {
     'project-events': ProjectEvent;
     team: Team;
     users: User;
+    'access-requests': AccessRequest;
     activity: Activity;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -101,6 +102,7 @@ export interface Config {
     'project-events': ProjectEventsSelect<false> | ProjectEventsSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'access-requests': AccessRequestsSelect<false> | AccessRequestsSelect<true>;
     activity: ActivitySelect<false> | ActivitySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -403,7 +405,7 @@ export interface Media {
   };
 }
 /**
- * Use Invite someone to add people: they get an email with a link to choose their own password.
+ * Use Invite someone, or Invite several people, to add people: each gets an email with a link to choose their own password. Requests from the form at /join are under Access requests.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
@@ -957,6 +959,30 @@ export interface Team {
   createdAt: string;
 }
 /**
+ * People asking to join the project, from the form at /join. Open a request to approve it, which creates their account and emails an invitation, or to decline it. Delete requests that are spam.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "access-requests".
+ */
+export interface AccessRequest {
+  id: number;
+  name: string;
+  email: string;
+  affiliation?: string | null;
+  kind: 'student' | 'researcher' | 'library' | 'community' | 'other';
+  reason: string;
+  /**
+   * For admins only; never sent to them.
+   */
+  staffNote?: string | null;
+  status: 'pending' | 'approved' | 'declined';
+  account?: (number | null) | User;
+  decidedBy?: (number | null) | User;
+  decidedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Every change anyone makes here, and every sign-in, newest first. Entries cannot be edited or deleted. Open one to see what changed.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1072,6 +1098,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'access-requests';
+        value: number | AccessRequest;
       } | null)
     | ({
         relationTo: 'activity';
@@ -1552,6 +1582,24 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "access-requests_select".
+ */
+export interface AccessRequestsSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  affiliation?: T;
+  kind?: T;
+  reason?: T;
+  staffNote?: T;
+  status?: T;
+  account?: T;
+  decidedBy?: T;
+  decidedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "activity_select".
  */
 export interface ActivitySelect<T extends boolean = true> {
@@ -1747,6 +1795,10 @@ export interface Setting {
    * Off: the public sees reading-size images only (2000 px). Signed-in staff can always open originals. Pending the PI's decision.
    */
   allowFullResolution?: boolean | null;
+  /**
+   * On: anyone can ask to join at /join, and admins approve or decline each request under Admin → Access requests. Off: the form says requests are closed, for example during a wave of spam.
+   */
+  acceptAccessRequests?: boolean | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1820,6 +1872,7 @@ export interface SettingsSelect<T extends boolean = true> {
   allowUnreviewedPublishing?: T;
   harmfulLanguageStatement?: T;
   allowFullResolution?: T;
+  acceptAccessRequests?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

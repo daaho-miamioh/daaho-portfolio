@@ -24,10 +24,12 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { InviteButton as InviteButton_315b3ae122c4f5100d0fb705c8f98f81 } from '../../../components/admin/InviteButton'
 import { InvitePanel as InvitePanel_320258ded341480a60698593f3e40915 } from '../../../components/admin/InvitePanel'
+import { AccessDecision as AccessDecision_57b6e3f8e57bd5849bd00bb87c5e0782 } from '../../../components/admin/AccessDecision'
 import { RecordLink as RecordLink_6e42df4c74e9f0eb69b3118cf79b3f1f } from '../../../components/admin/ActivityEntry'
 import { Changes as Changes_6e42df4c74e9f0eb69b3118cf79b3f1f } from '../../../components/admin/ActivityEntry'
 import { Icon as Icon_81fda60f3e3709e861f40982a767707d } from '../../../components/admin/Brand'
 import { Logo as Logo_81fda60f3e3709e861f40982a767707d } from '../../../components/admin/Brand'
+import { RequestAccessLink as RequestAccessLink_1352a983fd52a074673f9514c1d3f220 } from '../../../components/admin/RequestAccessLink'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -59,10 +61,12 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/InviteButton#InviteButton": InviteButton_315b3ae122c4f5100d0fb705c8f98f81,
   "/components/admin/InvitePanel#InvitePanel": InvitePanel_320258ded341480a60698593f3e40915,
+  "/components/admin/AccessDecision#AccessDecision": AccessDecision_57b6e3f8e57bd5849bd00bb87c5e0782,
   "/components/admin/ActivityEntry#RecordLink": RecordLink_6e42df4c74e9f0eb69b3118cf79b3f1f,
   "/components/admin/ActivityEntry#Changes": Changes_6e42df4c74e9f0eb69b3118cf79b3f1f,
   "/components/admin/Brand#Icon": Icon_81fda60f3e3709e861f40982a767707d,
   "/components/admin/Brand#Logo": Logo_81fda60f3e3709e861f40982a767707d,
+  "/components/admin/RequestAccessLink#RequestAccessLink": RequestAccessLink_1352a983fd52a074673f9514c1d3f220,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

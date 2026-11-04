@@ -13,6 +13,7 @@ import * as migration_20261030_035928_items_written_by_people from './20261030_0
 import * as migration_20261030_164022_items_format_and_original_online from './20261030_164022_items_format_and_original_online';
 import * as migration_20261030_195630_collections_within_the_collection from './20261030_195630_collections_within_the_collection';
 import * as migration_20261031_051949_activity_log from './20261031_051949_activity_log';
+import * as migration_20261101_030939_access_requests from './20261101_030939_access_requests';
 
 export const migrations = [
   {
@@ -89,5 +90,10 @@ export const migrations = [
     up: migration_20261031_051949_activity_log.up,
     down: migration_20261031_051949_activity_log.down,
     name: '20261031_051949_activity_log',
+  },
+  {
+    up: migration_20261101_030939_access_requests.up,
+    down: migration_20261101_030939_access_requests.down,
+    name: '20261101_030939_access_requests',
   },
 ];

@@ -28,8 +28,23 @@ export function siteOrigin(req: PayloadRequest): string {
   throw new APIError('SITE_URL is not set, so the site cannot write links into emails.', 500)
 }
 
-const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
-const roleLabel = (role: string) => ROLES.find((r) => r.value === role)?.label.split(' — ')[0] ?? role
+export const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+export const roleLabel = (role: string) => ROLES.find((r) => r.value === role)?.label.split(' — ')[0] ?? role
+
+/** The frame every email from the site shares: the project line, a heading, then `inner` (HTML). */
+export function emailPage(heading: string, inner: string) {
+  return `<!doctype html><html><body style="margin:0;background:#fafafa;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#0a0a0a">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border:1px solid #e5e5e5;border-radius:14px">
+<tr><td style="padding:32px">
+<p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#525252">DAAHO · Miami University Libraries</p>
+<h1 style="margin:0 0 20px;font-size:22px;line-height:1.3">${escapeHtml(heading)}</h1>
+${inner}
+</td></tr></table></td></tr></table></body></html>`
+}
+
+export const emailButton = (link: string, label: string) =>
+  `<p style="margin:0 0 24px"><a href="${escapeHtml(link)}" style="display:inline-block;background:#0a0a0a;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:600">${escapeHtml(label)}</a></p>`
 
 export function invitationEmail(o: { name: string; inviter: string; role: string; link: string; expires: Date }) {
   const until = o.expires.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/New_York' })
@@ -46,19 +61,15 @@ export function invitationEmail(o: { name: string; inviter: string; role: string
     '',
     'If you were not expecting this, you can ignore this email.',
   ].join('\n')
-  const html = `<!doctype html><html><body style="margin:0;background:#fafafa;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#0a0a0a">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
-<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border:1px solid #e5e5e5;border-radius:14px">
-<tr><td style="padding:32px">
-<p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#525252">DAAHO · Miami University Libraries</p>
-<h1 style="margin:0 0 20px;font-size:22px;line-height:1.3">You are invited to the DAAHO project site</h1>
-<p style="margin:0 0 16px;font-size:16px;line-height:1.6">Hi ${escape(o.name)},</p>
-<p style="margin:0 0 24px;font-size:16px;line-height:1.6">${escape(o.inviter)} has invited you to work on <strong>Documenting Asian American Histories in Ohio</strong> as <strong>${escape(roleLabel(o.role))}</strong>. Choose your password to activate your account.</p>
-<p style="margin:0 0 24px"><a href="${escape(o.link)}" style="display:inline-block;background:#0a0a0a;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:600">Choose your password</a></p>
-<p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#525252">This link works once and expires on <strong>${escape(until)}</strong> (Eastern time). If it has expired, ask ${escape(o.inviter)} to send a new one.</p>
-<p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#525252">If the button does not work, copy this address into your browser:<br><span style="word-break:break-all">${escape(o.link)}</span></p>
-<p style="margin:16px 0 0;font-size:13px;color:#525252">If you were not expecting this, you can ignore this email.</p>
-</td></tr></table></td></tr></table></body></html>`
+  const html = emailPage(
+    subject,
+    `<p style="margin:0 0 16px;font-size:16px;line-height:1.6">Hi ${escapeHtml(o.name)},</p>
+<p style="margin:0 0 24px;font-size:16px;line-height:1.6">${escapeHtml(o.inviter)} has invited you to work on <strong>Documenting Asian American Histories in Ohio</strong> as <strong>${escapeHtml(roleLabel(o.role))}</strong>. Choose your password to activate your account.</p>
+${emailButton(o.link, 'Choose your password')}
+<p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#525252">This link works once and expires on <strong>${escapeHtml(until)}</strong> (Eastern time). If it has expired, ask ${escapeHtml(o.inviter)} to send a new one.</p>
+<p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#525252">If the button does not work, copy this address into your browser:<br><span style="word-break:break-all">${escapeHtml(o.link)}</span></p>
+<p style="margin:16px 0 0;font-size:13px;color:#525252">If you were not expecting this, you can ignore this email.</p>`,
+  )
   return { subject, text, html }
 }
 

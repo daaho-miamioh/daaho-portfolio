@@ -1,22 +1,13 @@
-import { addDataAndFileToRequest, APIError, type CollectionConfig, type PayloadHandler, type PayloadRequest } from 'payload'
+import { addDataAndFileToRequest, APIError, type CollectionConfig, type PayloadRequest } from 'payload'
 
 import { admins, adminsField, hasRole, loggedIn, ROLES } from '@/access/roles'
 import { emailConfigured } from '@/lib/email'
+import { jsonEndpoint } from '@/lib/endpoint'
 import { inviteNewUser, sendInvitation, siteOrigin } from '@/lib/invite'
 
 /** Admins only; errors come back as JSON the invitation panel can show. */
-const adminEndpoint =
-  (run: (req: PayloadRequest) => Promise<unknown>): PayloadHandler =>
-  async (req) => {
-    try {
-      if (!hasRole(req, 'admin')) throw new APIError('Only admins can invite people.', 403)
-      return Response.json(await run(req))
-    } catch (err) {
-      const status = err instanceof APIError ? err.status : 500
-      const message = err instanceof Error ? err.message : 'Something went wrong.'
-      return Response.json({ errors: [{ message }] }, { status })
-    }
-  }
+const adminEndpoint = (run: (req: PayloadRequest) => Promise<unknown>) =>
+  jsonEndpoint(run, { admin: true, refusal: 'Only admins can invite people.' })
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -25,7 +16,8 @@ export const Users: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'email', 'role', 'invitedAt'],
     group: 'Admin',
-    description: 'Use Invite someone to add people: they get an email with a link to choose their own password.',
+    description:
+      'Use Invite someone, or Invite several people, to add people: each gets an email with a link to choose their own password. Requests from the form at /join are under Access requests.',
     components: { beforeListTable: ['/components/admin/InvitePanel#InvitePanel'] },
   },
   auth: {

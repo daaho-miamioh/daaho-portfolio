@@ -6,6 +6,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { AccessRequests } from './collections/AccessRequests'
 import { Annotations } from './collections/Annotations'
 import { Events } from './collections/Events'
 import { Genres } from './collections/Genres'
@@ -73,9 +74,11 @@ export default buildConfig({
         Logo: '/components/admin/Brand#Logo',
         Icon: '/components/admin/Brand#Icon',
       },
+      // Under the sign-in form: the way in for someone without an account.
+      afterLogin: ['/components/admin/RequestAccessLink#RequestAccessLink'],
     },
   },
-  collections: [Items, Sets, Stories, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users],
+  collections: [Items, Sets, Stories, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users, AccessRequests],
   globals: [Home, About, Settings],
   editor: lexicalEditor(),
   // Invitations and password resets. Resend on Vercel, the library's mail server later: see src/lib/email.ts.
