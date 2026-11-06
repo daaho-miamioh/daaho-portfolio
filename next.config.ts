@@ -23,6 +23,8 @@ const nextConfig: NextConfig = {
       { source: '/past/:slug', destination: '/events/:slug', permanent: true },
       { source: '/news', destination: '/events', permanent: true },
       { source: '/contact', destination: '/about', permanent: false },
+      // The BC collection was renamed at the PI's request (2026-11).
+      { source: '/collection/race-at-miami-university', destination: '/collection/miamis-connections-with-asia', permanent: true },
     ]
   },
   webpack: (webpackConfig) => {
