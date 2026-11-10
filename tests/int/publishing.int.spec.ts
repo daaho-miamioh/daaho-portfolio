@@ -137,6 +137,25 @@ describe('publishing rules', () => {
     expect(await isPublic(mediaId)).toBe(false)
   })
 
+  it('makes a recording public on publish and private again on unpublish', async () => {
+    // 0.2 s of silence: a real MP3, so the upload passes the same checks as a listening copy.
+    const mp3 = Buffer.from('/+MYxAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVV/+MYxDsAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxHYAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxLEAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxMQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV', 'base64')
+    const audio = await payload.create({
+      collection: 'media',
+      data: { alt: 'test recording', public: false },
+      file: { data: mp3, mimetype: 'audio/mpeg', name: `test-${stamp}.mp3`, size: mp3.length },
+    })
+    ids.media.push(audio.id)
+    const item = await draftItem({ review: ALL_CHECKED, rights: 'In copyright', format: 'oral_history', pages: [], recording: audio.id })
+    expect(await isPublic(audio.id)).toBe(false)
+
+    await payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false })
+    expect(await isPublic(audio.id)).toBe(true)
+
+    await payload.update({ collection: 'items', id: item.id, data: { _status: 'draft' }, user: editor, overrideAccess: false })
+    expect(await isPublic(audio.id)).toBe(false)
+  })
+
   it('shows the public published items only', async () => {
     const item = await draftItem()
     const anonymous = await payload.find({

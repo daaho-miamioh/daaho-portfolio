@@ -169,6 +169,10 @@ export interface Item {
    * Required before publishing.
    */
   rights?: string | null;
+  /**
+   * The listening copy (MP3) that plays on the item page. Public once the item is published. Keep the lossless master (WAV) on the project Google Drive.
+   */
+  recording?: (number | null) | Media;
   pages?:
     | {
         image: number | Media;
@@ -1158,6 +1162,7 @@ export interface ItemsSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   rights?: T;
+  recording?: T;
   pages?:
     | T
     | {

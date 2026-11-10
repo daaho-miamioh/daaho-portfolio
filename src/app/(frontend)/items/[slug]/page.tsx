@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { FORMATS, PERSON_ROLES } from '@/collections/Items'
+import { FORMATS, PERSON_ROLES, RECORDING_FORMATS } from '@/collections/Items'
 import { AnnotatedTranscript } from '@/components/AnnotatedTranscript'
 import { ContextEvents } from '@/components/ContextEvents'
 import { Paragraphs } from '@/components/Paragraphs'
+import { RecordingPlayer } from '@/components/RecordingPlayer'
 import { ItemGrid } from '@/components/ItemCard'
 import { eventsForItem, yearOf } from '@/lib/context'
 import { displayDate } from '@/lib/dates'
@@ -38,7 +39,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 const roleLabel = Object.fromEntries(PERSON_ROLES.map((r) => [r.value, r.label]))
 const formatLabel: Record<string, string> = Object.fromEntries(FORMATS.map((f) => [f.value, f.label]))
-const RECORDINGS = new Set(['oral_history', 'audio', 'video'])
 const populated = <T extends { id: number }>(xs: (number | T)[] | null | undefined) =>
   (xs ?? []).filter((x): x is T => typeof x === 'object' && !!x)
 
@@ -126,6 +126,8 @@ export default async function ItemPage({ params }: Params) {
   const fullResolution = !!user || !!settings.allowFullResolution
 
   const pages = (item.pages ?? []).map((p) => ({ media: asMedia(p.image), label: p.label })).filter((p) => p.media)
+  // The listening copy, for a recording we hold and play ourselves.
+  const audio = RECORDING_FORMATS.has(item.format ?? '') ? asMedia(item.recording) : null
   const people = (item.people ?? [])
     .map((row) => ({ person: typeof row.person === 'object' ? (row.person as Person) : null, role: row.role }))
     .filter((r): r is { person: Person; role: typeof r.role } => !!r.person)
@@ -153,9 +155,9 @@ export default async function ItemPage({ params }: Params) {
   const checkedParts = parts.filter(([, checked]) => checked).map(([, , label]) => label)
   const archival = item.archival ?? {}
   // Held and shown by another institution: we keep the record and a link to the original, not the file.
-  const elsewhere = !pages.length && archival.url ? archival.url : null
+  const elsewhere = !pages.length && !audio && archival.url ? archival.url : null
   const holder = archival.repository || 'the holding institution'
-  const recording = RECORDINGS.has(item.format ?? '')
+  const recording = RECORDING_FORMATS.has(item.format ?? '')
   // Checked parts split by who wrote them: people (the catalog, staff) or AI, then checked by staff. The
   // transcript of an item held elsewhere is the holder's, credited as such, so it is in neither.
   const byPeople = new Set(item.review?.byPeople ?? [])
@@ -231,7 +233,7 @@ export default async function ItemPage({ params }: Params) {
               <>
                 Project staff are still checking parts of this record that were drafted with AI
                 {checkedParts.length ? '' : ' — its description, transcript and the people and places it names'}. They
-                will appear here once checked. The scans are the authoritative record.
+                will appear here once checked. The {audio ? 'recording is' : 'scans are'} the authoritative record.
               </>
             )}
           </p>
@@ -240,10 +242,19 @@ export default async function ItemPage({ params }: Params) {
 
       <div className="item-layout">
         <section
-          className={elsewhere ? 'item-elsewhere' : 'item-pages'}
-          aria-label={elsewhere ? undefined : 'Scans'}
-          aria-labelledby={elsewhere ? 'elsewhere-heading' : undefined}
+          className={elsewhere ? 'item-elsewhere' : audio ? 'item-recording' : 'item-pages'}
+          aria-label={elsewhere || audio ? undefined : 'Scans'}
+          aria-labelledby={elsewhere ? 'elsewhere-heading' : audio ? 'recording-heading' : undefined}
         >
+          {/* A recording we hold: its listening copy plays here; the transcript's times play from that point. */}
+          {audio && (
+            <>
+              {archival.extent && <p className="eyebrow">{archival.extent}</p>}
+              <h2 id="recording-heading">The recording</h2>
+              <RecordingPlayer src={audio.url ?? ''} type={audio.mimeType} label={`Recording: ${item.title}`} />
+              {item.transcript && <p>Select a time in the transcript below to play from that point.</p>}
+            </>
+          )}
           {/* No scans: the original is held and shown by another institution, so link to it. */}
           {elsewhere && (
             <>
@@ -398,7 +409,9 @@ export default async function ItemPage({ params }: Params) {
                       ? ` Project staff have checked the transcript against the ${recording ? 'recording' : 'original'}.`
                       : ''
                   }`
-                : 'The scans and catalog record come from the library.'}{' '}
+                : audio
+                  ? 'The recording was digitized from the original tape.'
+                  : 'The scans and catalog record come from the library.'}{' '}
               {peopleParts.length > 0 && (
                 <>
                   The {listed(peopleParts)} {were(peopleParts)} written by library and project
@@ -431,7 +444,14 @@ export default async function ItemPage({ params }: Params) {
       {item.transcript && (
         <section className={`transcript${translation ? ' has-translation' : ''}`} aria-labelledby="transcript-heading">
           <h2 id="transcript-heading">{translation ? 'Transcript and translation' : 'Transcript'}</h2>
-          {elsewhere ? (
+          {audio ? (
+            <p className="transcript-note">
+              Transcribed from the recording, with times counted from its start. It keeps the speakers&rsquo; own
+              words, including language that may be harmful &mdash; see our{' '}
+              <Link href="/harmful-language">statement on potentially harmful language</Link>. The recording is the
+              authoritative record.
+            </p>
+          ) : elsewhere ? (
             <p className="transcript-note">
               Transcript from {holder}
               {recording ? ', with times counted from the start of the recording' : ''}. It keeps the speakers&rsquo;
@@ -460,7 +480,7 @@ export default async function ItemPage({ params }: Params) {
           <div className="transcript-columns">
             <div className="transcript-col">
               {translation && <h3 className="col-label">Original{item.language ? ` · ${item.language}` : ''}</h3>}
-              <AnnotatedTranscript text={item.transcript} annotations={annotations.approved} lang={langAttr(item.language)} />
+              <AnnotatedTranscript text={item.transcript} annotations={annotations.approved} lang={langAttr(item.language)} seekable={!!audio} />
             </div>
             {translation && translationStatus && (
               <div className="transcript-col" id="translation">

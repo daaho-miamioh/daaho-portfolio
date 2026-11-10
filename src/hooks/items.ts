@@ -13,10 +13,13 @@ import { sortableDate } from '@/lib/dates'
 import { CHECKS, publicSearchText, stripForPublic } from '@/lib/publicView'
 
 type Page = { image?: number | { id: number } | null }
+type Upload = number | { id: number } | null | undefined
+const uploadId = (u: Upload) => (typeof u === 'object' && u ? u.id : u)
 const mediaIds = (pages: Page[] | null | undefined) =>
-  (pages ?? [])
-    .map((p) => (typeof p.image === 'object' && p.image ? p.image.id : p.image))
-    .filter((id): id is number => typeof id === 'number')
+  (pages ?? []).map((p) => uploadId(p.image)).filter((id): id is number => typeof id === 'number')
+/** Every file an item shows: its scans and, for a recording, the listening copy. */
+const itemMedia = (doc: { pages?: Page[] | null; recording?: Upload } | null | undefined) =>
+  [...mediaIds(doc?.pages), uploadId(doc?.recording)].filter((id): id is number => typeof id === 'number')
 
 /**
  * The two rules an archival site has to enforce, not merely document:
@@ -200,7 +203,7 @@ async function syncItemVisibility({ doc, previousDoc, req, deleted }: SyncArgs) 
     : (await req.payload.find({ collection: 'items', where: { id: { equals: doc.id } }, draft: false, depth: 0, limit: 1, pagination: false, req, overrideAccess: true })).docs[0]
   const isPublished = published?._status === 'published'
 
-  const visibleMedia = new Set(isPublished ? mediaIds(published.pages) : [])
+  const visibleMedia = new Set(isPublished ? itemMedia(published) : [])
   // Each scan's alternative text names its item by a title someone has checked, or else only by its
   // ID: the media library is public, and an AI title (with misread names and dates) must not leak there.
   const altFor = new Map<number, string>()
@@ -210,8 +213,10 @@ async function syncItemVisibility({ doc, previousDoc, req, deleted }: SyncArgs) 
     const label = p.label && !/^page\s*\d+$/i.test(p.label.trim()) ? ` (${p.label.trim()})` : ''
     if (id) altFor.set(id, `Page ${i + 1}${label} of ${name}`)
   })
+  const recordingId = uploadId(doc.recording)
+  if (recordingId) altFor.set(recordingId, `Recording of ${name}`)
   // Saves only what changes: a bulk publish of many items would otherwise re-save every scan and person.
-  const scans = [...new Set([...mediaIds(doc.pages), ...mediaIds(previousDoc?.pages), ...visibleMedia])]
+  const scans = [...new Set([...itemMedia(doc), ...itemMedia(previousDoc), ...visibleMedia])]
   const scansNow = new Map(
     scans.length
       ? (await req.payload.find({ collection: 'media', where: { id: { in: scans } }, depth: 0, pagination: false, select: { public: true, alt: true }, req, overrideAccess: true })).docs.map((m) => [m.id, m])

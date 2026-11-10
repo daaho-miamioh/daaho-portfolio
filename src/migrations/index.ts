@@ -14,6 +14,7 @@ import * as migration_20261030_164022_items_format_and_original_online from './2
 import * as migration_20261030_195630_collections_within_the_collection from './20261030_195630_collections_within_the_collection';
 import * as migration_20261031_051949_activity_log from './20261031_051949_activity_log';
 import * as migration_20261101_030939_access_requests from './20261101_030939_access_requests';
+import * as migration_20261110_204753_item_recording from './20261110_204753_item_recording';
 
 export const migrations = [
   {
@@ -95,5 +96,10 @@ export const migrations = [
     up: migration_20261101_030939_access_requests.up,
     down: migration_20261101_030939_access_requests.down,
     name: '20261101_030939_access_requests',
+  },
+  {
+    up: migration_20261110_204753_item_recording.up,
+    down: migration_20261110_204753_item_recording.down,
+    name: '20261110_204753_item_recording'
   },
 ];

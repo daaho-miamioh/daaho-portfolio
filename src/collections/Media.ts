@@ -54,7 +54,9 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    mimeTypes: ['image/*'],
+    // Images, and the listening copies of recordings (MP3 or AAC). Lossless masters (WAV) stay on the
+    // project's Google Drive: the site serves only what a visitor plays.
+    mimeTypes: ['image/*', 'audio/mpeg', 'audio/mp4', 'audio/aac', 'audio/x-m4a'],
     adminThumbnail: 'thumbnail',
     imageSizes: [
       { name: 'thumbnail', width: 400 },

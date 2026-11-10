@@ -340,6 +340,18 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .item-elsewhere h2 { font-size: 1.25rem; margin: 0 0 0.6rem; }
 .item-elsewhere p:not(.eyebrow) { color: var(--ink-soft); margin: 0 0 1.4rem; max-width: 34rem; }
 .item-elsewhere .button { white-space: normal; }
+/* In place of the scans, for a recording we hold: the player, then the transcript below plays from its times. */
+.item-recording {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 1.75rem 1.75rem 2rem;
+}
+.item-recording h2 { font-size: 1.25rem; margin: 0 0 1rem; }
+.item-recording p:not(.eyebrow) { color: var(--ink-soft); font-size: 0.9rem; margin: 0.9rem 0 0; }
+.recording-player { display: block; width: 100%; }
+.transcript-body .timestamp {
+  display: inline-block; font-weight: 600; color: var(--accent); text-decoration: none; margin-top: 0.6rem;
+}
+.transcript-body .timestamp:hover, .transcript-body .timestamp:focus-visible { text-decoration: underline; }
 .item-text h2 { font-size: 1.25rem; margin: 2.25rem 0 0.85rem; }
 .item-text h2:first-child, .item-text section:first-child h2 { margin-top: 0; }
 .links li { margin: 0.3rem 0; }

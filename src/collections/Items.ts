@@ -32,6 +32,9 @@ export const FORMATS = [
   { label: 'Video recording', value: 'video' },
 ] as const
 
+/** Formats that are listened to rather than read: they have a recording, not scans. */
+export const RECORDING_FORMATS = new Set<string>(['oral_history', 'audio', 'video'])
+
 export const Items: CollectionConfig = {
   slug: 'items',
   labels: { singular: 'Item', plural: 'Items' },
@@ -74,6 +77,17 @@ export const Items: CollectionConfig = {
         {
           label: 'Pages',
           fields: [
+            {
+              name: 'recording',
+              type: 'upload',
+              relationTo: 'media',
+              filterOptions: { mimeType: { like: 'audio/' } },
+              admin: {
+                condition: (data) => RECORDING_FORMATS.has(data?.format ?? ''),
+                description:
+                  'The listening copy (MP3) that plays on the item page. Public once the item is published. Keep the lossless master (WAV) on the project Google Drive.',
+              },
+            },
             {
               name: 'pages',
               type: 'array',
