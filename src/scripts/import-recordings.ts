@@ -164,7 +164,10 @@ async function main() {
       continue
     }
 
-    let media = await findOne(payload, 'media', 'filename', rec.files.listening)
+    // Reuse the copy the item already has: on upload Payload may have renamed it (…-1.mp3) to avoid a
+    // file of the same name, so a lookup by the pipeline's filename alone would upload it again.
+    const attached = typeof existing?.recording === 'number' ? { id: existing.recording } : undefined
+    let media = attached ?? (await findOne(payload, 'media', 'filename', rec.files.listening))
     if (!media) {
       const data = fs.readFileSync(path.join(dir, rec.files.listening))
       media = await payload.create({
