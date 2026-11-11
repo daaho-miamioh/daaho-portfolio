@@ -48,6 +48,18 @@
       "summary": "Asian Americans in Ohio talk about immigrating and making their lives here. The recordings play on the library's website.",
       "holder": "Columbus Metropolitan Library",
       "url": "https://digital-collections.columbuslibrary.org/digital/collection/oralhistory"
+    },
+    {
+      "slug": "victor-wong-collection",
+      "title": "Victor Wong collection",
+      "shortTitle": null,
+      "kind": "Sound recordings",
+      "color": "violet",
+      "prefix": "SR_150_",
+      "order": 5,
+      "summary": "Cassette recordings from the Victor Wong collection, digitized from tape. The first is the Cincinnati Chinese Church's dedication of its new fellowship hall in 1992.",
+      "holder": null,
+      "url": null
     }
   ]
 }
