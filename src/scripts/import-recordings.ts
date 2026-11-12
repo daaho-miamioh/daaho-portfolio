@@ -5,8 +5,8 @@
  *   pnpm import:recordings:production      # the live site, from this machine
  *   DRY_RUN=1 pnpm import:recordings       # report only, touches nothing
  *
- * Reads <PIPELINE_DIR>/out_audio/<ID>/item.json and the listening copy beside it. PIPELINE_DIR
- * defaults to ../daaho-metadata-pipeline.
+ * Reads <PIPELINE_DIR>/out_audio/<ID>/item.json and the files beside it: the listening copy and the
+ * label photograph. PIPELINE_DIR defaults to ../daaho-metadata-pipeline.
  *
  * - Every item is a draft. Nothing here publishes, and the listening copy stays private until an
  *   editor publishes the item.
@@ -48,7 +48,7 @@ type Recording = {
   archival: { creator?: string | null; type?: string | null; extent?: string | null; collection?: string | null }
   label?: { lines?: string[] } | null
   transcript: string
-  files: { listening: string; master?: string }
+  files: { listening: string; master?: string; photos?: { file: string; label?: string | null }[] }
   ai: { model?: string; promptVersion?: string }
   review_notes: string[]
 }
@@ -102,8 +102,10 @@ async function main() {
   console.log(`Pipeline: ${PIPELINE_DIR}`)
   console.log(`Recordings: ${recordings.map((r) => r.rec.itemId).join(', ') || 'none'}`)
   for (const { dir, rec } of recordings) {
-    const file = path.join(dir, rec.files.listening)
-    if (!fs.existsSync(file)) throw new Error(`${rec.itemId}: listening copy missing at ${file}`)
+    for (const name of [rec.files.listening, ...(rec.files.photos ?? []).map((p) => p.file)]) {
+      const file = path.join(dir, name)
+      if (!fs.existsSync(file)) throw new Error(`${rec.itemId}: ${name} missing at ${file}`)
+    }
   }
   if (DRY_RUN) {
     console.log('DRY_RUN set: nothing written.')
@@ -179,6 +181,25 @@ async function main() {
       counts.media++
     }
 
+    // The label photographs go in the item's images, private until the item is published, as scans do.
+    const priorPages = (existing?.pages ?? []) as { image: number | { id: number } }[]
+    const pages: { image: number; label: string | null }[] = []
+    for (const [i, photo] of (rec.files.photos ?? []).entries()) {
+      const prior = priorPages[i]?.image
+      let image = prior ? { id: typeof prior === 'number' ? prior : prior.id } : await findOne(payload, 'media', 'filename', photo.file)
+      if (!image) {
+        const data = fs.readFileSync(path.join(dir, photo.file))
+        image = await payload.create({
+          collection: 'media',
+          data: { alt: `${photo.label ?? 'Photograph'}, ${rec.itemId}`, public: false, sourceFilename: photo.file },
+          file: { data, mimetype: /\.png$/i.test(photo.file) ? 'image/png' : 'image/jpeg', name: photo.file, size: data.length },
+          overrideAccess: true,
+        })
+        counts.media++
+      }
+      pages.push({ image: image.id, label: photo.label ?? null })
+    }
+
     const people = rec.people.map((p) => `${p.name}${p.role ? ` (${p.role}` : ''}${p.source ? `, from the ${p.source}` : ''}${p.role ? ')' : ''}`)
     const notes = [
       ...rec.review_notes,
@@ -193,7 +214,7 @@ async function main() {
       format: rec.format,
       set: await setId(rec.set),
       recording: media.id,
-      pages: [],
+      pages,
       transcript: rec.transcript,
       language: rec.language ?? null,
       places: await Promise.all(rec.places.map((n) => term('places', n))),
@@ -221,7 +242,7 @@ async function main() {
   }
   console.log(
     `\nDone: ${counts.created} created, ${counts.refreshed} refreshed, ${counts.kept} left as they were; ` +
-      `${counts.media} listening copies uploaded, ${counts.terms} places/subjects/genres added.`,
+      `${counts.media} files uploaded (listening copies, photographs), ${counts.terms} places/subjects/genres added.`,
   )
   process.exit(0)
 }

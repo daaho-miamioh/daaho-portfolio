@@ -346,6 +346,8 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
   padding: 1.75rem 1.75rem 2rem;
 }
 .item-recording h2 { font-size: 1.25rem; margin: 0 0 1rem; }
+.item-recording .page { margin-top: 1.5rem; }
+.item-recording .page a, .item-recording .page-frame { box-shadow: none; }
 .item-recording p:not(.eyebrow) { color: var(--ink-soft); font-size: 0.9rem; margin: 0.9rem 0 0; }
 .recording-player { display: block; width: 100%; }
 .transcript-body .timestamp {

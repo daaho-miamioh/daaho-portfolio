@@ -282,24 +282,31 @@ export default async function ItemPage({ params }: Params) {
                     srcSet={fullResolution ? srcSet(media!) : srcSet(media!, ['thumbnail', 'card', 'reading'])}
                     sizes="(min-width: 960px) 55vw, 100vw"
                     // From the title the visitor may see, not the stored alt text, which may predate a correction.
-                    alt={`Page ${i + 1} of ${item.title}`}
+                    alt={audio ? `${label || 'Photograph'}: ${item.title}` : `Page ${i + 1} of ${item.title}`}
                     width={media!.width ?? undefined}
                     height={media!.height ?? undefined}
                     loading={i === 0 ? 'eager' : 'lazy'}
                   />
                 )
                 return fullResolution ? (
-                  <a href={media!.url ?? '#'} aria-label={`Open full-resolution scan of page ${i + 1}`}>
+                  <a href={media!.url ?? '#'} aria-label={audio ? `Open full-resolution photograph: ${label || 'the original'}` : `Open full-resolution scan of page ${i + 1}`}>
                     {image}
                   </a>
                 ) : (
                   <div className="page-frame">{image}</div>
                 )
               })()}
+              {/* A recording's images are photographs of the tape, not pages: caption them by what they show. */}
               <figcaption>
-                Page {i + 1}
-                {/* Labels such as "Recto" add information; "page 2" only repeats the number. */}
-                {label && !/^page\s*\d+$/i.test(label.trim()) ? ` · ${label}` : ''}
+                {audio ? (
+                  label || 'Photograph'
+                ) : (
+                  <>
+                    Page {i + 1}
+                    {/* Labels such as "Recto" add information; "page 2" only repeats the number. */}
+                    {label && !/^page\s*\d+$/i.test(label.trim()) ? ` · ${label}` : ''}
+                  </>
+                )}
               </figcaption>
             </figure>
           ))}
