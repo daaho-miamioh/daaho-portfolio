@@ -15,6 +15,7 @@ import * as migration_20261030_195630_collections_within_the_collection from './
 import * as migration_20261031_051949_activity_log from './20261031_051949_activity_log';
 import * as migration_20261101_030939_access_requests from './20261101_030939_access_requests';
 import * as migration_20261110_204753_item_recording from './20261110_204753_item_recording';
+import * as migration_20261118_190721_annotation_suggestions from './20261118_190721_annotation_suggestions';
 
 export const migrations = [
   {
@@ -100,6 +101,11 @@ export const migrations = [
   {
     up: migration_20261110_204753_item_recording.up,
     down: migration_20261110_204753_item_recording.down,
-    name: '20261110_204753_item_recording'
+    name: '20261110_204753_item_recording',
+  },
+  {
+    up: migration_20261118_190721_annotation_suggestions.up,
+    down: migration_20261118_190721_annotation_suggestions.down,
+    name: '20261118_190721_annotation_suggestions'
   },
 ];

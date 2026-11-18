@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation'
 
 import { FORMATS, PERSON_ROLES, RECORDING_FORMATS } from '@/collections/Items'
 import { AnnotatedTranscript } from '@/components/AnnotatedTranscript'
+import { SuggestAnnotation } from '@/components/SuggestAnnotation'
+import { TranscriptEditor } from '@/components/TranscriptEditor'
 import { ContextEvents } from '@/components/ContextEvents'
 import { Paragraphs } from '@/components/Paragraphs'
 import { RecordingPlayer } from '@/components/RecordingPlayer'
@@ -14,6 +16,7 @@ import { langAttr } from '@/lib/lang'
 import { asMedia, src, srcSet } from '@/lib/media'
 import { relatedItems, toLinkable, type Kind } from '@/lib/related'
 import { hiddenParts } from '@/lib/publicView'
+import { recaptchaSiteKey } from '@/lib/recaptcha'
 import { getViewer } from '@/lib/viewer'
 import type { Annotation, Event, Genre, Item, Person, Place, Story, Subject, User } from '@/payload-types'
 
@@ -451,6 +454,17 @@ export default async function ItemPage({ params }: Params) {
       {item.transcript && (
         <section className={`transcript${translation ? ' has-translation' : ''}`} aria-labelledby="transcript-heading">
           <h2 id="transcript-heading">{translation ? 'Transcript and translation' : 'Transcript'}</h2>
+          {/* Signed-in staff correct the transcript here; saves are logged and versioned. */}
+          {user && !elsewhere && (
+            <TranscriptEditor
+              itemId={item.id}
+              transcript={item.transcript}
+              status={item._status === 'published' ? 'published' : 'draft'}
+              role={((user as User).role ?? 'contributor') as 'admin' | 'editor' | 'contributor'}
+              updatedAt={item.updatedAt}
+              checked={!!item.review?.transcriptChecked}
+            />
+          )}
           {audio ? (
             <p className="transcript-note">
               Transcribed from the recording, with times counted from its start. It keeps the speakers&rsquo; own
@@ -487,7 +501,17 @@ export default async function ItemPage({ params }: Params) {
           <div className="transcript-columns">
             <div className="transcript-col">
               {translation && <h3 className="col-label">Original{item.language ? ` · ${item.language}` : ''}</h3>}
-              <AnnotatedTranscript text={item.transcript} annotations={annotations.approved} lang={langAttr(item.language)} seekable={!!audio} />
+              <AnnotatedTranscript
+                text={item.transcript}
+                annotations={annotations.approved}
+                lang={langAttr(item.language)}
+                seekable={!!audio}
+                id="transcript-text"
+              />
+              {/* Visitors may suggest notes on a published transcript; editors approve them first. */}
+              {item._status === 'published' && (recaptchaSiteKey() || process.env.NODE_ENV !== 'production') && (
+                <SuggestAnnotation itemId={item.id} targetId="transcript-text" siteKey={recaptchaSiteKey()} signedIn={!!user} />
+              )}
             </div>
             {translation && translationStatus && (
               <div className="transcript-col" id="translation">

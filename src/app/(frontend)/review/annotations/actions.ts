@@ -20,9 +20,11 @@ export async function reviewAnnotation(formData: FormData) {
       await payload.update({ collection: 'annotations', id, user, overrideAccess: false, data: { status: 'approved', ...(note ? { reviewNote: note } : {}) } })
       message = 'Approved — the annotation is now public.'
     } else if (intent === 'return') {
-      if (!note) throw new APIError('Say why it is being returned, so the author can fix it.', 400)
-      await payload.update({ collection: 'annotations', id, user, overrideAccess: false, data: { status: 'rejected', reviewNote: note } })
-      message = 'Returned to the author.'
+      // A visitor's suggestion has no author to return it to; declining it needs no note.
+      const { source } = await payload.findByID({ collection: 'annotations', id, depth: 0, user, overrideAccess: false })
+      if (!note && source !== 'public') throw new APIError('Say why it is being returned, so the author can fix it.', 400)
+      await payload.update({ collection: 'annotations', id, user, overrideAccess: false, data: { status: 'rejected', reviewNote: note || null } })
+      message = source === 'public' ? 'Declined.' : 'Returned to the author.'
     } else {
       throw new APIError('Unknown action.', 400)
     }

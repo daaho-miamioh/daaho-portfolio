@@ -865,6 +865,10 @@ export interface Annotation {
    * Why it was returned, or anything the author should know.
    */
   reviewNote?: string | null;
+  source?: ('staff' | 'public') | null;
+  submitterName?: string | null;
+  submitterEmail?: string | null;
+  submitterHash?: string | null;
   author?: (number | null) | User;
   lastEditedBy?: (number | null) | User;
   reviewedBy?: (number | null) | User;
@@ -1334,6 +1338,10 @@ export interface AnnotationsSelect<T extends boolean = true> {
   body?: T;
   status?: T;
   reviewNote?: T;
+  source?: T;
+  submitterName?: T;
+  submitterEmail?: T;
+  submitterHash?: T;
   author?: T;
   lastEditedBy?: T;
   reviewedBy?: T;

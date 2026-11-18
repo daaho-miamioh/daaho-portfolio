@@ -81,7 +81,22 @@ export default async function ReviewAnnotationsPage({ searchParams }: { searchPa
                 <strong>{CATEGORY[a.category] ?? a.category}:</strong> <span style={{ whiteSpace: 'pre-wrap' }}>{a.body}</span>
               </p>
               <p className="muted">
-                By {nameOf(a.author as User)}
+                {a.source === 'public' ? (
+                  <>
+                    Suggested by a visitor
+                    {a.submitterName ? `: ${a.submitterName}` : ''}
+                    {a.submitterEmail ? (
+                      <>
+                        {' '}
+                        (<a href={`mailto:${a.submitterEmail}`}>{a.submitterEmail}</a>)
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </>
+                ) : (
+                  <>By {nameOf(a.author as User)}</>
+                )}
                 {idOf(a.lastEditedBy) !== idOf(a.author) ? ` · last changed by ${nameOf(a.lastEditedBy as User)}` : ''}
                 {item && (
                   <>
@@ -94,14 +109,16 @@ export default async function ReviewAnnotationsPage({ searchParams }: { searchPa
                 <p className="notice notice-draft">You wrote or last changed this one, so another editor or admin needs to review it.</p>
               ) : (
                 <>
-                  <label htmlFor={`note-${a.id}`}>Note to the author (required when returning)</label>
+                  <label htmlFor={`note-${a.id}`}>
+                    {a.source === 'public' ? 'Note for the record (optional; the visitor is not notified)' : 'Note to the author (required when returning)'}
+                  </label>
                   <textarea id={`note-${a.id}`} name="reviewNote" rows={2} />
                   <div className="cluster-actions">
                     <button type="submit" name="intent" value="approve" className="button">
                       Approve and publish
                     </button>{' '}
                     <button type="submit" name="intent" value="return" className="button-secondary">
-                      Return to author
+                      {a.source === 'public' ? 'Decline' : 'Return to author'}
                     </button>
                   </div>
                 </>

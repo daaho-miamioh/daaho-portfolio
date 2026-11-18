@@ -1,17 +1,12 @@
-import type { Access, CollectionConfig, Where } from 'payload'
+import { addDataAndFileToRequest, type Access, type CollectionConfig, type Where } from 'payload'
 
 import { hasRole, loggedIn } from '@/access/roles'
 import { anchorToTranscript, reviewRule } from '@/hooks/annotations'
+import { ANNOTATION_CATEGORIES } from '@/lib/annotationCategories'
+import { jsonEndpoint } from '@/lib/endpoint'
+import { suggestAnnotation } from '@/lib/suggestions'
 
-export const ANNOTATION_CATEGORIES = [
-  { label: 'Context', value: 'context' },
-  { label: 'Person', value: 'person' },
-  { label: 'Place', value: 'place' },
-  { label: 'Translation', value: 'translation' },
-  { label: 'Correction', value: 'correction' },
-  { label: 'Harmful language', value: 'harmful-language' },
-  { label: 'Other', value: 'other' },
-] as const
+export { ANNOTATION_CATEGORIES }
 
 const publicRead: Access = ({ req }) => {
   if (req.user) return true
@@ -27,9 +22,11 @@ const authorOrEditor: Access = ({ req }) => {
   return own
 }
 
+const staffOnly = ({ req }: { req: { user?: unknown } }) => !!req.user
+
 /**
- * Notes attached to a passage of a transcript. Written by staff in the item editor, public only after
- * someone other than the author approves them.
+ * Notes attached to a passage of a transcript. Written by staff in the item editor, or suggested by
+ * visitors on the item page; public only after someone other than the author approves them.
  */
 export const Annotations: CollectionConfig = {
   slug: 'annotations',
@@ -43,6 +40,17 @@ export const Annotations: CollectionConfig = {
   versions: { maxPerDoc: 25 },
   access: { read: publicRead, create: loggedIn, update: authorOrEditor, delete: authorOrEditor },
   hooks: { beforeChange: [reviewRule, anchorToTranscript] },
+  endpoints: [
+    {
+      // Visitors suggest a note on a passage of a public transcript; it waits for an editor.
+      path: '/suggest',
+      method: 'post',
+      handler: jsonEndpoint(async (req) => {
+        await addDataAndFileToRequest(req)
+        return suggestAnnotation(req, (req.data ?? {}) as Record<string, unknown>)
+      }),
+    },
+  ],
   fields: [
     { name: 'item', type: 'relationship', relationTo: 'items', required: true, index: true },
     { name: 'quote', type: 'textarea', required: true, label: 'Annotated passage' },
@@ -63,6 +71,20 @@ export const Annotations: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     { name: 'reviewNote', type: 'textarea', admin: { position: 'sidebar', description: 'Why it was returned, or anything the author should know.' } },
+    {
+      name: 'source',
+      type: 'select',
+      defaultValue: 'staff',
+      options: [
+        { label: 'Project staff', value: 'staff' },
+        { label: 'A visitor', value: 'public' },
+      ],
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    { name: 'submitterName', type: 'text', label: "Visitor's name", access: { read: staffOnly }, admin: { position: 'sidebar', readOnly: true, condition: (d) => d?.source === 'public' } },
+    { name: 'submitterEmail', type: 'email', label: "Visitor's email", access: { read: staffOnly }, admin: { position: 'sidebar', readOnly: true, condition: (d) => d?.source === 'public' } },
+    // A salted hash of the visitor's address, to limit how often one source sends. Never shown.
+    { name: 'submitterHash', type: 'text', index: true, access: { read: () => false }, admin: { hidden: true } },
     { name: 'author', type: 'relationship', relationTo: 'users', admin: { position: 'sidebar', readOnly: true } },
     { name: 'lastEditedBy', type: 'relationship', relationTo: 'users', admin: { position: 'sidebar', readOnly: true } },
     { name: 'reviewedBy', type: 'relationship', relationTo: 'users', admin: { position: 'sidebar', readOnly: true } },

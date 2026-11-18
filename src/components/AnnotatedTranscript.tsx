@@ -20,7 +20,9 @@ function withTimes(text: string, key: number): ReactNode[] {
     out.push(text.slice(last, start))
     out.push(
       <a key={`${key}-${start}`} className="timestamp" href={`#t=${seconds}`} data-seek={seconds}>
-        <span className="visually-hidden">Play from </span>
+        <span className="visually-hidden" data-skip="">
+          Play from{' '}
+        </span>
         {text.slice(start, end)}
       </a>,
     )
@@ -40,11 +42,14 @@ export function AnnotatedTranscript({
   annotations,
   lang,
   seekable,
+  id,
 }: {
   text: string
   annotations: Annotation[]
   lang?: string
   seekable?: boolean
+  /** For the visitors' note form (SuggestAnnotation), which reads selections inside it. */
+  id?: string
 }) {
   const ranges = new Map<number, { start: number; end: number }>()
   for (const a of annotations) {
@@ -61,14 +66,14 @@ export function AnnotatedTranscript({
 
   return (
     <>
-      <div className="transcript-body" lang={lang}>
+      <div className="transcript-body" lang={lang} id={id}>
         {segments.map((s, i) => {
           if (s.id == null) return <span key={i}>{seekable ? withTimes(s.text, i) : s.text}</span>
           const n = number.get(s.id)!
           return (
             <mark key={i} id={`annotation-ref-${n}`} className="annotation-mark">
               {s.text}
-              <sup>
+              <sup data-skip="">
                 <a href={`#annotation-${n}`} aria-label={`Annotation ${n}`}>
                   {n}
                 </a>
@@ -80,7 +85,7 @@ export function AnnotatedTranscript({
       {order.length > 0 && (
         <section className="annotations" aria-labelledby="annotations-heading">
           <h3 id="annotations-heading">Annotations</h3>
-          <p className="transcript-note">Notes added by project staff and reviewed before publication.</p>
+          <p className="transcript-note">Notes by project staff and visitors, checked by an editor before they appear.</p>
           <ol>
             {order.map((id) => {
               const a = byId.get(id)!
@@ -92,6 +97,7 @@ export function AnnotatedTranscript({
                     <span className="annotation-category">{CATEGORY[a.category] ?? a.category}</span>
                   </p>
                   <p className="annotation-body">{a.body}</p>
+                  {a.source === 'public' && <p className="annotation-credit">Suggested by a visitor</p>}
                   {!loose.has(id) && (
                     <a href={`#annotation-ref-${n}`} className="annotation-back">
                       Back to the passage<span className="visually-hidden"> for annotation {n}</span>
