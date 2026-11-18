@@ -30,6 +30,7 @@ import { Changes as Changes_6e42df4c74e9f0eb69b3118cf79b3f1f } from '../../../co
 import { Icon as Icon_81fda60f3e3709e861f40982a767707d } from '../../../components/admin/Brand'
 import { Logo as Logo_81fda60f3e3709e861f40982a767707d } from '../../../components/admin/Brand'
 import { RequestAccessLink as RequestAccessLink_1352a983fd52a074673f9514c1d3f220 } from '../../../components/admin/RequestAccessLink'
+import { WebsiteLink as WebsiteLink_2df924a8f8366295b253bb05b1b13e33 } from '../../../components/admin/WebsiteLink'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -67,6 +68,7 @@ export const importMap = {
   "/components/admin/Brand#Icon": Icon_81fda60f3e3709e861f40982a767707d,
   "/components/admin/Brand#Logo": Logo_81fda60f3e3709e861f40982a767707d,
   "/components/admin/RequestAccessLink#RequestAccessLink": RequestAccessLink_1352a983fd52a074673f9514c1d3f220,
+  "/components/admin/WebsiteLink#WebsiteLink": WebsiteLink_2df924a8f8366295b253bb05b1b13e33,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

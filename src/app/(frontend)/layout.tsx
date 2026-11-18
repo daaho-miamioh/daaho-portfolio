@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import Link from 'next/link'
 import React from 'react'
 
+import { SignOutButton } from '@/components/SignOutButton'
 import { MainNav, SectionNav } from '@/components/SiteNav'
 import { getViewer } from '@/lib/viewer'
 import type { User } from '@/payload-types'
@@ -52,13 +53,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </Link>
             <MainNav submit={submit} />
           </div>
-          {canReview && (
+          {/* Everyone signed in sees drafts on the website, so everyone signed in gets the bar that says so. */}
+          {user && (
             <nav className="staff-bar" aria-label="Staff">
               <div className="wrap">
                 <span className="staff-label">Staff</span>
-                <Link href="/review/people">Review duplicates</Link>
-                <Link href="/review/annotations">Review annotations</Link>
-                <Link href="/admin">Admin</Link>
+                <span className="staff-who">
+                  Signed in as {(user as User).name}. Drafts are shown.
+                </span>
+                <span className="staff-links">
+                  {canReview && <Link href="/review/people">Review duplicates</Link>}
+                  {canReview && <Link href="/review/annotations">Review annotations</Link>}
+                  <Link href="/admin">Admin</Link>
+                  <SignOutButton />
+                </span>
               </div>
             </nav>
           )}
@@ -111,7 +119,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Link href="/join">Join the project</Link>
                 </li>
                 <li>
-                  <Link href="/admin">Staff sign-in</Link>
+                  <Link href="/signed-in">Staff sign-in</Link>
                 </li>
               </ul>
             </nav>

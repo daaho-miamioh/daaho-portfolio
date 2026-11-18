@@ -76,6 +76,8 @@ export default buildConfig({
       },
       // Under the sign-in form: the way in for someone without an account.
       afterLogin: ['/components/admin/RequestAccessLink#RequestAccessLink'],
+      // In the menu: back to the website, where signed-in staff also see drafts.
+      afterNavLinks: ['/components/admin/WebsiteLink#WebsiteLink'],
     },
   },
   collections: [Items, Sets, Stories, Annotations, Events, People, Places, Subjects, Genres, Media, ProjectEvents, Team, Users, AccessRequests],

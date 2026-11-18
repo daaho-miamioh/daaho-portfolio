@@ -143,11 +143,35 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
   .site-header .nav-panel { top: calc(100% - 0.35rem); left: 1.25rem; right: 1.25rem; }
   .site-header nav .nav-panel a { padding: 0.65rem 0.8rem; white-space: normal; }
 }
-.staff-bar { background: var(--ink); color: var(--on-dark-soft); font-size: 0.82rem; }
-.staff-bar .wrap { display: flex; gap: 1.25rem; align-items: center; padding-top: 0.35rem; padding-bottom: 0.35rem; flex-wrap: wrap; }
-.staff-bar a { color: var(--on-dark); text-decoration: none; }
-.staff-bar a:hover { color: var(--on-dark); text-decoration: underline; }
-.staff-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.7rem; }
+/* The Staff bar, for anyone signed in. It is a nav inside the header, so its links need rules more
+   specific than `.site-header nav a`; otherwise they turn grey, and black on black when hovered. */
+.staff-bar { background: var(--ink); color: var(--on-dark-soft); font-size: 0.85rem; }
+.staff-bar .wrap { display: flex; gap: 0.5rem 1rem; align-items: center; padding-top: 0.5rem; padding-bottom: 0.5rem; flex-wrap: wrap; }
+.staff-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.7rem; font-weight: 600; color: #fff; background: var(--accent); padding: 0.15rem 0.5rem; border-radius: 4px; }
+.staff-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1.25rem; margin-left: auto; }
+.site-header .staff-bar a, .staff-bar .staff-signout {
+  display: inline; color: var(--on-dark); background: none; border: 0; border-radius: 0; padding: 0.15rem 0;
+  font: inherit; font-weight: 500; text-decoration: none; cursor: pointer;
+}
+.site-header .staff-bar a:hover, .staff-bar .staff-signout:hover { color: #fff; background: none; text-decoration: underline; text-underline-offset: 0.25em; }
+.site-header .staff-bar a:focus-visible, .staff-bar .staff-signout:focus-visible { outline: 2px solid var(--on-dark); outline-offset: 3px; border-radius: 2px; }
+.staff-bar .staff-signout:disabled { color: var(--on-dark-soft); cursor: default; }
+@media (max-width: 40rem) { .staff-links { margin-left: 0; } }
+
+/* After signing in: the website or the admin. */
+.signed-in { max-width: 52rem; padding-top: 1rem; }
+.choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.25rem; margin: 2rem 0 1.5rem; }
+.choice-card {
+  display: flex; flex-direction: column; gap: 0.5rem; padding: 1.5rem; color: var(--ink); text-decoration: none; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: var(--shadow);
+  transition: border-color 0.2s, box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.choice-card:hover { color: var(--ink); border-color: var(--ink); box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+.choice-card h2 { font-size: 1.35rem; margin: 0; }
+.choice-card p { margin: 0; color: var(--ink-soft); line-height: 1.55; flex: 1; }
+.choice-go { font-weight: 600; margin-top: 0.5rem; }
+.choice-go span[aria-hidden] { display: inline-block; transition: transform 0.2s var(--ease); }
+.choice-card:hover .choice-go span[aria-hidden] { transform: translateX(3px); }
 .nav-staff { color: var(--accent) !important; }
 @media (max-width: 56rem) { .site-title-long { display: none; } }
 
