@@ -87,7 +87,7 @@ export async function suggestAnnotation(
   const transcript = item && item._status === 'published' ? (item.transcript ?? '') : ''
   if (!transcript) throw new APIError('This item cannot take suggestions.', 404, null, true)
   if (!locate(transcript, { quote: data.quote, start: data.start })) {
-    throw new APIError('The selected passage was not found in the transcript. Select it again.', 400, null, true)
+    throw new APIError('That passage was not found in the transcript. Select it again, or copy it exactly.', 400, null, true)
   }
 
   const hash = visitorHash(req)

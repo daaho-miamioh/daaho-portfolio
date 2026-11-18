@@ -120,9 +120,10 @@ export function SuggestAnnotation({ itemId, targetId, siteKey, signedIn }: { ite
     }
   }, [check])
 
-  const open = async () => {
-    if (!picked) return
-    setQuote({ text: picked.quote, start: picked.start })
+  // With a selection, the passage is the selected text; without one (keyboard, screen reader, touch),
+  // the visitor pastes the passage into the form.
+  const open = async (from: Picked | null) => {
+    setQuote(from ? { text: from.quote, start: from.start } : { text: '', start: -1 })
     setPicked(null)
     setSent(false)
     setProblem(null)
@@ -153,6 +154,7 @@ export function SuggestAnnotation({ itemId, targetId, siteKey, signedIn }: { ite
     if (!quote) return
     setProblem(null)
     const found: typeof errors = {}
+    if (!quote.text.trim()) found.quote = 'Paste the passage your note is about.'
     if (fields.body.trim().length < 5) found.body = 'Write your note.'
     if (fields.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim())) found.email = 'Check the email address, or leave it empty.'
     if (Object.keys(found).length) return setErrors(found)
@@ -163,7 +165,7 @@ export function SuggestAnnotation({ itemId, targetId, siteKey, signedIn }: { ite
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ item: itemId, quote: quote.text, start: quote.start, ...fields, recaptcha: token, website: trap.current?.value ?? '' }),
+        body: JSON.stringify({ item: itemId, quote: quote.start >= 0 ? quote.text : quote.text.trim(), start: quote.start >= 0 ? quote.start : null, ...fields, recaptcha: token, website: trap.current?.value ?? '' }),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -190,9 +192,15 @@ export function SuggestAnnotation({ itemId, targetId, siteKey, signedIn }: { ite
 
   return (
     <>
-      <p className="transcript-note suggest-hint">Know something about this document? Select a passage in the transcript to suggest a note.</p>
+      <p className="transcript-note suggest-hint">
+        Know something about this document? Select a passage in the transcript to suggest a note, or{' '}
+        <button type="button" className="link-button" onClick={() => void open(null)}>
+          suggest a note by pasting the passage
+        </button>
+        .
+      </p>
       {picked && (
-        <button type="button" className="button suggest-button" style={{ top: picked.top, left: picked.left }} onMouseDown={(e) => e.preventDefault()} onClick={() => void open()}>
+        <button type="button" className="button suggest-button" style={{ top: picked.top, left: picked.left }} onMouseDown={(e) => e.preventDefault()} onClick={() => void open(picked)}>
           Suggest a note
         </button>
       )}
@@ -208,8 +216,33 @@ export function SuggestAnnotation({ itemId, targetId, siteKey, signedIn }: { ite
         ) : (
           <form className="join-form" onSubmit={(e) => void submit(e)} noValidate>
             <h2 id="suggest-heading">Suggest a note on this passage</h2>
-            <blockquote className="suggest-quote">{quote && quote.text.length > 400 ? `${quote.text.slice(0, 400)}…` : quote?.text}</blockquote>
-            {errors.quote && <p className="join-error">{errors.quote}</p>}
+            {quote && quote.start >= 0 ? (
+              <blockquote className="suggest-quote">{quote.text.length > 400 ? `${quote.text.slice(0, 400)}…` : quote.text}</blockquote>
+            ) : (
+              <div className="join-field">
+                <label htmlFor="suggest-passage">The passage your note is about</label>
+                <p id="suggest-passage-hint" className="join-hint">
+                  Copy it from the transcript exactly, a few words or a sentence.
+                </p>
+                <textarea
+                  id="suggest-passage"
+                  rows={3}
+                  maxLength={1500}
+                  value={quote?.text ?? ''}
+                  onChange={(e) => {
+                    setQuote({ text: e.target.value, start: -1 })
+                    if (errors.quote) setErrors({ ...errors, quote: undefined })
+                  }}
+                  aria-invalid={errors.quote ? true : undefined}
+                  aria-describedby={['suggest-passage-hint', errors.quote ? 'suggest-passage-error' : ''].filter(Boolean).join(' ')}
+                />
+              </div>
+            )}
+            {errors.quote && (
+              <p id="suggest-passage-error" className="join-error">
+                {errors.quote}
+              </p>
+            )}
             <div className="join-field">
               <label htmlFor="suggest-category">What kind of note?</label>
               <select id="suggest-category" value={fields.category} onChange={set('category')}>
