@@ -7,9 +7,16 @@
  * Reads <PIPELINE_DIR>/out_batch/*.loc15.json and the scans in <PIPELINE_DIR>/images.
  * PIPELINE_DIR defaults to ../daaho-metadata-pipeline.
  *
- * Create-only by design: anything that already exists — an item, a person, a scan, a term — is left
- * exactly as it is, so re-running never overwrites work an editor has done in the CMS. To re-import
- * one item from scratch, delete it in the CMS and run again.
+ * Create-only by default: anything that already exists — an item, a person, a scan, a term — is left
+ * exactly as it is, so re-running never overwrites work an editor has done in the CMS.
+ *
+ *   REFRESH=1   also refresh an item that exists but is still an unreviewed draft (never published,
+ *               no review box ticked): its scans and AI fields are replaced from the pipeline. Used
+ *               when better scans arrive, e.g. the CML rescans of the Asian Festival programs.
+ *   OUT_DIR     the pipeline's output folder (default out_batch); IMAGES_DIR its scans (default images).
+ *   SKIP_PEOPLE=1  link no people; list the names in the item's import issues for an editor to
+ *               choose from. For a booklet that names hundreds of performers, sponsors and historical
+ *               figures, none of them its creator or contributors in the Mini MAP's sense.
  *
  * Run it locally, against whichever database DATABASE_URL points to. Do not run it as a serverless
  * function: uploading 316 scans takes minutes.
@@ -38,6 +45,10 @@ function describeDatabase(): string {
 
 const PIPELINE_DIR = path.resolve(process.env.PIPELINE_DIR ?? '../daaho-metadata-pipeline')
 const DRY_RUN = !!process.env.DRY_RUN
+const REFRESH = !!process.env.REFRESH
+const SKIP_PEOPLE = !!process.env.SKIP_PEOPLE
+const OUT_DIR = path.resolve(PIPELINE_DIR, process.env.OUT_DIR ?? 'out_batch')
+const IMAGES_DIR = path.resolve(PIPELINE_DIR, process.env.IMAGES_DIR ?? 'images')
 const LOW_CONFIDENCE = 70
 
 type Meta = Record<string, unknown> & { field_confidence?: Record<string, number | null> }
@@ -56,7 +67,7 @@ type Record_ = {
 const text = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null)
 
 function loadRecords(): Record_[] {
-  const dir = path.join(PIPELINE_DIR, 'out_batch')
+  const dir = OUT_DIR
   if (!fs.existsSync(dir)) throw new Error(`No pipeline output at ${dir}. Set PIPELINE_DIR.`)
   return fs
     .readdirSync(dir)
@@ -222,7 +233,7 @@ async function main() {
   const personIds = new Map<string, number>()
   const created = new Set<string>()
   const usedSlugs = new Set<string>()
-  for (const n of [...names.values()].sort((a, b) => a.key.localeCompare(b.key))) {
+  for (const n of SKIP_PEOPLE ? [] : [...names.values()].sort((a, b) => a.key.localeCompare(b.key))) {
     // A name an editor merged into another record maps to the survivor; recreating it would undo
     // the merge on every re-import.
     let doc =
@@ -263,8 +274,13 @@ async function main() {
   for (const r of records) {
     const m = r.metadata
     const id = r.context.item_id
-    if (await findOne(payload, 'items', 'itemId', id)) {
+    const existing = (await payload.find({ collection: 'items', where: { itemId: { equals: id } }, draft: true, depth: 0, limit: 1, overrideAccess: true }))
+      .docs[0] as { id: number; _status?: string | null; review?: Record<string, unknown> | null } | undefined
+    const reviewed = (it: NonNullable<typeof existing>) =>
+      it._status === 'published' || ['titleChecked', 'descriptionChecked', 'transcriptChecked', 'linksChecked'].some((k) => it.review?.[k])
+    if (existing && (!REFRESH || reviewed(existing))) {
       counts.itemsSkipped++
+      if (REFRESH) console.log(`  ${id}: published or partly reviewed; left as it is`)
       continue
     }
     const title = text(m.title) ?? id
@@ -273,7 +289,7 @@ async function main() {
     for (const [i, p] of r.context.pages.entries()) {
       let media = await findOne(payload, 'media', 'sourceFilename', p.filename)
       if (!media) {
-        const filePath = path.join(PIPELINE_DIR, 'images', p.filename)
+        const filePath = path.join(IMAGES_DIR, p.filename)
         if (!fs.existsSync(filePath)) throw new Error(`${id}: scan missing: ${filePath}`)
         const label = p.label?.replace(/_/g, ' ')
         media = await payload.create({
@@ -289,10 +305,7 @@ async function main() {
 
     const fc = m.field_confidence ?? {}
     const transcriptConfidence = typeof fc.transcript === 'number' ? fc.transcript : null
-    await payload.create({
-      collection: 'items',
-      draft: true,
-      data: {
+    const data = {
         itemId: id,
         title,
         date: text(m.date),
@@ -308,11 +321,14 @@ async function main() {
         }),
         rights: text(m.rights),
         pages,
-        people: (perItem.get(id) ?? []).map(({ key, role }) => ({ person: personIds.get(key)!, role })),
+        people: SKIP_PEOPLE ? [] : (perItem.get(id) ?? []).map(({ key, role }) => ({ person: personIds.get(key)!, role })),
         places: await Promise.all(asList(m.place).map((n) => term('places', n))),
         subjects: await Promise.all(asList(m.subjects).map((n) => term('subjects', n))),
         genres: await Promise.all(asList(m.genre).map((n) => term('genres', n, aat.get(n.toLowerCase())))),
         archival: {
+          // Mini MAP: Creator as "last name, first name"; Extent a number and a unit (D-020).
+          creator: asList(m.creator).join('; ') || null,
+          extent: pages.length ? `${pages.length} page${pages.length === 1 ? '' : 's'}` : null,
           repository: text(m.repository),
           collection: text(m.collection),
           series: text(m.series),
@@ -320,7 +336,7 @@ async function main() {
           folder: text(m.folder),
           callNumber: text(m.call_number),
         },
-        review: { status: 'ai_generated' },
+        review: { status: 'ai_generated' as const },
         ai: {
           model: r.context.model ?? null,
           promptVersion: r.context.prompt_version ?? null,
@@ -328,17 +344,27 @@ async function main() {
           lowConfidence: transcriptConfidence != null && transcriptConfidence < LOW_CONFIDENCE,
           fieldConfidence: fc,
         },
-        importIssues: (issues.get(id) ?? []).map((issue) => ({ issue })),
-        _status: 'draft',
-      },
-      overrideAccess: true,
-    })
+        importIssues: [
+          ...(issues.get(id) ?? []),
+          ...(SKIP_PEOPLE && perItem.get(id)?.length
+            ? [`Names in the item, not linked (choose who belongs under People): ${perItem.get(id)!.map(({ key }) => names.get(key)?.display ?? key).join('; ')}`]
+            : []),
+        ].map((issue) => ({ issue })),
+        _status: 'draft' as const,
+      }
+    if (existing) {
+      // Keep what the pipeline does not produce (its collection on this site, rights, a recording).
+      await payload.update({ collection: 'items', id: existing.id, draft: true, data, overrideAccess: true })
+      console.log(`  ${id}: refreshed (unreviewed draft): ${pages.length} scans`)
+    } else {
+      await payload.create({ collection: 'items', draft: true, data, overrideAccess: true })
+    }
     counts.items++
     if (counts.items % 10 === 0) console.log(`  ${counts.items} items imported...`)
   }
 
   console.log(
-    `\nDone. Created ${counts.items} items (${counts.itemsSkipped} already present, skipped), ` +
+    `\nDone. Created or refreshed ${counts.items} items (${counts.itemsSkipped} left as they were), ` +
       `${counts.media} scans, ${counts.people} people/organizations, ${counts.terms} places/subjects/genres.`,
   )
   process.exit(0)

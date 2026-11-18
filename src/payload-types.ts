@@ -161,7 +161,7 @@ export interface Item {
   id: number;
   title: string;
   /**
-   * YYYY-MM-DD, YYYY-MM or YYYY. Leave empty if undated.
+   * YYYY-MM-DD, YYYY-MM or YYYY; a range with an en dash (1910–1920). Leave empty only if undated, and end the title ", undated".
    */
   date?: string | null;
   description?: string | null;
@@ -251,11 +251,11 @@ export interface Item {
     type?: string | null;
     theme?: string | null;
     /**
-     * e.g. 2 pages
+     * A number and a unit: 1 page, 2 pages, 25 minutes
      */
     extent?: string | null;
     /**
-     * e.g. 28 x 21.5 cm
+     * Height x width: 28 cm x 21.5 cm
      */
     dimensions?: string | null;
     repository?: string | null;
