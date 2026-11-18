@@ -25,6 +25,12 @@ const nextConfig: NextConfig = {
       { source: '/contact', destination: '/about', permanent: false },
       // The BC collection was renamed at the PI's request (2026-11).
       { source: '/collection/race-at-miami-university', destination: '/collection/miamis-connections-with-asia', permanent: true },
+      // FAST variant subjects merged into their authorized headings (Mini MAP corrections, 2026-11-18).
+      { source: '/subjects/foreign-students', destination: '/subjects/students-foreign', permanent: true },
+      { source: '/subjects/international-students', destination: '/subjects/students-foreign', permanent: true },
+      { source: '/subjects/college-admission', destination: '/subjects/universities-and-colleges-admission', permanent: true },
+      { source: '/subjects/immigration', destination: '/subjects/emigration-and-immigration', permanent: true },
+      { source: '/subjects/churches', destination: '/subjects/church-buildings', permanent: true },
     ]
   },
   webpack: (webpackConfig) => {

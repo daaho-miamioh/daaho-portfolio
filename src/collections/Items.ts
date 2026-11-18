@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { validMapDate, validMapDimensions, validMapExtent } from '@/lib/map'
 
 import { editors, loggedIn, publishedOrLoggedIn } from '@/access/roles'
 import { slugField } from '@/fields/slug'
@@ -68,7 +69,8 @@ export const Items: CollectionConfig = {
               name: 'date',
               type: 'text',
               access: { read: publicOnceChecked('titleChecked') },
-              admin: { description: 'YYYY-MM-DD, YYYY-MM or YYYY. Leave empty if undated.' },
+              validate: validMapDate,
+              admin: { description: 'YYYY-MM-DD, YYYY-MM or YYYY; a range with an en dash (1910–1920). Leave empty only if undated, and end the title ", undated".' },
             },
             { name: 'description', type: 'textarea', access: { read: publicOnceChecked('descriptionChecked') } },
             { name: 'rights', type: 'textarea', admin: { description: 'Required before publishing.' } },
@@ -254,8 +256,8 @@ export const Items: CollectionConfig = {
                 {
                   type: 'row',
                   fields: [
-                    { name: 'extent', type: 'text', admin: { description: 'e.g. 2 pages' } },
-                    { name: 'dimensions', type: 'text', admin: { description: 'e.g. 28 x 21.5 cm' } },
+                    { name: 'extent', type: 'text', validate: validMapExtent, admin: { description: 'A number and a unit: 1 page, 2 pages, 25 minutes' } },
+                    { name: 'dimensions', type: 'text', validate: validMapDimensions, admin: { description: 'Height x width: 28 cm x 21.5 cm' } },
                   ],
                 },
                 { name: 'repository', type: 'text' },

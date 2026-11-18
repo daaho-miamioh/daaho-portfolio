@@ -26,8 +26,11 @@ const itemMedia = (doc: { pages?: Page[] | null; recording?: Upload } | null | u
  * an AI-generated description is not published until a person has reviewed it, and nothing is
  * published without a rights statement. Contributors draft; only editors and admins publish.
  */
-export const publishGate: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
+export const publishGate: CollectionBeforeChangeHook = async ({ context, data, originalDoc, req }) => {
   if (data._status !== 'published') return data
+  // A maintenance script correcting the form of an item that is already published (e.g. the
+  // Mini MAP corrections, D-020 in the metadata pipeline) keeps it published; it publishes nothing new.
+  if (context?.maintenance === true && !req.user && originalDoc?._status === 'published') return data
   if (req.user && !hasRole(req, 'admin', 'editor')) {
     throw new APIError('Contributors can save drafts but cannot publish. Ask an editor to publish.', 403)
   }

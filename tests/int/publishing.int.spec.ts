@@ -90,6 +90,28 @@ describe('publishing rules', () => {
     }
   })
 
+  it('lets a maintenance script correct an item already published, but never publish a new one', async () => {
+    const before = await payload.findGlobal({ slug: 'settings', depth: 0 })
+    try {
+      await payload.updateGlobal({ slug: 'settings', data: { allowUnreviewedPublishing: true } })
+      const item = await draftItem({ rights: 'In copyright' })
+      await payload.update({ collection: 'items', id: item.id, data: { _status: 'published' }, user: editor, overrideAccess: false })
+      await payload.updateGlobal({ slug: 'settings', data: { allowUnreviewedPublishing: false } })
+      const fixed = await payload.update({
+        collection: 'items', id: item.id, data: { title: 'Test item, undated', _status: 'published' },
+        overrideAccess: true, context: { maintenance: true },
+      })
+      expect(fixed._status).toBe('published')
+      expect(fixed.title).toBe('Test item, undated')
+      const fresh = await draftItem({ rights: 'In copyright' })
+      await expect(
+        payload.update({ collection: 'items', id: fresh.id, data: { _status: 'published' }, overrideAccess: true, context: { maintenance: true } }),
+      ).rejects.toThrow(/Before publishing/)
+    } finally {
+      await payload.updateGlobal({ slug: 'settings', data: { allowUnreviewedPublishing: !!before.allowUnreviewedPublishing } })
+    }
+  })
+
   it('refuses to publish without a rights statement', async () => {
     // With no site default either: the default in Site settings counts as the item's statement.
     const before = await payload.findGlobal({ slug: 'settings', depth: 0 })
