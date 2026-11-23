@@ -5,6 +5,7 @@ import React from 'react'
 
 import { SignOutButton } from '@/components/SignOutButton'
 import { MainNav, SectionNav } from '@/components/SiteNav'
+import { SECTIONS } from '@/lib/sections'
 import { getViewer } from '@/lib/viewer'
 import type { User } from '@/payload-types'
 
@@ -20,15 +21,10 @@ export const metadata = {
     'Letters, records and recordings on Asian American lives in Ohio, from the archives of Miami University and from partner collections.',
 }
 
-const EXPLORE = [
-  ['/collection#collections', 'Collections'],
-  ['/items', 'Items'],
-  ['/stories', 'Stories'],
-  ['/people', 'People'],
-  ['/places', 'Places'],
-  ['/subjects', 'Subjects'],
-  ['/timeline', 'Timeline'],
-] as const
+// The footer repeats the menus from the same list (src/lib/sections.ts), so the two always match.
+const tabsOf = (href: string) => SECTIONS.find((s) => s.href === href)?.tabs ?? []
+const EXPLORE = [...tabsOf('/collection'), ...SECTIONS.filter((s) => !s.tabs).map((s) => [s.href, s.label] as const)]
+const PROJECT = [...tabsOf('/about'), ['/join', 'Join the project'] as const, ['/signed-in', 'Staff sign-in'] as const]
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { payload, user } = await getViewer()
@@ -103,24 +99,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <nav aria-label="Project" className="footer-links">
               <p className="footer-heading">Project</p>
               <ul role="list">
-                <li>
-                  <Link href="/about">About the project</Link>
-                </li>
-                <li>
-                  <Link href="/about/team">Team</Link>
-                </li>
-                <li>
-                  <Link href="/events">Events</Link>
-                </li>
-                <li>
-                  <Link href="/harmful-language">Statement on harmful language</Link>
-                </li>
-                <li>
-                  <Link href="/join">Join the project</Link>
-                </li>
-                <li>
-                  <Link href="/signed-in">Staff sign-in</Link>
-                </li>
+                {PROJECT.map(([href, label]) => (
+                  <li key={href}>
+                    <Link href={href}>{label}</Link>
+                  </li>
+                ))}
               </ul>
             </nav>
           </div>
