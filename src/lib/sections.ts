@@ -30,6 +30,7 @@ export const SECTIONS: readonly Section[] = [
     tabs: [
       ['/about', 'The project'],
       ['/about/team', 'Team'],
+      ['/about/logo', 'Our logo'],
       ['/events', 'Events'],
       ['/harmful-language', 'Statement on harmful language'],
     ],

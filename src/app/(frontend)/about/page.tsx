@@ -77,13 +77,22 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      {/* The logo has its own page; this keeps old links to /about#logo next to the way in. */}
       {about.logo?.text && (
-        <section id="logo" aria-labelledby="logo-heading" className="about-logo">
-          <h2 id="logo-heading">{about.logo.heading || 'About our logo'}</h2>
-          <div className="about-logo-body">
+        <section id="logo" aria-labelledby="logo-heading" className="section about-teaser">
+          <div className="about-logo-teaser">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            {logo && <img src={src(logo, 'card')} alt={logo.alt} width={240} loading="lazy" />}
-            <Paragraphs text={about.logo.text} className="prose" />
+            {logo && <img src={src(logo, 'card')} alt="" width={96} height={96} loading="lazy" />}
+            <div>
+              <p className="eyebrow">Our logo</p>
+              <h2 id="logo-heading">{about.logo.heading || 'About our logo'}</h2>
+            </div>
+          </div>
+          <div>
+            <p className="lede">A circle of people holding hands around a globe: what the design means, and who made it.</p>
+            <Link href="/about/logo" className="button-secondary">
+              Read about our logo <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </section>
       )}

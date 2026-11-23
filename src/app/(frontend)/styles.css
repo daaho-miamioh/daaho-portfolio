@@ -285,20 +285,21 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .about-teaser { display: grid; gap: 1.5rem 3rem; padding: 3rem; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); }
 @media (min-width: 52rem) { .about-teaser { grid-template-columns: 1fr 1fr; align-items: end; } }
 .about-teaser h2 { margin: 0; }
-.sponsors { margin-top: 4.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem 3rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
-.sponsors h2 { margin: 0; }
-.sponsors .eyebrow { margin: 0; }
-.sponsors ul { display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: center; }
-.sponsors img { max-height: 4.5rem; width: auto; filter: grayscale(1); opacity: 0.75; transition: filter 0.3s, opacity 0.3s; }
-.sponsors a:hover img { filter: none; opacity: 1; }
+/* Funders, centered and in full color, as on the project's first website. */
+.sponsors { margin-top: 5.5rem; padding-top: 3.5rem; border-top: 1px solid var(--rule); text-align: center; }
+.sponsors h2 { margin: 0 0 2.25rem; font-size: clamp(1.5rem, 2.6vw, 2rem); }
+.sponsors ul { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2.5rem 4.5rem; }
+.sponsors img { max-height: 10rem; max-width: 16rem; width: auto; height: auto; }
+.sponsors li > a { display: block; border-radius: 6px; }
 
 /* Slideshow */
-.slideshow { margin: 4.5rem 0 0; }
+/* Centered on the page, at one height for every slide, so the caption and buttons stay put. */
+.slideshow { max-width: 60rem; margin: 4.5rem auto 0; text-align: center; }
 .slideshow figure { margin: 0; }
-.slide-frame { background: var(--dark); border-radius: 20px; overflow: hidden; display: flex; justify-content: center; align-items: center; min-height: 18rem; box-shadow: var(--shadow-lift); }
-.slide-frame img { max-height: 34rem; width: auto; max-width: 100%; height: auto; object-fit: contain; }
-.slideshow figcaption { color: var(--ink-soft); font-size: 0.88rem; margin-top: 0.85rem; max-width: 50rem; }
-.slide-controls { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.85rem; font-family: var(--mono); font-size: 0.85rem; color: var(--ink-soft); }
+.slide-frame { background: var(--dark); border-radius: 20px; overflow: hidden; display: flex; justify-content: center; align-items: center; height: clamp(16rem, 48vw, 32rem); box-shadow: var(--shadow-lift); }
+.slide-frame img { max-height: 100%; width: auto; max-width: 100%; height: auto; object-fit: contain; }
+.slideshow figcaption { color: var(--ink-soft); font-size: 0.88rem; margin: 0.85rem auto 0; max-width: 46rem; min-height: 2.6em; }
+.slide-controls { display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-top: 0.85rem; font-family: var(--mono); font-size: 0.85rem; color: var(--ink-soft); }
 .slide-controls button {
   font: inherit; font-size: 1rem; width: 2.75rem; height: 2.75rem; border: 1px solid var(--rule-strong); border-radius: 999px;
   background: var(--surface); color: var(--ink); cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
@@ -511,7 +512,6 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .team-member h3 { font-size: 1.02rem; }
 .team-member .role { margin: 0.2rem 0 0; }
 .team-bio p { margin: 0.6rem 0 0; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
-.about-logo { margin-top: 4rem; }
 
 /* Collection overview */
 .collection-search { margin-top: 2rem; max-width: 44rem; }
@@ -635,9 +635,13 @@ ul.set-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
 .set-crumb a::before { content: ''; flex: none; width: 0.55rem; height: 0.55rem; border-radius: 2px; background: currentColor; }
 .set-crumb a:hover { background: var(--set); color: #fff; }
 
-.about-logo-body { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 1.75rem; }
-.about-logo-body img { max-width: 12rem; height: auto; }
-.about-logo-body .prose { flex: 1 1 20rem; }
+.about-logo-teaser { display: flex; align-items: center; gap: 1.25rem; }
+.about-logo-teaser img { width: 5rem; height: auto; flex: none; }
+/* /about/logo */
+.logo-page { max-width: 60rem; }
+.logo-page-body { display: grid; gap: 2rem 3rem; align-items: center; margin-top: 1.5rem; }
+.logo-page-body img { width: 100%; max-width: 18rem; height: auto; justify-self: center; }
+@media (min-width: 48rem) { .logo-page-body { grid-template-columns: 18rem 1fr; } }
 
 /* Statement pages */
 .statement .prose p { margin: 0 0 1rem; }

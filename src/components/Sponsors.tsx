@@ -7,9 +7,7 @@ export function Sponsors({ sponsors }: { sponsors: Home['sponsors'] }) {
   if (!list.length) return null
   return (
     <section aria-labelledby="sponsors-heading" className="sponsors">
-      <p id="sponsors-heading" className="eyebrow">
-        Supported by
-      </p>
+      <h2 id="sponsors-heading">Sponsored by</h2>
       <ul role="list">
         {list.map((s) => {
           const content = s.logo ? (
