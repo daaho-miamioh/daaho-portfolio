@@ -33,6 +33,7 @@ export const SECTIONS: readonly Section[] = [
       ['/about/logo', 'Our logo'],
       ['/events', 'Events'],
       ['/harmful-language', 'Statement on harmful language'],
+      ['/join', 'Join the project'],
     ],
   },
 ]

@@ -24,7 +24,7 @@ export const metadata = {
 // The footer repeats the menus from the same list (src/lib/sections.ts), so the two always match.
 const tabsOf = (href: string) => SECTIONS.find((s) => s.href === href)?.tabs ?? []
 const EXPLORE = [...tabsOf('/collection'), ...SECTIONS.filter((s) => !s.tabs).map((s) => [s.href, s.label] as const)]
-const PROJECT = [...tabsOf('/about'), ['/join', 'Join the project'] as const, ['/signed-in', 'Staff sign-in'] as const]
+const PROJECT = tabsOf('/about')
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { payload, user } = await getViewer()
@@ -115,7 +115,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </p>
             <p>
               &copy; {new Date().getFullYear()} Miami University Libraries · Funded by the National Historical Publications
-              and Records Commission (NHPRC)
+              and Records Commission (NHPRC) · <Link href="/signed-in">Staff sign-in</Link>
             </p>
           </div>
         </footer>
