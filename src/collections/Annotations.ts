@@ -34,8 +34,9 @@ export const Annotations: CollectionConfig = {
   admin: {
     useAsTitle: 'quote',
     group: 'Content',
-    defaultColumns: ['quote', 'item', 'category', 'status', 'author'],
-    description: 'Written from the item editor (Annotations tab). Public only after approval by someone other than the author.',
+    defaultColumns: ['quote', 'item', 'source', 'category', 'status', 'author'],
+    description:
+      'Notes on passages of transcripts, from two sources, shown under Source: "Project staff" notes are written in the item editor (Annotations tab); "Public suggestion" notes are sent by visitors from the item page. Either kind is public only after someone other than its writer approves it.',
   },
   versions: { maxPerDoc: 25 },
   access: { read: publicRead, create: loggedIn, update: authorOrEditor, delete: authorOrEditor },
@@ -56,6 +57,21 @@ export const Annotations: CollectionConfig = {
     { name: 'quote', type: 'textarea', required: true, label: 'Annotated passage' },
     { name: 'category', type: 'select', required: true, defaultValue: 'context', options: [...ANNOTATION_CATEGORIES] },
     { name: 'body', type: 'textarea', required: true, label: 'Annotation' },
+    // First in the sidebar, so who wrote a note is the first thing a reviewer sees.
+    {
+      name: 'source',
+      type: 'select',
+      defaultValue: 'staff',
+      options: [
+        { label: 'Project staff', value: 'staff' },
+        { label: 'Public suggestion', value: 'public' },
+      ],
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Set by the system: Project staff wrote it in the item editor, or a visitor suggested it on the website.',
+      },
+    },
     {
       name: 'status',
       type: 'select',
@@ -71,16 +87,6 @@ export const Annotations: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     { name: 'reviewNote', type: 'textarea', admin: { position: 'sidebar', description: 'Why it was returned, or anything the author should know.' } },
-    {
-      name: 'source',
-      type: 'select',
-      defaultValue: 'staff',
-      options: [
-        { label: 'Project staff', value: 'staff' },
-        { label: 'A visitor', value: 'public' },
-      ],
-      admin: { position: 'sidebar', readOnly: true },
-    },
     { name: 'submitterName', type: 'text', label: "Visitor's name", access: { read: staffOnly }, admin: { position: 'sidebar', readOnly: true, condition: (d) => d?.source === 'public' } },
     { name: 'submitterEmail', type: 'email', label: "Visitor's email", access: { read: staffOnly }, admin: { position: 'sidebar', readOnly: true, condition: (d) => d?.source === 'public' } },
     // A salted hash of the visitor's address, to limit how often one source sends. Never shown.

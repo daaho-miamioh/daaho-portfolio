@@ -849,7 +849,7 @@ export interface Story {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Written from the item editor (Annotations tab). Public only after approval by someone other than the author.
+ * Notes on passages of transcripts, from two sources, shown under Source: "Project staff" notes are written in the item editor (Annotations tab); "Public suggestion" notes are sent by visitors from the item page. Either kind is public only after someone other than its writer approves it.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "annotations".
@@ -860,12 +860,15 @@ export interface Annotation {
   quote: string;
   category: 'context' | 'person' | 'place' | 'translation' | 'correction' | 'harmful-language' | 'other';
   body: string;
+  /**
+   * Set by the system: Project staff wrote it in the item editor, or a visitor suggested it on the website.
+   */
+  source?: ('staff' | 'public') | null;
   status: 'draft' | 'submitted' | 'approved' | 'rejected';
   /**
    * Why it was returned, or anything the author should know.
    */
   reviewNote?: string | null;
-  source?: ('staff' | 'public') | null;
   submitterName?: string | null;
   submitterEmail?: string | null;
   submitterHash?: string | null;
@@ -1336,9 +1339,9 @@ export interface AnnotationsSelect<T extends boolean = true> {
   quote?: T;
   category?: T;
   body?: T;
+  source?: T;
   status?: T;
   reviewNote?: T;
-  source?: T;
   submitterName?: T;
   submitterEmail?: T;
   submitterHash?: T;
