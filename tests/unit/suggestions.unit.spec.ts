@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { recaptchaSiteKey, verifyRecaptcha } from '@/lib/recaptcha'
-import { checkSuggestion } from '@/lib/suggestions'
+import { checkSuggestion, suggestionEmail, suggestionNoticeTo } from '@/lib/suggestions'
 
 const ok = { item: 7, quote: 'Dear Mr. Huang', start: 0, category: 'person', body: 'Chin-Wu Huang studied at Miami in 1924.' }
 
@@ -53,5 +53,37 @@ describe('the reCAPTCHA check', () => {
     vi.stubEnv('NODE_ENV', 'development')
     expect(await verifyRecaptcha('t', null, google(true))).toEqual({ ok: true })
     vi.unstubAllEnvs()
+  })
+})
+
+describe('the notice of a new visitor suggestion', () => {
+  const mail = suggestionEmail({
+    itemId: 'AAMU-0038',
+    title: 'Letter to C. H. Chuang',
+    category: 'place',
+    quote: 'Tsing Hua <College>',
+    body: 'Now Tsinghua University & more.',
+    itemLink: 'https://daaho.example/items/aamu-0038',
+    reviewLink: 'https://daaho.example/review/annotations',
+  })
+  it('goes to the shared mailbox unless another address is set', () => {
+    const before = process.env.SUGGESTION_NOTICE_TO
+    delete process.env.SUGGESTION_NOTICE_TO
+    expect(suggestionNoticeTo()).toBe('daaho@miamioh.edu')
+    process.env.SUGGESTION_NOTICE_TO = 'someone@example.org'
+    expect(suggestionNoticeTo()).toBe('someone@example.org')
+    if (before === undefined) delete process.env.SUGGESTION_NOTICE_TO
+    else process.env.SUGGESTION_NOTICE_TO = before
+  })
+  it('names the item, the kind of note, the passage and the note, and links to the review page', () => {
+    expect(mail.subject).toBe('New visitor note on AAMU-0038')
+    expect(mail.text).toContain('Kind of note: Place')
+    expect(mail.text).toContain('Tsing Hua <College>')
+    expect(mail.text).toContain('https://daaho.example/review/annotations')
+  })
+  it('escapes what the visitor wrote in the HTML version', () => {
+    expect(mail.html).toContain('Tsing Hua &lt;College&gt;')
+    expect(mail.html).toContain('Tsinghua University &amp; more.')
+    expect(mail.html).not.toContain('<College>')
   })
 })
