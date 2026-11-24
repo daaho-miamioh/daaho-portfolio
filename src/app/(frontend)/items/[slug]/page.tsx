@@ -6,6 +6,7 @@ import { FORMATS, PERSON_ROLES, RECORDING_FORMATS } from '@/collections/Items'
 import { AnnotatedTranscript } from '@/components/AnnotatedTranscript'
 import { SuggestAnnotation } from '@/components/SuggestAnnotation'
 import { TranscriptEditor } from '@/components/TranscriptEditor'
+import { TranscriptView } from '@/components/TranscriptView'
 import { ContextEvents } from '@/components/ContextEvents'
 import { Paragraphs } from '@/components/Paragraphs'
 import { RecordingPlayer } from '@/components/RecordingPlayer'
@@ -17,6 +18,7 @@ import { asMedia, src, srcSet } from '@/lib/media'
 import { relatedItems, toLinkable, type Kind } from '@/lib/related'
 import { hiddenParts } from '@/lib/publicView'
 import { recaptchaSiteKey } from '@/lib/recaptcha'
+import { splitPages } from '@/lib/transcriptPages'
 import { getViewer } from '@/lib/viewer'
 import type { Annotation, Event, Genre, Item, Person, Place, Story, Subject, User } from '@/payload-types'
 
@@ -192,6 +194,50 @@ export default async function ItemPage({ params }: Params) {
             checked: false,
           }
 
+  // One scan, as a figure: at the top of the page, and again beside its page of the transcript.
+  const figure = ({ media, label }: (typeof pages)[number], i: number, sizes: string, eager: boolean) => {
+    const image = (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src(media!, 'reading')}
+        srcSet={fullResolution ? srcSet(media!) : srcSet(media!, ['thumbnail', 'card', 'reading'])}
+        sizes={sizes}
+        // From the title the visitor may see, not the stored alt text, which may predate a correction.
+        alt={audio ? `${label || 'Photograph'}: ${item.title}` : `Page ${i + 1} of ${item.title}`}
+        width={media!.width ?? undefined}
+        height={media!.height ?? undefined}
+        loading={eager ? 'eager' : 'lazy'}
+      />
+    )
+    return (
+      <figure key={media!.id} className="page">
+        {fullResolution ? (
+          <a href={media!.url ?? '#'} aria-label={audio ? `Open full-resolution photograph: ${label || 'the original'}` : `Open full-resolution scan of page ${i + 1}`}>
+            {image}
+          </a>
+        ) : (
+          <div className="page-frame">{image}</div>
+        )}
+        {/* A recording's images are photographs of the tape, not pages: caption them by what they show. */}
+        <figcaption>
+          {audio ? (
+            label || 'Photograph'
+          ) : (
+            <>
+              Page {i + 1}
+              {/* Labels such as "Recto" add information; "page 2" only repeats the number. */}
+              {label && !/^page\s*\d+$/i.test(label.trim()) ? ` · ${label}` : ''}
+            </>
+          )}
+        </figcaption>
+      </figure>
+    )
+  }
+  // Each scan beside its own page of text, when the visitor can read the transcript and its [page N]
+  // markers match the scans one for one. The top of the page then shows the first scan only.
+  const paged =
+    !audio && !elsewhere && !translation && pages.length > 1 && !!item.transcript && splitPages(item.transcript)?.length === pages.length
+
   return (
     <article className="item">
       {item._status !== 'published' && (
@@ -275,44 +321,14 @@ export default async function ItemPage({ params }: Params) {
               </a>
             </>
           )}
-          {pages.map(({ media, label }, i) => (
-            <figure key={media!.id} className="page">
-              {(() => {
-                const image = (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={src(media!, 'reading')}
-                    srcSet={fullResolution ? srcSet(media!) : srcSet(media!, ['thumbnail', 'card', 'reading'])}
-                    sizes="(min-width: 960px) 55vw, 100vw"
-                    // From the title the visitor may see, not the stored alt text, which may predate a correction.
-                    alt={audio ? `${label || 'Photograph'}: ${item.title}` : `Page ${i + 1} of ${item.title}`}
-                    width={media!.width ?? undefined}
-                    height={media!.height ?? undefined}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                  />
-                )
-                return fullResolution ? (
-                  <a href={media!.url ?? '#'} aria-label={audio ? `Open full-resolution photograph: ${label || 'the original'}` : `Open full-resolution scan of page ${i + 1}`}>
-                    {image}
-                  </a>
-                ) : (
-                  <div className="page-frame">{image}</div>
-                )
-              })()}
-              {/* A recording's images are photographs of the tape, not pages: caption them by what they show. */}
-              <figcaption>
-                {audio ? (
-                  label || 'Photograph'
-                ) : (
-                  <>
-                    Page {i + 1}
-                    {/* Labels such as "Recto" add information; "page 2" only repeats the number. */}
-                    {label && !/^page\s*\d+$/i.test(label.trim()) ? ` · ${label}` : ''}
-                  </>
-                )}
-              </figcaption>
-            </figure>
-          ))}
+          {(paged ? pages.slice(0, 1) : pages).map((p, i) => figure(p, i, '(min-width: 960px) 55vw, 100vw', i === 0))}
+          {paged && (
+            <p className="paged-jump">
+              <a href="#transcript">
+                All {pages.length} pages, each beside its transcript<span aria-hidden="true"> ↓</span>
+              </a>
+            </p>
+          )}
         </section>
 
         <div className="item-text">
@@ -452,7 +468,11 @@ export default async function ItemPage({ params }: Params) {
       </div>
 
       {item.transcript && (
-        <section className={`transcript${translation ? ' has-translation' : ''}`} aria-labelledby="transcript-heading">
+        <section
+          id="transcript"
+          className={`transcript${translation ? ' has-translation' : ''}${paged ? ' is-paged' : ''}`}
+          aria-labelledby="transcript-heading"
+        >
           <h2 id="transcript-heading">{translation ? 'Transcript and translation' : 'Transcript'}</h2>
           {/* Signed-in staff correct the transcript here; saves are logged and versioned. */}
           {user && !elsewhere && (
@@ -498,6 +518,7 @@ export default async function ItemPage({ params }: Params) {
               <strong>About the English translation:</strong> {translationStatus.long}
             </p>
           )}
+          {paged && <TranscriptView targetId="transcript-text" pageCount={pages.length} />}
           <div className="transcript-columns">
             <div className="transcript-col">
               {translation && <h3 className="col-label">Original{item.language ? ` · ${item.language}` : ''}</h3>}
@@ -507,6 +528,7 @@ export default async function ItemPage({ params }: Params) {
                 lang={langAttr(item.language)}
                 seekable={!!audio}
                 id="transcript-text"
+                pageFigures={paged ? pages.map((p, i) => figure(p, i, '(min-width: 960px) 45vw, 100vw', false)) : undefined}
               />
               {/* Visitors may suggest notes on a published transcript; editors approve them first. */}
               {item._status === 'published' && (recaptchaSiteKey() || process.env.NODE_ENV !== 'production') && (

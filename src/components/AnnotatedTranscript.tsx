@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 
 import { ANNOTATION_CATEGORIES } from '@/collections/Annotations'
 import { locate, segment } from '@/lib/anchors'
+import { piecesByPage, splitPages, type Piece } from '@/lib/transcriptPages'
 import type { Annotation } from '@/payload-types'
 
 const CATEGORY = Object.fromEntries(ANNOTATION_CATEGORIES.map((c) => [c.value, c.label]))
@@ -36,6 +37,11 @@ function withTimes(text: string, key: number): ReactNode[] {
  * A transcript with its approved annotations: each annotated passage is highlighted and numbered,
  * and the notes follow in an ordered list, linked both ways. Pass approved annotations only. With
  * `seekable`, the times in it play the recording on the page from that point.
+ *
+ * With `pageFigures`, one scan per `[page N]` marker, each page of text sits beside its scan. The
+ * scans are marked data-skip and the text runs in order, so selections and offsets still count the
+ * stored transcript exactly. `data-view="text"` on the same element (TranscriptView) hides the
+ * scans and shows the text as one block.
  */
 export function AnnotatedTranscript({
   text,
@@ -43,6 +49,7 @@ export function AnnotatedTranscript({
   lang,
   seekable,
   id,
+  pageFigures,
 }: {
   text: string
   annotations: Annotation[]
@@ -50,6 +57,7 @@ export function AnnotatedTranscript({
   seekable?: boolean
   /** For the visitors' note form (SuggestAnnotation), which reads selections inside it. */
   id?: string
+  pageFigures?: ReactNode[]
 }) {
   const ranges = new Map<number, { start: number; end: number }>()
   for (const a of annotations) {
@@ -64,24 +72,44 @@ export function AnnotatedTranscript({
   const number = new Map(order.map((id, i) => [id, i + 1]))
   const loose = new Set([...unplaced, ...annotations.filter((a) => !ranges.has(a.id)).map((a) => a.id)])
 
+  // A passage cut by a page break keeps its anchor on its first part and its number on its last.
+  const piece = (p: Piece, key: string, i: number) => {
+    if (p.id == null) return <span key={key}>{seekable ? withTimes(p.text, i) : p.text}</span>
+    const n = number.get(p.id)!
+    return (
+      <mark key={key} id={p.first ? `annotation-ref-${n}` : undefined} className="annotation-mark">
+        {p.text}
+        {p.last && (
+          <sup data-skip="">
+            <a href={`#annotation-${n}`} aria-label={`Annotation ${n}`}>
+              {n}
+            </a>
+          </sup>
+        )}
+      </mark>
+    )
+  }
+  const pages = pageFigures && pageFigures.length > 1 ? splitPages(text) : null
+  const byPage = pages && pages.length === pageFigures!.length ? piecesByPage(segments, pages) : null
+
   return (
     <>
-      <div className="transcript-body" lang={lang} id={id}>
-        {segments.map((s, i) => {
-          if (s.id == null) return <span key={i}>{seekable ? withTimes(s.text, i) : s.text}</span>
-          const n = number.get(s.id)!
-          return (
-            <mark key={i} id={`annotation-ref-${n}`} className="annotation-mark">
-              {s.text}
-              <sup data-skip="">
-                <a href={`#annotation-${n}`} aria-label={`Annotation ${n}`}>
-                  {n}
-                </a>
-              </sup>
-            </mark>
-          )
-        })}
-      </div>
+      {byPage ? (
+        <div className="paged" lang={lang} id={id} data-view="pages">
+          {byPage.map((pieces, k) => (
+            <div className="paged-row" key={k}>
+              <div className="paged-scan" data-skip="">
+                {pageFigures![k]}
+              </div>
+              <div className="transcript-body paged-text">{pieces.map((p, i) => piece(p, `${k}-${i}`, i))}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="transcript-body" lang={lang} id={id}>
+          {segments.map((s, i) => piece({ ...s, first: true, last: true }, String(i), i))}
+        </div>
+      )}
       {order.length > 0 && (
         <section className="annotations" aria-labelledby="annotations-heading">
           <h3 id="annotations-heading">Annotations</h3>

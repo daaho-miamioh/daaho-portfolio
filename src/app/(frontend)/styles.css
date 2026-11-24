@@ -415,6 +415,28 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .transcript-columns { display: grid; gap: 2.5rem; }
 @media (min-width: 64rem) { .has-translation .transcript-columns { grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; } }
 .transcript-col { min-width: 0; }
+
+/* Page by page: each scan beside its own page of the transcript where there is room, above it otherwise.
+   The text is the stored transcript, split at its [page N] markers (AnnotatedTranscript). */
+.transcript.is-paged { max-width: none; }
+.transcript.is-paged > p, .transcript.is-paged .annotations { max-width: 52rem; }
+.paged-jump { margin: 0.25rem 0 0; font-family: var(--mono); font-size: 0.85rem; }
+.view-switch { display: inline-flex; gap: 0.2rem; padding: 0.2rem; margin: 0 0 1.5rem; border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--surface); }
+.view-switch button { font: inherit; font-size: 0.88rem; padding: 0.4rem 1rem; border: 0; border-radius: 999px; background: transparent; color: var(--ink-soft); cursor: pointer; }
+.view-switch button:hover { color: var(--ink); }
+.view-switch button[aria-pressed='true'] { background: var(--ink); color: var(--on-dark); }
+.paged { display: grid; gap: 2.5rem; }
+.paged-row { display: grid; gap: 1rem; align-items: start; }
+@media (min-width: 60rem) { .paged-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 2rem; } }
+/* Full text: the same text as one block, as it is stored, without the scans. */
+.paged[data-view='text'] {
+  display: block; max-width: 52rem; white-space: pre-wrap; font-family: var(--mono); font-size: 0.92rem; line-height: 1.85; background: var(--surface);
+  border: 1px solid var(--rule); padding: 2rem 2.25rem; border-radius: var(--radius); box-shadow: var(--shadow); overflow-wrap: anywhere;
+}
+.paged[data-view='text'] .paged-row { display: contents; }
+.paged[data-view='text'] .paged-scan { display: none; }
+.paged[data-view='text'] .paged-text { display: inline; background: none; border: 0; padding: 0; border-radius: 0; box-shadow: none; }
+@media (max-width: 40rem) { .paged[data-view='text'] { padding: 1.25rem; } }
 .col-label { font-family: var(--mono); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin: 0 0 0.85rem; }
 .translation-status { font-size: 0.88rem; line-height: 1.5; margin: 0 0 1.5rem; max-width: 52rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); }
 .translation-status.is-checked { border-left-color: var(--ink); }
