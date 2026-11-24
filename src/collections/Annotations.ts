@@ -70,6 +70,7 @@ export const Annotations: CollectionConfig = {
         position: 'sidebar',
         readOnly: true,
         description: 'Set by the system: Project staff wrote it in the item editor, or a visitor suggested it on the website.',
+        components: { Cell: '/components/admin/AnnotationCells#SourceCell' },
       },
     },
     {
@@ -91,7 +92,13 @@ export const Annotations: CollectionConfig = {
     { name: 'submitterEmail', type: 'email', label: "Visitor's email", access: { read: staffOnly }, admin: { position: 'sidebar', readOnly: true, condition: (d) => d?.source === 'public' } },
     // A salted hash of the visitor's address, to limit how often one source sends. Never shown.
     { name: 'submitterHash', type: 'text', index: true, access: { read: () => false }, admin: { hidden: true } },
-    { name: 'author', type: 'relationship', relationTo: 'users', admin: { position: 'sidebar', readOnly: true } },
+    // In the list, a visitor's suggestion names the visitor here instead of "<No Author>".
+    {
+      name: 'author',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: { position: 'sidebar', readOnly: true, components: { Cell: '/components/admin/AnnotationCells#AuthorCell' } },
+    },
     { name: 'lastEditedBy', type: 'relationship', relationTo: 'users', admin: { position: 'sidebar', readOnly: true } },
     { name: 'reviewedBy', type: 'relationship', relationTo: 'users', admin: { position: 'sidebar', readOnly: true } },
     { name: 'reviewedAt', type: 'date', admin: { position: 'sidebar', readOnly: true } },

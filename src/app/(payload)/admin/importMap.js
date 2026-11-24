@@ -22,6 +22,8 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { SourceCell as SourceCell_5315acf2e2a181b857dedb2ec94c23ff } from '../../../components/admin/AnnotationCells'
+import { AuthorCell as AuthorCell_5315acf2e2a181b857dedb2ec94c23ff } from '../../../components/admin/AnnotationCells'
 import { InviteButton as InviteButton_315b3ae122c4f5100d0fb705c8f98f81 } from '../../../components/admin/InviteButton'
 import { InvitePanel as InvitePanel_320258ded341480a60698593f3e40915 } from '../../../components/admin/InvitePanel'
 import { AccessDecision as AccessDecision_57b6e3f8e57bd5849bd00bb87c5e0782 } from '../../../components/admin/AccessDecision'
@@ -60,6 +62,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/components/admin/AnnotationCells#SourceCell": SourceCell_5315acf2e2a181b857dedb2ec94c23ff,
+  "/components/admin/AnnotationCells#AuthorCell": AuthorCell_5315acf2e2a181b857dedb2ec94c23ff,
   "/components/admin/InviteButton#InviteButton": InviteButton_315b3ae122c4f5100d0fb705c8f98f81,
   "/components/admin/InvitePanel#InvitePanel": InvitePanel_320258ded341480a60698593f3e40915,
   "/components/admin/AccessDecision#AccessDecision": AccessDecision_57b6e3f8e57bd5849bd00bb87c5e0782,
