@@ -449,7 +449,13 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
   background: var(--bg); color: var(--ink); transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 .filters input:hover, .filters select:hover { border-color: #a3a3a3; }
-.filters input:focus, .filters select:focus { outline: none; border-color: var(--ink); background: var(--surface); box-shadow: 0 0 0 3px rgb(37 99 235 / 0.25); }
+.filters input:focus, .filters select:focus { outline: none; border-color: var(--ink); background-color: var(--surface); box-shadow: 0 0 0 3px rgb(37 99 235 / 0.25); }
+/* The browser's own arrow sits right against the text; draw one with room on both sides. */
+.filters select, .join-field select {
+  appearance: none; -webkit-appearance: none; padding-right: 2.6rem; text-overflow: ellipsis; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center; background-size: 0.75rem auto;
+}
 .filter-search input { font-size: 1.05rem; padding: 0.8rem 1rem; }
 .filter-actions { display: flex; gap: 1rem; align-items: center; }
 .filter-actions .button { cursor: pointer; }
@@ -470,7 +476,7 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .decade::before { content: ''; position: absolute; left: -0.4rem; top: 0.55rem; width: 0.8rem; height: 0.8rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--ink); }
 .decade h2 { margin: 0 0 0.35rem; font-family: var(--mono); font-weight: 500; letter-spacing: -0.02em; }
 .decade-items { margin: 0 0 0.75rem; font-weight: 500; }
-.decade-thumbs { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.75rem 0 0.85rem; }
+ul.decade-thumbs { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.75rem 0 0.85rem; }
 .decade-thumbs a { display: block; width: 5.5rem; aspect-ratio: 4 / 5; border-radius: 8px; overflow: hidden; border: 1px solid var(--rule); background: var(--panel); box-shadow: var(--shadow); transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
 .decade-thumbs a:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: var(--shadow-lift); }
 .decade-thumbs img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
@@ -616,7 +622,8 @@ ul.set-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
 .set-intro { margin-top: 3rem; }
 .set-rights { color: var(--ink-soft); font-size: 0.9rem; }
 .set-search { margin: 0; width: min(100%, 26rem); }
-.set-decades { margin: -0.5rem 0 1.75rem; }
+/* ul.: the list reset (ul[role='list']) would otherwise take the margin away. */
+ul.set-decades { margin: -0.5rem 0 1.75rem; }
 .filter-context { font-family: var(--mono); font-size: 0.85rem; color: var(--ink-soft); margin: -0.5rem 0 0; }
 
 /* On an item: its collection, as a tag on its card and a link above its title */
@@ -796,7 +803,7 @@ ul.story-tags { margin: 0 0 1.25rem; }
 }
 .join-field textarea { resize: vertical; min-height: 7.5rem; line-height: 1.5; }
 .join-field input:hover, .join-field select:hover, .join-field textarea:hover { border-color: #a3a3a3; }
-.join-field input:focus, .join-field select:focus, .join-field textarea:focus { outline: none; border-color: var(--ink); background: var(--surface); box-shadow: 0 0 0 3px rgb(37 99 235 / 0.25); }
+.join-field input:focus, .join-field select:focus, .join-field textarea:focus { outline: none; border-color: var(--ink); background-color: var(--surface); box-shadow: 0 0 0 3px rgb(37 99 235 / 0.25); }
 .join-field [aria-invalid='true'] { border-color: var(--accent); }
 .join-hint { margin: 0; font-size: 0.85rem; color: var(--ink-faint); }
 .join-error, .join-problem { margin: 0; font-size: 0.88rem; color: var(--accent-dark); }
