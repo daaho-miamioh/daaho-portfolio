@@ -72,6 +72,8 @@ export function JoinForm() {
     id: `join-${key}`,
     value: form[key],
     onChange: set(key),
+    // Only the affiliation is optional; its label says so. This lets a screen reader say "required".
+    'aria-required': key === 'affiliation' ? undefined : true,
     'aria-invalid': errors[key] ? true : undefined,
     'aria-describedby': errors[key] ? `join-${key}-error` : undefined,
   })

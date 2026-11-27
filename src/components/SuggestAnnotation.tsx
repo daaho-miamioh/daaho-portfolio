@@ -233,6 +233,7 @@ export function SuggestAnnotation({ itemId, targetId, siteKey, signedIn }: { ite
                     setQuote({ text: e.target.value, start: -1 })
                     if (errors.quote) setErrors({ ...errors, quote: undefined })
                   }}
+                  aria-required
                   aria-invalid={errors.quote ? true : undefined}
                   aria-describedby={['suggest-passage-hint', errors.quote ? 'suggest-passage-error' : ''].filter(Boolean).join(' ')}
                 />
@@ -264,6 +265,7 @@ export function SuggestAnnotation({ itemId, targetId, siteKey, signedIn }: { ite
                 maxLength={2000}
                 value={fields.body}
                 onChange={set('body')}
+                aria-required
                 aria-invalid={errors.body ? true : undefined}
                 aria-describedby={['suggest-body-hint', errors.body ? 'suggest-body-error' : ''].filter(Boolean).join(' ')}
               />
