@@ -59,7 +59,11 @@ ul[role='list'], ol.goals { list-style: none; margin: 0; padding: 0; }
 ::selection { background: #0a0a0a; color: #fafafa; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 1.25rem; }
-@media (min-width: 48rem) { .wrap { padding: 0 2rem; } }
+@media (min-width: 48rem) {
+  .wrap { padding: 0 2rem; }
+  /* Room for the pinned header, so a link reached by Shift+Tab or a #jump does not land under it. */
+  html { scroll-padding-top: 5.5rem; }
+}
 main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 
 .skip-link { position: absolute; left: -999px; top: 0.5rem; background: var(--ink); color: var(--on-dark); padding: 0.5rem 1rem; z-index: 100; border-radius: 999px; }
@@ -289,7 +293,8 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .sponsors { margin-top: 5.5rem; padding-top: 3.5rem; border-top: 1px solid var(--rule); text-align: center; }
 .sponsors h2 { margin: 0 0 2.25rem; font-size: clamp(1.5rem, 2.6vw, 2rem); }
 .sponsors ul { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2.5rem 4.5rem; }
-.sponsors img { max-height: 10rem; max-width: 16rem; width: auto; height: auto; }
+/* A set height, so a logo (loaded lazily) holds its place and its link can take focus before it loads. */
+.sponsors img { height: 10rem; width: auto; max-width: 16rem; object-fit: contain; }
 .sponsors li > a { display: block; border-radius: 6px; }
 
 /* Slideshow */
@@ -386,12 +391,20 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .links a:hover { text-decoration: underline; }
 .role { color: var(--ink-soft); font-size: 0.85rem; }
 .facts {
-  display: grid; grid-template-columns: max-content 1fr; gap: 0; margin: 2rem 0; background: var(--surface);
+  display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0; margin: 2rem 0; background: var(--surface);
   border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden;
 }
 .facts dt, .facts dd { padding: 0.75rem 1.1rem; border-bottom: 1px solid var(--rule); margin: 0; }
+.facts dd { overflow-wrap: anywhere; }
 .facts dt { font-family: var(--mono); font-weight: 500; color: var(--ink-soft); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; padding-top: 0.95rem; }
 .facts dt:nth-last-of-type(1), .facts dd:last-child { border-bottom: 0; }
+/* On a phone the labels go above their values: side by side, the label column left the values too
+   narrow, and at 320px the list ran off the screen. */
+@media (max-width: 30rem) {
+  .facts { grid-template-columns: minmax(0, 1fr); }
+  .facts dt { border-bottom: 0; padding-bottom: 0.1rem; }
+  .facts dd { padding-top: 0.1rem; }
+}
 .inline-list { display: flex; flex-wrap: wrap; gap: 0.35rem 0.4rem; }
 .facts .inline-list a, .item-text .inline-list a {
   display: inline-block; padding: 0.15rem 0.65rem; border: 1px solid var(--rule-strong); border-radius: 999px; text-decoration: none; font-size: 0.9rem;
@@ -454,8 +467,8 @@ main.wrap { padding-top: 2.5rem; padding-bottom: 5rem; min-height: 60vh; }
 .az a:hover { background: var(--ink); color: var(--on-dark); border-color: var(--ink); }
 .index-list { columns: 2 18rem; column-gap: 3rem; }
 .index-list li { break-inside: avoid; padding: 0.35rem 0; border-bottom: 1px solid var(--rule); }
-.index-list a { text-decoration: none; }
-.index-list a:hover { text-decoration: underline; }
+/* Underlined like links in running text: beside the role and count, a plain name did not read as a link. */
+.index-list a:hover { text-decoration-color: currentColor; }
 .related { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
 .related h2 { margin-top: 0; }
 
@@ -651,7 +664,7 @@ ul.set-decades { margin: -0.5rem 0 1.75rem; }
 /* On an item: its collection, as a tag on its card and a link above its title */
 .card.has-set .card-link { border-top: 3px solid var(--set); }
 .card-set {
-  margin: 0 0 0.45rem; color: var(--set); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin: 0 0 0.45rem; color: var(--set);
   font-family: var(--mono); font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
 }
 .card-set::before { content: ''; display: inline-block; width: 0.5rem; height: 0.5rem; margin-right: 0.4rem; border-radius: 2px; background: var(--set); }

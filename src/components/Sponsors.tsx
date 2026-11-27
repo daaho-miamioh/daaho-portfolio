@@ -10,9 +10,16 @@ export function Sponsors({ sponsors }: { sponsors: Home['sponsors'] }) {
       <h2 id="sponsors-heading">Sponsored by</h2>
       <ul role="list">
         {list.map((s) => {
+          const size = s.logo?.sizes?.card?.url ? s.logo.sizes.card : s.logo
           const content = s.logo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={src(s.logo, 'card')} alt={s.name} loading="lazy" />
+            <img
+              src={src(s.logo, 'card')}
+              alt={s.name}
+              width={size?.width ?? undefined}
+              height={size?.height ?? undefined}
+              loading="lazy"
+            />
           ) : (
             s.name
           )
