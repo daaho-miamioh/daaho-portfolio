@@ -97,6 +97,8 @@ export default async function ItemsPage({ searchParams }: { searchParams: Promis
       <p className="lede" role="status">
         {active ? `${res.totalDocs} of ${visible.length} items match.` : `${res.totalDocs} items, earliest first.`}
       </p>
+      {/* The cards' titles are h3s; this keeps the outline from jumping from the h1 straight to them. */}
+      <h2 className="visually-hidden">Results</h2>
       <ItemGrid items={res.docs as Item[]} />
       <Pagination page={res.page ?? 1} totalPages={res.totalPages} href={(p) => filterHref('/items', filters, p)} />
     </>

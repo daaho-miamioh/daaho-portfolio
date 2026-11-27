@@ -20,6 +20,7 @@ export default async function StoriesPage() {
         Biographies written by students and staff of the project, each set beside the letters and records in the
         collection that tell part of it.
       </p>
+      <h2 className="visually-hidden">All stories</h2>
       {stories.length ? <StoryGrid stories={stories} /> : <p className="empty">No stories yet.</p>}
     </>
   )
